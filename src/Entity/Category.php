@@ -9,9 +9,9 @@ use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
  * @GQL\Type
- * @ORM\Entity(repositoryClass="App\Repository\WalletRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\CategoryRepository")
  */
-class Wallet
+class Category
 {
     /**
      * @ORM\Id
@@ -34,19 +34,13 @@ class Wallet
     private $color;
 
     /**
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="integer")
      * @GQL\Field
      */
-    private $user_id;
+    private $icon;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="wallets")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
-     */
-    private $user;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="wallet")
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="category")
      */
     private $transactions;
 
@@ -84,26 +78,14 @@ class Wallet
         return $this;
     }
 
-    public function getUserId(): ?string
+    public function getIcon(): ?int
     {
-        return $this->user_id;
+        return $this->icon;
     }
 
-    public function setUserId(string $user_id): self
+    public function setIcon(int $icon): self
     {
-        $this->user_id = $user_id;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
+        $this->icon = $icon;
 
         return $this;
     }
@@ -120,7 +102,7 @@ class Wallet
     {
         if (!$this->transactions->contains($transaction)) {
             $this->transactions[] = $transaction;
-            $transaction->setWallet($this);
+            $transaction->setCategory($this);
         }
 
         return $this;
@@ -131,8 +113,8 @@ class Wallet
         if ($this->transactions->contains($transaction)) {
             $this->transactions->removeElement($transaction);
             // set the owning side to null (unless already changed)
-            if ($transaction->getWallet() === $this) {
-                $transaction->setWallet(null);
+            if ($transaction->getCategory() === $this) {
+                $transaction->setCategory(null);
             }
         }
 

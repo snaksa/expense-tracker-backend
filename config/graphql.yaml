@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        public: true
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Auto
+
+    App\GraphQL\:
+        resource: '../src/GraphQL'
+        exclude: '../src/GraphQL/{Providers}'
