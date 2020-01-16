@@ -6,10 +6,7 @@ parameters:
             standard: PSR2
             ignore_patterns:
                 - tests
-                - migrations
                 - vendor
-                - database
-                - resources
                 - config
         composer:
             file: ./composer.json
