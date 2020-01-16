@@ -1,0 +1,17 @@
+overblog_graphql:
+    definitions:
+        schema:
+            query: Query
+            mutation: Mutation
+        mappings:
+            auto_discover: false
+            types:
+                -
+                    type: annotation
+                    dir: "%kernel.project_dir%/src/Entity"
+                    suffix: ~
+                -
+                    type: annotation
+                    dir: "%kernel.project_dir%/src/GraphQL"
+                    suffix: ~
+

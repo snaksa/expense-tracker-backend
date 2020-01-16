@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  php:
+    image: snaksa/expense-tracker-backend
+    build:
+      context: .
+    container_name: expense-tracker-backend-php
+    volumes:
+     - .:/var/www/html
+    ports:
+      - "8080:80"
