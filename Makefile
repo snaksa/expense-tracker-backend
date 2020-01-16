@@ -34,7 +34,6 @@ build:
 	@docker-compose rm -vsf
 	@docker-compose down -v --remove-orphans
 	@docker-compose build
-	@make -s clean
 
 ssh:
 	$(info 💻 Make: SSH into PHP container.)
