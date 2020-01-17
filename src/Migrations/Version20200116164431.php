@@ -28,6 +28,12 @@ final class Version20200116164431 extends AbstractMigration
         $table->addColumn('password', 'string')
             ->setNotnull(true);
 
+        $table->addColumn('api_key', 'string')
+            ->setNotnull(false);
+
+        $table->addColumn('api_key_expiry_date', 'datetime')
+            ->setNotnull(false);
+
         $table->addColumn('roles', 'json')
                 ->setNotnull(true);
 

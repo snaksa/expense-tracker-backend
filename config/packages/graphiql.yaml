@@ -1,0 +1,6 @@
+overblog_graphiql:
+    javascript_libraries:
+        graphiql: "0.11.11"
+        react: "15.6.2"
+        fetch: "2.0.4"
+    template: "GraphiQL/index.html.twig"
