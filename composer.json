@@ -24,6 +24,7 @@
         "overblog/graphiql-bundle": "^0.2.0",
         "phpro/grumphp": "^0.17.2",
         "symfony/maker-bundle": "^1.14",
+        "symfony/phpunit-bridge": "^5.0",
         "symfony/twig-pack": "^1.0"
     },
     "config": {
