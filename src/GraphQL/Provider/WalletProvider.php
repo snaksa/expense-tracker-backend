@@ -5,6 +5,7 @@ namespace App\GraphQL\Provider;
 use App\Builder\WalletBuilder;
 use App\Entity\Wallet;
 use App\GraphQL\Input\Wallet\WalletCreateRequest;
+use App\GraphQL\Input\Wallet\WalletDeleteRequest;
 use App\GraphQL\Input\Wallet\WalletUpdateRequest;
 use App\Repository\WalletRepository;
 use Doctrine\ORM\EntityNotFoundException;
@@ -92,5 +93,23 @@ class WalletProvider
         $this->repository->save($wallet);
 
         return $wallet;
+    }
+
+    /**
+     * @GQL\Mutation(type="Wallet")
+     *
+     * @param WalletDeleteRequest $input
+     *
+     * @return Wallet
+     */
+    public function deleteWallet(WalletDeleteRequest $input): Wallet
+    {
+        $wallet = $this->repository->findOneById($input->id);
+
+        $clone = clone $wallet;
+
+        $this->repository->remove($wallet);
+
+        return $clone;
     }
 }

@@ -6,6 +6,7 @@ use App\Builder\TransactionBuilder;
 use App\Entity\Transaction;
 use App\Exception\GraphQLException;
 use App\GraphQL\Input\Transaction\TransactionCreateRequest;
+use App\GraphQL\Input\Transaction\TransactionDeleteRequest;
 use App\GraphQL\Input\Transaction\TransactionUpdateRequest;
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityNotFoundException;
@@ -99,19 +100,16 @@ class TransactionProvider
     /**
      * @GQL\Mutation(type="Transaction")
      *
-     * @param integer $id
+     * @param TransactionDeleteRequest $input
      *
      * @return Transaction
      */
-    public function deleteTransaction(int $id): Transaction
+    public function deleteTransaction(TransactionDeleteRequest $input): Transaction
     {
-        $transaction = $this->repository->findOneById($id);
-
-        if (!$transaction) {
-            throw GraphQLException::fromString('Transaction not found!');
-        }
+        $transaction = $this->repository->findOneById($input->id);
 
         $clone = clone $transaction;
+
         $this->repository->remove($transaction);
 
         return $clone;

@@ -5,6 +5,7 @@ namespace App\GraphQL\Provider;
 use App\Builder\CategoryBuilder;
 use App\Entity\Category;
 use App\GraphQL\Input\Category\CategoryCreateRequest;
+use App\GraphQL\Input\Category\CategoryDeleteRequest;
 use App\GraphQL\Input\Category\CategoryUpdateRequest;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityNotFoundException;
@@ -92,5 +93,23 @@ class CategoryProvider
         $this->repository->save($category);
 
         return $category;
+    }
+
+    /**
+     * @GQL\Mutation(type="Category")
+     *
+     * @param CategoryDeleteRequest $input
+     *
+     * @return Category
+     */
+    public function deleteCategory(CategoryDeleteRequest $input): Category
+    {
+        $category = $this->repository->findOneById($input->id);
+
+        $clone = clone $category;
+
+        $this->repository->remove($category);
+
+        return $clone;
     }
 }
