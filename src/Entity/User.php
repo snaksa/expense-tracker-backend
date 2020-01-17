@@ -40,6 +40,19 @@ class User implements UserInterface
     private $password;
 
     /**
+     * @var string The API key
+     * @ORM\Column(type="string", unique=true)
+     */
+    private $api_key;
+
+    /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $api_key_expiry_date;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Category", mappedBy="user")
      */
     private $categories;
@@ -191,6 +204,30 @@ class User implements UserInterface
                 $category->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getApiKey(): ?string
+    {
+        return $this->api_key;
+    }
+
+    public function setApiKey(string $apiKey): self
+    {
+        $this->api_key = $apiKey;
+
+        return $this;
+    }
+
+    public function getApiKeyExpiryDate(): ?\DateTimeInterface
+    {
+        return $this->api_key_expiry_date;
+    }
+
+    public function setApiKeyExpiryDate(?\DateTimeInterface $api_key_expiry_date): self
+    {
+        $this->api_key_expiry_date = $api_key_expiry_date;
 
         return $this;
     }
