@@ -28,18 +28,10 @@ class WalletProvider
      */
     private $builder;
 
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
-
-    public function __construct(WalletRepository $repository, WalletBuilder $builder, UserRepository $userRepository)
+    public function __construct(WalletRepository $repository, WalletBuilder $builder)
     {
         $this->repository = $repository;
         $this->builder = $builder;
-
-        // TODO: remove User repository
-        $this->userRepository = $userRepository;
     }
 
     /**
@@ -78,10 +70,6 @@ class WalletProvider
             ->create()
             ->bind($input)
             ->build();
-
-        // TODO: remove user setting
-        $user = $this->userRepository->findOneBy([]);
-        $wallet->setUser($user)->setUserId($user->getId());
 
         $this->repository->save($wallet);
 

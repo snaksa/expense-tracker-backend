@@ -85,7 +85,7 @@ class Wallet
         return $this;
     }
 
-    public function getUserId(): ?string
+    public function getUserId(): ?int
     {
         return $this->user_id;
     }
