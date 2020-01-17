@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Input\Transaction;
 
+use App\Validator\Constraints as Assert;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
@@ -11,6 +12,10 @@ class TransactionUpdateRequest extends TransactionRequest
 {
     /**
      * @GQL\Field(type="Int!")
+     * @Assert\EntityExists(
+     *  message="Wallet not found!",
+     *  entityClass="App\Entity\Wallet"
+     * )
      * @var integer
      */
     public $id;
@@ -35,12 +40,22 @@ class TransactionUpdateRequest extends TransactionRequest
 
     /**
      * @GQL\Field(type="Int")
+     * @Assert\EntityExists(
+     *  message="Category not found!",
+     *  entityClass="App\Entity\Category",
+     *  allowNull=true
+     * )
      * @var integer
      */
     public $categoryId;
 
     /**
      * @GQL\Field(type="Int")
+     * @Assert\EntityExists(
+     *  message="Wallet not found!",
+     *  entityClass="App\Entity\Wallet",
+     *  allowNull=true
+     * )
      * @var integer
      */
     public $walletId;

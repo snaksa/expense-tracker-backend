@@ -1,11 +1,11 @@
-<?php
-
-declare (strict_types=1);
+<?php declare (strict_types=1);
 
 namespace App\Builder;
 
 use App\Entity\Category;
 use App\GraphQL\Input\Category\CategoryRequest;
+use App\Services\AuthorizationService;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 
 class CategoryBuilder extends BaseBuilder
@@ -15,9 +15,23 @@ class CategoryBuilder extends BaseBuilder
      */
     private $category;
 
+    /**
+     * @var AuthorizationService
+     */
+    private $authorizationService;
+
+    public function __construct(EntityManagerInterface $entityManager, AuthorizationService $authorizationService)
+    {
+        $this->authorizationService = $authorizationService;
+
+        parent::__construct($entityManager);
+    }
+
     public function create(): self
     {
         $this->category = new Category();
+        $this->category->setUserId($this->authorizationService->getCurrentUser()->getId());
+        $this->category->setUser($this->authorizationService->getCurrentUser());
 
         return $this;
     }

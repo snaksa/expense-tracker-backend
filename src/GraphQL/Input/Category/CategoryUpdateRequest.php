@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Input\Category;
 
+use App\Validator\Constraints as Assert;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
@@ -11,6 +12,10 @@ class CategoryUpdateRequest extends CategoryRequest
 {
     /**
      * @GQL\Field(type="Int!")
+     * @Assert\EntityExists(
+     *  message="Category not found!",
+     *  entityClass="App\Entity\Category"
+     * )
      * @var integer
      */
     public $id;

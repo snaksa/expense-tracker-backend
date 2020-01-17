@@ -4,6 +4,7 @@ namespace App\GraphQL\Provider;
 
 use App\Builder\WalletBuilder;
 use App\Entity\Wallet;
+use App\Exception\GraphQLException;
 use App\GraphQL\Input\Wallet\WalletCreateRequest;
 use App\GraphQL\Input\Wallet\WalletDeleteRequest;
 use App\GraphQL\Input\Wallet\WalletUpdateRequest;
@@ -53,7 +54,12 @@ class WalletProvider
      */
     public function wallet(int $id): Wallet
     {
-        return $this->repository->findOneById($id);
+        $wallet = $this->repository->findOneById($id);
+        if (!$wallet) {
+            throw GraphQLException::fromString('Wallet not found!');
+        }
+
+        return $wallet;
     }
 
     /**

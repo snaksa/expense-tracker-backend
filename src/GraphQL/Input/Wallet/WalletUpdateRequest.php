@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Input\Wallet;
 
+use App\Validator\Constraints as Assert;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
@@ -11,6 +12,10 @@ class WalletUpdateRequest extends WalletRequest
 {
     /**
      * @GQL\Field(type="Int!")
+     * @Assert\EntityExists(
+     *  message="Wallet not found!",
+     *  entityClass="App\Entity\Wallet"
+     * )
      * @var integer
      */
     public $id;
