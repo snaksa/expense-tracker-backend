@@ -7,7 +7,7 @@ namespace App\Builder;
 use App\Entity\Category;
 use App\Entity\Transaction;
 use App\Entity\Wallet;
-use App\GraphQL\Input\TransactionRequest;
+use App\GraphQL\Input\Transaction\TransactionRequest;
 use Doctrine\ORM\EntityNotFoundException;
 
 class TransactionBuilder extends BaseBuilder

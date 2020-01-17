@@ -6,7 +6,7 @@ namespace App\Builder;
 
 use App\Entity\Wallet;
 use App\Exception\UnauthorizedOperationException;
-use App\GraphQL\Input\WalletRequest;
+use App\GraphQL\Input\Wallet\WalletRequest;
 use App\Services\AuthorizationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;

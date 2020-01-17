@@ -5,7 +5,7 @@ declare (strict_types=1);
 namespace App\Builder;
 
 use App\Entity\User;
-use App\GraphQL\Input\UserRequest;
+use App\GraphQL\Input\User\UserRequest;
 use App\Traits\DateUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;

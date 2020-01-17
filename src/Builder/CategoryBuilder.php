@@ -5,7 +5,7 @@ declare (strict_types=1);
 namespace App\Builder;
 
 use App\Entity\Category;
-use App\GraphQL\Input\CategoryRequest;
+use App\GraphQL\Input\Category\CategoryRequest;
 use Doctrine\ORM\EntityNotFoundException;
 
 class CategoryBuilder extends BaseBuilder

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace App\GraphQL\Input;
+namespace App\GraphQL\Input\User;
 
 use Overblog\GraphQLBundle\Annotation as GQL;
 
-abstract class WalletRequest
+abstract class UserRequest
 {
     /**
      * @var integer
@@ -14,10 +14,15 @@ abstract class WalletRequest
     /**
      * @var string
      */
-    public $name;
+    public $email;
 
     /**
      * @var string
      */
-    public $color;
+    public $password;
+
+    /**
+     * @var string
+     */
+    public $confirmPassword;
 }
