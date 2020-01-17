@@ -31,8 +31,20 @@ final class Version20200116165853 extends AbstractMigration
         $table->addColumn('icon', 'integer')
             ->setNotnull(true);
 
+        $table->addColumn('user_id', 'integer')
+            ->setNotnull(true)
+            ->setUnsigned(true);
+
         $table->setPrimaryKey(['id']);
         $table->addUniqueIndex(['name']);
+
+        $table->addForeignKeyConstraint(
+            'user',
+            ['user_id'],
+            ['id'],
+            ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'],
+            'fk_category_user'
+        );
     }
 
     public function down(Schema $schema): void

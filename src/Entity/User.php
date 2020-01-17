@@ -36,6 +36,11 @@ class User implements UserInterface
     private $password;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Category", mappedBy="user")
+     */
+    private $categories;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Wallet", mappedBy="user")
      */
     private $wallets;
@@ -43,6 +48,7 @@ class User implements UserInterface
     public function __construct()
     {
         $this->wallets = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -148,6 +154,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($wallet->getUser() === $this) {
                 $wallet->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Category[]
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): self
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories[] = $category;
+            $category->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): self
+    {
+        if ($this->categories->contains($category)) {
+            $this->categories->removeElement($category);
+            // set the owning side to null (unless already changed)
+            if ($category->getUser() === $this) {
+                $category->setUser(null);
             }
         }
 

@@ -40,6 +40,18 @@ class Category
     private $icon;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     * @GQL\Field
+     */
+    private $user_id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="categories")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=true)
+     */
+    private $user;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="category")
      */
     private $transactions;
@@ -117,6 +129,30 @@ class Category
                 $transaction->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUserId(): ?string
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?string $user_id): self
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
