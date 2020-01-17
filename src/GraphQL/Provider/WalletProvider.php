@@ -6,7 +6,6 @@ use App\Builder\WalletBuilder;
 use App\Entity\Wallet;
 use App\GraphQL\Input\WalletCreateRequest;
 use App\GraphQL\Input\WalletUpdateRequest;
-use App\Repository\UserRepository;
 use App\Repository\WalletRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Overblog\GraphQLBundle\Annotation as GQL;
