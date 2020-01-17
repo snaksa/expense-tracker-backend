@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Input\Transaction;
 
+use App\GraphQL\Types\TransactionType;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 abstract class TransactionRequest
@@ -21,7 +22,7 @@ abstract class TransactionRequest
     public $value;
 
     /**
-     * @var integer
+     * @var TransactionType
      */
     public $type;
 
