@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace App\GraphQL\Input;
+namespace App\GraphQL\Input\Category;
 
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
  * @GQL\Input
  */
-class WalletUpdateRequest extends WalletRequest
+class CategoryUpdateRequest extends CategoryRequest
 {
     /**
      * @GQL\Field(type="Int!")
@@ -26,4 +26,10 @@ class WalletUpdateRequest extends WalletRequest
      * @var string
      */
     public $color;
+
+    /**
+     * @GQL\Field(type="Int")
+     * @var integer
+     */
+    public $icon;
 }

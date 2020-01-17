@@ -4,8 +4,8 @@ namespace App\GraphQL\Provider;
 
 use App\Builder\CategoryBuilder;
 use App\Entity\Category;
-use App\GraphQL\Input\CategoryCreateRequest;
-use App\GraphQL\Input\CategoryUpdateRequest;
+use App\GraphQL\Input\Category\CategoryCreateRequest;
+use App\GraphQL\Input\Category\CategoryUpdateRequest;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Overblog\GraphQLBundle\Annotation as GQL;

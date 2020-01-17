@@ -4,15 +4,13 @@ namespace App\GraphQL\Provider;
 
 use App\Builder\UserBuilder;
 use App\Entity\User;
-use App\Exception\GraphQLException;
-use App\GraphQL\Input\UserLoginRequest;
-use App\GraphQL\Input\UserRegisterRequest;
+use App\GraphQL\Input\User\UserLoginRequest;
+use App\GraphQL\Input\User\UserRegisterRequest;
 use App\Repository\UserRepository;
 use App\Services\AuthorizationService;
 use App\Traits\DateUtils;
 use Doctrine\ORM\EntityNotFoundException;
 use Overblog\GraphQLBundle\Annotation as GQL;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @GQL\Provider
