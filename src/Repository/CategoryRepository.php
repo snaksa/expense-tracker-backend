@@ -19,7 +19,14 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
-    public function save(Category $category) {
+    public function remove(Category $category)
+    {
+        $this->_em->remove($category);
+        $this->_em->flush();
+    }
+
+    public function save(Category $category)
+    {
         $this->_em->persist($category);
         $this->_em->flush();
     }
