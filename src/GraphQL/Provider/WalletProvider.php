@@ -5,10 +5,12 @@ namespace App\GraphQL\Provider;
 use App\Builder\WalletBuilder;
 use App\Entity\Wallet;
 use App\Exception\GraphQLException;
+use App\Exception\UnauthorizedOperationException;
 use App\GraphQL\Input\Wallet\WalletCreateRequest;
 use App\GraphQL\Input\Wallet\WalletDeleteRequest;
 use App\GraphQL\Input\Wallet\WalletUpdateRequest;
 use App\Repository\WalletRepository;
+use App\Services\AuthorizationService;
 use Doctrine\ORM\EntityNotFoundException;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
@@ -29,10 +31,19 @@ class WalletProvider
      */
     private $builder;
 
-    public function __construct(WalletRepository $repository, WalletBuilder $builder)
-    {
+    /**
+     * @var AuthorizationService
+     */
+    private $authService;
+
+    public function __construct(
+        WalletRepository $repository,
+        WalletBuilder $builder,
+        AuthorizationService $authService
+    ) {
         $this->repository = $repository;
         $this->builder = $builder;
+        $this->authService = $authService;
     }
 
     /**
@@ -42,7 +53,11 @@ class WalletProvider
      */
     public function wallets(): array
     {
-        return $this->repository->findAll();
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
+        return $this->repository->findBy(['user_id' => $this->authService->getCurrentUser()->getId()]);
     }
 
     /**
@@ -54,9 +69,18 @@ class WalletProvider
      */
     public function wallet(int $id): Wallet
     {
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
         $wallet = $this->repository->findOneById($id);
+
         if (!$wallet) {
             throw GraphQLException::fromString('Wallet not found!');
+        }
+
+        if ($wallet->getUserId() && $wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
+            throw GraphQLException::fromString('Unauthorized access!');
         }
 
         return $wallet;
@@ -72,6 +96,10 @@ class WalletProvider
      */
     public function createWallet(WalletCreateRequest $input): Wallet
     {
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
         $wallet = $this->builder
             ->create()
             ->bind($input)
@@ -92,11 +120,19 @@ class WalletProvider
      */
     public function updateWallet(WalletUpdateRequest $input): Wallet
     {
-        $wallet = $this->builder
-            ->bind($input)
-            ->build();
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
 
-        $this->repository->save($wallet);
+        try {
+            $wallet = $this->builder
+                ->bind($input)
+                ->build();
+
+            $this->repository->save($wallet);
+        } catch (UnauthorizedOperationException $ex) {
+            throw GraphQLException::fromString('Unauthorized operation!');
+        }
 
         return $wallet;
     }
@@ -110,7 +146,16 @@ class WalletProvider
      */
     public function deleteWallet(WalletDeleteRequest $input): Wallet
     {
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
+        /**@var Wallet $wallet */
         $wallet = $this->repository->findOneById($input->id);
+
+        if ($wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
 
         $clone = clone $wallet;
 

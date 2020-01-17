@@ -4,10 +4,13 @@ namespace App\GraphQL\Provider;
 
 use App\Builder\CategoryBuilder;
 use App\Entity\Category;
+use App\Exception\GraphQLException;
+use App\Exception\UnauthorizedOperationException;
 use App\GraphQL\Input\Category\CategoryCreateRequest;
 use App\GraphQL\Input\Category\CategoryDeleteRequest;
 use App\GraphQL\Input\Category\CategoryUpdateRequest;
 use App\Repository\CategoryRepository;
+use App\Services\AuthorizationService;
 use Doctrine\ORM\EntityNotFoundException;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
@@ -28,10 +31,19 @@ class CategoryProvider
      */
     private $builder;
 
-    public function __construct(CategoryRepository $repository, CategoryBuilder $builder)
-    {
+    /**
+     * @var AuthorizationService
+     */
+    private $authService;
+
+    public function __construct(
+        CategoryRepository $repository,
+        CategoryBuilder $builder,
+        AuthorizationService $authService
+    ) {
         $this->repository = $repository;
         $this->builder = $builder;
+        $this->authService = $authService;
     }
 
     /**
@@ -41,7 +53,11 @@ class CategoryProvider
      */
     public function categories(): array
     {
-        return $this->repository->findAll();
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
+        return $this->repository->findUserCategories($this->authService->getCurrentUser());
     }
 
     /**
@@ -53,7 +69,22 @@ class CategoryProvider
      */
     public function category(int $id): Category
     {
-        return $this->repository->findOneById($id);
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
+        /**@var Category $category */
+        $category = $this->repository->findOneById($id);
+
+        if (!$category) {
+            throw GraphQLException::fromString('Category not found!');
+        }
+
+        if ($category->getUserId() && $category->getUserId() !== $this->authService->getCurrentUser()->getId()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
+        return $category;
     }
 
     /**
@@ -66,6 +97,10 @@ class CategoryProvider
      */
     public function createCategory(CategoryCreateRequest $input): Category
     {
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
         $category = $this->builder
             ->create()
             ->bind($input)
@@ -86,11 +121,19 @@ class CategoryProvider
      */
     public function updateCategory(CategoryUpdateRequest $input): Category
     {
-        $category = $this->builder
-            ->bind($input)
-            ->build();
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
 
-        $this->repository->save($category);
+        try {
+            $category = $this->builder
+                ->bind($input)
+                ->build();
+
+            $this->repository->save($category);
+        } catch (UnauthorizedOperationException $ex) {
+            throw GraphQLException::fromString('Unauthorized operation!');
+        }
 
         return $category;
     }
@@ -104,7 +147,16 @@ class CategoryProvider
      */
     public function deleteCategory(CategoryDeleteRequest $input): Category
     {
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
+        /**@var Category $category */
         $category = $this->repository->findOneById($input->id);
+
+        if ($category->getUserId() !== $this->authService->getCurrentUser()->getId()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
 
         $clone = clone $category;
 

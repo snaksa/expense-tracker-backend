@@ -4,11 +4,15 @@ namespace App\GraphQL\Provider;
 
 use App\Builder\TransactionBuilder;
 use App\Entity\Transaction;
+use App\Entity\Wallet;
 use App\Exception\GraphQLException;
+use App\Exception\UnauthorizedOperationException;
 use App\GraphQL\Input\Transaction\TransactionCreateRequest;
 use App\GraphQL\Input\Transaction\TransactionDeleteRequest;
 use App\GraphQL\Input\Transaction\TransactionUpdateRequest;
 use App\Repository\TransactionRepository;
+use App\Repository\WalletRepository;
+use App\Services\AuthorizationService;
 use Doctrine\ORM\EntityNotFoundException;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
@@ -25,14 +29,30 @@ class TransactionProvider
     private $repository;
 
     /**
+     * @var WalletRepository
+     */
+    private $walletRepository;
+
+    /**
      * @var TransactionBuilder
      */
     private $builder;
 
-    public function __construct(TransactionRepository $repository, TransactionBuilder $builder)
-    {
+    /**
+     * @var AuthorizationService
+     */
+    private $authService;
+
+    public function __construct(
+        TransactionRepository $repository,
+        WalletRepository $walletRepository,
+        TransactionBuilder $builder,
+        AuthorizationService $authService
+    ) {
         $this->repository = $repository;
+        $this->walletRepository = $walletRepository;
         $this->builder = $builder;
+        $this->authService = $authService;
     }
 
     /**
@@ -43,6 +63,17 @@ class TransactionProvider
      */
     public function transactions(int $walletId): array
     {
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
+        /**@var Wallet $wallet */
+        $wallet = $this->walletRepository->findOneById($walletId);
+
+        if ($wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
         return $this->repository->findBy(['wallet_id' => $walletId]);
     }
 
@@ -55,7 +86,22 @@ class TransactionProvider
      */
     public function transaction(int $id): Transaction
     {
-        return $this->repository->findOneById($id);
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
+        /**@var Transaction $transaction */
+        $transaction = $this->repository->findOneById($id);
+
+        if (!$transaction) {
+            throw GraphQLException::fromString('Transaction not found!');
+        }
+
+        if ($transaction->getWallet()->getUserId() !== $this->authService->getCurrentUser()->getId()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
+        return $transaction;
     }
 
     /**
@@ -68,6 +114,10 @@ class TransactionProvider
      */
     public function createTransaction(TransactionCreateRequest $input): Transaction
     {
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
         $transaction = $this->builder
             ->create()
             ->bind($input)
@@ -88,11 +138,19 @@ class TransactionProvider
      */
     public function updateTransaction(TransactionUpdateRequest $input): Transaction
     {
-        $transaction = $this->builder
-            ->bind($input)
-            ->build();
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
 
-        $this->repository->save($transaction);
+        try {
+            $transaction = $this->builder
+                ->bind($input)
+                ->build();
+
+            $this->repository->save($transaction);
+        } catch (UnauthorizedOperationException $ex) {
+            throw GraphQLException::fromString('Unauthorized operation!');
+        }
 
         return $transaction;
     }
@@ -106,7 +164,16 @@ class TransactionProvider
      */
     public function deleteTransaction(TransactionDeleteRequest $input): Transaction
     {
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
+        /**@var Transaction $transaction */
         $transaction = $this->repository->findOneById($input->id);
+
+        if ($transaction->getWallet()->getUserId() !== $this->authService->getCurrentUser()->getId()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
 
         $clone = clone $transaction;
 

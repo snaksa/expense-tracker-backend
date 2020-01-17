@@ -35,7 +35,6 @@ class Wallet
 
     /**
      * @ORM\Column(type="integer", nullable=false)
-     * @GQL\Field
      */
     private $user_id;
 
@@ -48,6 +47,7 @@ class Wallet
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="wallet")
+     * @GQL\Field(type="[Transaction]")
      */
     private $transactions;
 

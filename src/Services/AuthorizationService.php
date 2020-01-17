@@ -36,7 +36,7 @@ class AuthorizationService
     {
         $isLoggedIn = false;
         try {
-            $isLoggedIn = $this->getCurrentUserId() != '';
+            $isLoggedIn = $this->getCurrentUser()->getId() != '';
         } catch (NotAuthenticatedException $e) {
         }
 

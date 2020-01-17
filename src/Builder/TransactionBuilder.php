@@ -5,7 +5,10 @@ namespace App\Builder;
 use App\Entity\Category;
 use App\Entity\Transaction;
 use App\Entity\Wallet;
+use App\Exception\UnauthorizedOperationException;
 use App\GraphQL\Input\Transaction\TransactionRequest;
+use App\Services\AuthorizationService;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 
 class TransactionBuilder extends BaseBuilder
@@ -14,6 +17,18 @@ class TransactionBuilder extends BaseBuilder
      * @var Transaction
      */
     private $transaction;
+
+    /**
+     * @var AuthorizationService
+     */
+    private $authorizationService;
+
+    public function __construct(EntityManagerInterface $entityManager, AuthorizationService $authorizationService)
+    {
+        $this->authorizationService = $authorizationService;
+
+        parent::__construct($entityManager);
+    }
 
     public function create(): self
     {
@@ -51,6 +66,10 @@ class TransactionBuilder extends BaseBuilder
 
         if ($input->walletId !== null) {
             $this->withWallet($this->findEntity($input->walletId, Wallet::class));
+        }
+
+        if ($this->transaction->getWallet()->getUserId() !== $this->authorizationService->getCurrentUser()->getId()) {
+            throw new UnauthorizedOperationException();
         }
 
         return $this;

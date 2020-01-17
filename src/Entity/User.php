@@ -54,11 +54,13 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Category", mappedBy="user")
+     * @GQL\Field(type="[Category]")
      */
     private $categories;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Wallet", mappedBy="user")
+     * @GQL\Field(type="[Wallet]")
      */
     private $wallets;
 

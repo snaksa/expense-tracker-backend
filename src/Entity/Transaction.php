@@ -45,6 +45,7 @@ class Transaction
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Wallet", inversedBy="transactions")
      * @ORM\JoinColumn(name="wallet_id", referencedColumnName="id", nullable=false)
+     * @GQL\Field(type="Wallet")
      */
     private $wallet;
 
@@ -56,6 +57,7 @@ class Transaction
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="transactions")
      * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
+     * @GQL\Field(type="Category")
      */
     private $category;
 

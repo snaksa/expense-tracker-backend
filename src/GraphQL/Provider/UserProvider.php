@@ -4,6 +4,7 @@ namespace App\GraphQL\Provider;
 
 use App\Builder\UserBuilder;
 use App\Entity\User;
+use App\Exception\GraphQLException;
 use App\GraphQL\Input\User\UserLoginRequest;
 use App\GraphQL\Input\User\UserRegisterRequest;
 use App\Repository\UserRepository;
@@ -34,7 +35,7 @@ class UserProvider
     /**
      * @var AuthorizationService
      */
-    private $authorizationService;
+    private $authService;
 
     public function __construct(
         UserRepository $repository,
@@ -43,7 +44,7 @@ class UserProvider
     ) {
         $this->repository = $repository;
         $this->builder = $builder;
-        $this->authorizationService = $authorizationService;
+        $this->authService = $authorizationService;
     }
 
     /**
@@ -63,7 +64,11 @@ class UserProvider
      */
     public function me(): User
     {
-        return $this->authorizationService->getCurrentUser();
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
+
+        return $this->authService->getCurrentUser();
     }
 
     /**
@@ -100,7 +105,7 @@ class UserProvider
             'email' => $input->email
         ]);
 
-        $this->authorizationService->isPasswordValid($user, $input->password);
+        $this->authService->isPasswordValid($user, $input->password);
 
         $user = $this->builder
             ->setUser($user)

@@ -3,6 +3,7 @@
 namespace App\Builder;
 
 use App\Entity\Category;
+use App\Exception\UnauthorizedOperationException;
 use App\GraphQL\Input\Category\CategoryRequest;
 use App\Services\AuthorizationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -45,6 +46,10 @@ class CategoryBuilder extends BaseBuilder
     {
         if ($input->id !== null) {
             $this->setCategory($this->findEntity($input->id, Category::class));
+        }
+
+        if ($this->category->getUserId() !== $this->authorizationService->getCurrentUser()->getId()) {
+            throw new UnauthorizedOperationException();
         }
 
         if ($input->name !== null) {
