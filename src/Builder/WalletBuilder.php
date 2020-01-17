@@ -5,7 +5,10 @@ declare (strict_types=1);
 namespace App\Builder;
 
 use App\Entity\Wallet;
+use App\Exception\UnauthorizedOperationException;
 use App\GraphQL\Input\WalletRequest;
+use App\Services\AuthorizationService;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 
 class WalletBuilder extends BaseBuilder
@@ -15,9 +18,23 @@ class WalletBuilder extends BaseBuilder
      */
     private $wallet;
 
+    /**
+     * @var AuthorizationService
+     */
+    private $authorizationService;
+
+    public function __construct(EntityManagerInterface $entityManager, AuthorizationService $authorizationService)
+    {
+        $this->authorizationService = $authorizationService;
+
+        parent::__construct($entityManager);
+    }
+
     public function create(): self
     {
         $this->wallet = new Wallet();
+        $this->wallet->setUserId($this->authorizationService->getCurrentUser()->getId());
+        $this->wallet->setUser($this->authorizationService->getCurrentUser());
 
         return $this;
     }
@@ -33,7 +50,9 @@ class WalletBuilder extends BaseBuilder
             $this->setWallet($this->findEntity($input->id, Wallet::class));
         }
 
-        // TODO: check if category belongs to the logged user
+        if ($this->authorizationService->getCurrentUser()->getId() !== $this->wallet->getUserId()) {
+            throw new UnauthorizedOperationException();
+        }
 
         if ($input->name !== null) {
             $this->withName($input->name);
