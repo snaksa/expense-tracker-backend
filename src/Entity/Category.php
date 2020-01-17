@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace App\Entity;
 
@@ -40,7 +40,7 @@ class Category
     private $icon;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      * @GQL\Field
      */
     private $user_id;
@@ -133,12 +133,12 @@ class Category
         return $this;
     }
 
-    public function getUserId(): ?string
+    public function getUserId(): ?int
     {
         return $this->user_id;
     }
 
-    public function setUserId(?string $user_id): self
+    public function setUserId(?int $user_id): self
     {
         $this->user_id = $user_id;
 
