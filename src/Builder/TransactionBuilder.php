@@ -42,7 +42,7 @@ class TransactionBuilder extends BaseBuilder
         }
 
         if ($input->type !== null) {
-            $this->withType($input->type);
+            $this->withType($input->type->value);
         }
 
         if ($input->categoryId !== null) {

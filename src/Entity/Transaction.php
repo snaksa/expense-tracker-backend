@@ -33,7 +33,7 @@ class Transaction
 
     /**
      * @ORM\Column(type="integer", nullable=false)
-     * @GQL\Field
+     * @GQL\Field(type="TransactionType!")
      */
     private $type;
 

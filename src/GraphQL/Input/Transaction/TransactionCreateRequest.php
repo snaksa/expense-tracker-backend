@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Input\Transaction;
 
+use App\GraphQL\Types\TransactionType;
 use App\Validator\Constraints as Assert;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
@@ -23,8 +24,8 @@ class TransactionCreateRequest extends TransactionRequest
     public $value;
 
     /**
-     * @GQL\Field(type="Int!")
-     * @var integer
+     * @GQL\Field(type="TransactionType!")
+     * @var TransactionType
      */
     public $type;
 

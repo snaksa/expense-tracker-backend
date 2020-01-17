@@ -5,6 +5,7 @@ namespace App\Tests\Unit\Entity;
 use App\Entity\Category;
 use App\Entity\Transaction;
 use App\Entity\Wallet;
+use App\GraphQL\Types\TransactionType;
 use PHPUnit\Framework\TestCase;
 
 class TransactionTest extends TestCase
@@ -21,7 +22,7 @@ class TransactionTest extends TestCase
             ->setWallet($wallet)
             ->setDescription('Description')
             ->setValue(10)
-            ->setType(1);
+            ->setType(TransactionType::INCOME);
 
         $this->assertEquals(null, $transaction->getId());
         $this->assertEquals(1, $transaction->getCategoryId());
@@ -30,6 +31,6 @@ class TransactionTest extends TestCase
         $this->assertEquals($wallet, $transaction->getWallet());
         $this->assertEquals('Description', $transaction->getDescription());
         $this->assertEquals(10, $transaction->getValue());
-        $this->assertEquals(1, $transaction->getType());
+        $this->assertEquals(TransactionType::INCOME, $transaction->getType());
     }
 }
