@@ -41,18 +41,19 @@ class Category
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @GQL\Field
      */
     private $user_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="categories")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=true)
+     * @GQL\Field(type="User")
      */
     private $user;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="category")
+     * @GQL\Field(type="[Transaction]")
      */
     private $transactions;
 

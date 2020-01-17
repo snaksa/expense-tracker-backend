@@ -46,10 +46,6 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 
     public function checkCredentials($credentials, UserInterface $user)
     {
-        if ($user->getApiKeyExpiryDate() < $this->getCurrentDateTime()) {
-            return false;
-        }
-
         return true;
     }
 

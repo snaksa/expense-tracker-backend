@@ -48,7 +48,7 @@ class WalletBuilder extends BaseBuilder
             $this->setWallet($this->findEntity($input->id, Wallet::class));
         }
 
-        if ($this->authorizationService->getCurrentUser()->getId() !== $this->wallet->getUserId()) {
+        if ($this->wallet->getUserId() !== $this->authorizationService->getCurrentUser()->getId()) {
             throw new UnauthorizedOperationException();
         }
 
