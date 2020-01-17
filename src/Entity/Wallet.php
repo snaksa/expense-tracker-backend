@@ -22,19 +22,19 @@ class Wallet
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=false)
      * @GQL\Field
      */
     private $name;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", nullable=false)
      * @GQL\Field
      */
     private $color;
 
     /**
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="integer", nullable=false)
      * @GQL\Field
      */
     private $user_id;
@@ -42,6 +42,7 @@ class Wallet
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="wallets")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+     * @GQL\Field(type="User")
      */
     private $user;
 
@@ -60,7 +61,7 @@ class Wallet
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -72,12 +73,12 @@ class Wallet
         return $this;
     }
 
-    public function getColor(): ?int
+    public function getColor(): string
     {
         return $this->color;
     }
 
-    public function setColor(int $color): self
+    public function setColor(string $color): self
     {
         $this->color = $color;
 
@@ -89,7 +90,7 @@ class Wallet
         return $this->user_id;
     }
 
-    public function setUserId(string $user_id): self
+    public function setUserId(int $user_id): self
     {
         $this->user_id = $user_id;
 

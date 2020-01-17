@@ -25,18 +25,18 @@ final class Version20200116165853 extends AbstractMigration
             ->setNotnull(true)
             ->setLength(255);
 
-        $table->addColumn('color', 'integer')
+        $table->addColumn('color', 'string')
             ->setNotnull(true);
 
         $table->addColumn('icon', 'integer')
             ->setNotnull(true);
 
         $table->addColumn('user_id', 'integer')
-            ->setNotnull(true)
+            ->setNotnull(false)
             ->setUnsigned(true);
 
         $table->setPrimaryKey(['id']);
-        $table->addUniqueIndex(['name']);
+        $table->addUniqueIndex(['name', 'user_id']);
 
         $table->addForeignKeyConstraint(
             'user',

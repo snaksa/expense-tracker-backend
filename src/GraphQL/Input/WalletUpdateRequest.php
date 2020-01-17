@@ -7,7 +7,7 @@ use Overblog\GraphQLBundle\Annotation as GQL;
 /**
  * @GQL\Input
  */
-class CategoryUpdateRequest extends CategoryRequest
+class WalletUpdateRequest extends WalletRequest
 {
     /**
      * @GQL\Field(type="Int!")
@@ -26,10 +26,4 @@ class CategoryUpdateRequest extends CategoryRequest
      * @var string
      */
     public $color;
-
-    /**
-     * @GQL\Field(type="Int")
-     * @var integer
-     */
-    public $icon;
 }

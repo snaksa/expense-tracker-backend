@@ -25,7 +25,7 @@ final class Version20200116170121 extends AbstractMigration
             ->setNotnull(true)
             ->setLength(255);
 
-        $table->addColumn('color', 'integer')
+        $table->addColumn('color', 'string')
             ->setNotnull(true);
 
         $table->addColumn('user_id', 'integer')

@@ -22,19 +22,19 @@ class Category
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=false)
      * @GQL\Field
      */
     private $name;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", nullable=false)
      * @GQL\Field
      */
     private $color;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=false)
      * @GQL\Field
      */
     private $icon;
@@ -78,19 +78,19 @@ class Category
         return $this;
     }
 
-    public function getColor(): ?int
+    public function getColor(): string
     {
         return $this->color;
     }
 
-    public function setColor(int $color): self
+    public function setColor(string $color): self
     {
         $this->color = $color;
 
         return $this;
     }
 
-    public function getIcon(): ?int
+    public function getIcon(): int
     {
         return $this->icon;
     }

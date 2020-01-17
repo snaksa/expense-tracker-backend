@@ -4,32 +4,20 @@ namespace App\GraphQL\Input;
 
 use Overblog\GraphQLBundle\Annotation as GQL;
 
-/**
- * @GQL\Input
- */
-class CategoryUpdateRequest extends CategoryRequest
+abstract class WalletRequest
 {
     /**
-     * @GQL\Field(type="Int!")
      * @var integer
      */
     public $id;
 
     /**
-     * @GQL\Field(type="String")
      * @var string
      */
     public $name;
 
     /**
-     * @GQL\Field(type="String")
      * @var string
      */
     public $color;
-
-    /**
-     * @GQL\Field(type="Int")
-     * @var integer
-     */
-    public $icon;
 }

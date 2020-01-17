@@ -23,7 +23,7 @@ dependencies: composer.json composer.lock
 
 up:
 	$(info 🔥 Make: Starting up.)
-	@docker-compose up -d php
+	@docker-compose up -d php db
 
 down:
 	$(info 💥 Make: Shutting down.)
@@ -34,6 +34,10 @@ build:
 	@docker-compose rm -vsf
 	@docker-compose down -v --remove-orphans
 	@docker-compose build
+
+migrate:
+	$(info 📦 Make: Running migrations)
+	@docker-compose run --rm php bin/console doctrine:migrations:migrate --quiet
 
 ssh:
 	$(info 💻 Make: SSH into PHP container.)

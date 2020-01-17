@@ -16,6 +16,7 @@ class BaseBuilder
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
+        // TODO: inject logged user
     }
 
     /**

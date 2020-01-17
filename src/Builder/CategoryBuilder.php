@@ -6,6 +6,7 @@ namespace App\Builder;
 
 use App\Entity\Category;
 use App\GraphQL\Input\CategoryRequest;
+use Doctrine\ORM\EntityNotFoundException;
 
 class CategoryBuilder extends BaseBuilder
 {
@@ -24,7 +25,7 @@ class CategoryBuilder extends BaseBuilder
     /**
      * @param CategoryRequest $input
      * @return CategoryBuilder
-     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public function bind(CategoryRequest $input): self
     {
@@ -61,7 +62,7 @@ class CategoryBuilder extends BaseBuilder
         return $this;
     }
 
-    public function withColor(int $color): self
+    public function withColor(string $color): self
     {
         $this->category->setColor($color);
 

@@ -7,6 +7,7 @@ use App\Entity\Category;
 use App\GraphQL\Input\CategoryCreateRequest;
 use App\GraphQL\Input\CategoryUpdateRequest;
 use App\Repository\CategoryRepository;
+use Doctrine\ORM\EntityNotFoundException;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
@@ -60,7 +61,7 @@ class CategoryProvider
      * @param CategoryCreateRequest $input
      *
      * @return Category
-     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public function createCategory(CategoryCreateRequest $input): Category
     {
@@ -80,7 +81,7 @@ class CategoryProvider
      * @param CategoryUpdateRequest $input
      *
      * @return Category
-     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public function updateCategory(CategoryUpdateRequest $input): Category
     {

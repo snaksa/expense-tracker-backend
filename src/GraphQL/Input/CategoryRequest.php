@@ -17,7 +17,7 @@ abstract class CategoryRequest
     public $name;
 
     /**
-     * @var integer
+     * @var string
      */
     public $color;
 
