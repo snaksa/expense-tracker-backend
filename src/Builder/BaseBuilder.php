@@ -4,7 +4,6 @@ namespace App\Builder;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
-use Doctrine\ORM\EntityRepository;
 
 class BaseBuilder
 {
@@ -16,7 +15,6 @@ class BaseBuilder
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
-        // TODO: inject logged user
     }
 
     /**
@@ -33,33 +31,5 @@ class BaseBuilder
         }
 
         return $entity;
-    }
-
-    /**
-     * @param int[] $ids
-     * @param string $class
-     * @return array
-     */
-    protected function findByIds(array $ids, string $class)
-    {
-        /**
-         * @var EntityRepository $repository
-         */
-        $repository = $this->entityManager->getRepository($class);
-
-        return $repository
-            ->createQueryBuilder('t')
-            ->where('t.id IN (:ids)')
-            ->setParameters(['ids' => $ids])
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @param object $item
-     */
-    protected function remove($item)
-    {
-        $this->entityManager->remove($item);
     }
 }
