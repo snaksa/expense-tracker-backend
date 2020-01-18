@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Entity;
 
+use App\Entity\Transaction;
 use App\Entity\User;
 use App\Entity\Wallet;
 use PHPUnit\Framework\TestCase;
@@ -16,15 +17,24 @@ class WalletTest extends TestCase
             ->setRoles(['role1', 'role2']);
 
         $wallet = (new Wallet())
+            ->setId(1)
             ->setName('Test')
             ->setColor('#FF00FF')
             ->setUserId(1)
             ->setUser($user);
 
-        $this->assertEquals(null, $wallet->getId());
+        $this->assertEquals(1, $wallet->getId());
         $this->assertEquals('Test', $wallet->getName());
         $this->assertEquals('#FF00FF', $wallet->getColor());
         $this->assertEquals(1, $wallet->getUserId());
         $this->assertEquals($user, $wallet->getUser());
+
+        $transaction = (new Transaction())->setDescription('Description');
+        $wallet->addTransaction($transaction);
+
+        $this->assertEquals(1, $wallet->getTransactions()->count());
+
+        $wallet->removeTransaction($transaction);
+        $this->assertEquals(0, $wallet->getTransactions()->count());
     }
 }

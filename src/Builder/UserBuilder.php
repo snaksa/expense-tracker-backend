@@ -3,6 +3,7 @@
 namespace App\Builder;
 
 use App\Entity\User;
+use App\Exception\PasswordConfirmationException;
 use App\GraphQL\Input\User\UserRequest;
 use App\Traits\DateUtils;
 use Doctrine\ORM\EntityManagerInterface;
@@ -54,7 +55,7 @@ class UserBuilder extends BaseBuilder
 
         if ($input->password !== null) {
             if ($input->password !== $input->confirmPassword) {
-                // TODO: throw exception if passwords do not match
+                throw new PasswordConfirmationException();
             }
 
             $this->withPassword($input->password);
