@@ -34,6 +34,7 @@ class UserBuilder extends BaseBuilder
     public function create(): self
     {
         $this->user = new User();
+        $this->user->setRoles($this->user->getRoles());
 
         return $this;
     }

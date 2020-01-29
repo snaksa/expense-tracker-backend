@@ -1,8 +1,9 @@
 overblog_graphql:
     definitions:
         schema:
-            query: Query
-            mutation: Mutation
+            default:
+                query: Query
+                mutation: Mutation
         mappings:
             auto_discover: false
             types:
