@@ -31,6 +31,9 @@ final class Version20200116171617 extends AbstractMigration
         $table->addColumn('type', 'integer')
             ->setNotnull(true);
 
+        $table->addColumn('date', 'datetime')
+            ->setNotnull(true);
+
         $table->addColumn('wallet_id', 'integer')
             ->setNotnull(true)
             ->setUnsigned(true);
