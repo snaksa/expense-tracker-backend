@@ -19,6 +19,20 @@ class TransactionRepository extends ServiceEntityRepository
         parent::__construct($registry, Transaction::class);
     }
 
+    /**
+     * @param int[] $ids
+     * @return Transaction[]
+     */
+    public function findByWalletIds(array $ids)
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.wallet_id IN (:ids)')
+            ->setParameters(['ids' => $ids])
+            ->orderBy('t.date', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function remove(Transaction $transaction)
     {
         $this->_em->remove($transaction);

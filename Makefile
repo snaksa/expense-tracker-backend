@@ -39,6 +39,10 @@ migrate:
 	$(info 📦 Make: Running migrations)
 	@docker-compose run --rm php bin/console doctrine:migrations:migrate --quiet
 
+fixtures:
+	$(info 📦 Make: Running migrations)
+	@docker-compose run --rm php bin/console doctrine:fixtures:load --quiet
+
 ssh:
 	$(info 💻 Make: SSH into PHP container.)
 	@docker-compose exec php bash

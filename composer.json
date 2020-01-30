@@ -22,6 +22,7 @@
         "symfony/yaml": "5.0.*"
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.3",
         "overblog/graphiql-bundle": "^0.2.0",
         "phpro/grumphp": "^0.17.2",
         "symfony/maker-bundle": "^1.14",

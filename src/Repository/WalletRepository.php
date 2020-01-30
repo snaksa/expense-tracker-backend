@@ -19,6 +19,19 @@ class WalletRepository extends ServiceEntityRepository
         parent::__construct($registry, Wallet::class);
     }
 
+    /**
+     * @param array $ids
+     * @return Wallet[]
+     */
+    public function findByIds(array $ids): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.id IN (:ids)')
+            ->setParameters(['ids' => $ids])
+            ->getQuery()
+            ->getResult();
+    }
+
     public function remove(Wallet $wallet)
     {
         $this->_em->remove($wallet);

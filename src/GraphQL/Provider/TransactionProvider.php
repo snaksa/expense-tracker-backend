@@ -9,6 +9,7 @@ use App\Exception\GraphQLException;
 use App\Exception\UnauthorizedOperationException;
 use App\GraphQL\Input\Transaction\TransactionCreateRequest;
 use App\GraphQL\Input\Transaction\TransactionDeleteRequest;
+use App\GraphQL\Input\Transaction\TransactionRecordsRequest;
 use App\GraphQL\Input\Transaction\TransactionUpdateRequest;
 use App\Repository\TransactionRepository;
 use App\Repository\WalletRepository;
@@ -58,23 +59,25 @@ class TransactionProvider
     /**
      * @GQL\Query(type="[Transaction]")
      *
-     * @param int $walletId
+     * @param TransactionRecordsRequest $input
      * @return Transaction[]
      */
-    public function transactions(int $walletId): array
+    public function transactions(TransactionRecordsRequest $input): array
     {
         if (!$this->authService->isLoggedIn()) {
             throw GraphQLException::fromString('Unauthorized access!');
         }
 
-        /**@var Wallet $wallet */
-        $wallet = $this->walletRepository->findOneById($walletId);
+        /**@var Wallet[] $wallets */
+        $wallets = $this->walletRepository->findByIds($input->walletIds);
 
-        if ($wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
-            throw GraphQLException::fromString('Unauthorized access!');
+        foreach ($wallets as $wallet) {
+            if ($wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
+                throw GraphQLException::fromString('Unauthorized access!');
+            }
         }
 
-        return $this->repository->findBy(['wallet_id' => $walletId]);
+        return $this->repository->findByWalletIds($input->walletIds);
     }
 
     /**

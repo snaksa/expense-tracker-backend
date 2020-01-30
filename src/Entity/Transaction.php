@@ -38,6 +38,14 @@ class Transaction
     private $type;
 
     /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(type="datetime", nullable=false)
+     * @GQL\Field(type="DateTime")
+     */
+    private $date;
+
+    /**
      * @ORM\Column(type="integer", nullable=false)
      */
     private $wallet_id;
@@ -146,6 +154,18 @@ class Transaction
     public function setCategory(?Category $category): self
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getDate(): \DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): self
+    {
+        $this->date = $date;
 
         return $this;
     }
