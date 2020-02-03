@@ -20,4 +20,10 @@ class WalletCreateRequest extends WalletRequest
      * @var string
      */
     public $color;
+
+    /**
+     * @GQL\Field(type="Float")
+     * @var float
+     */
+    public $amount;
 }
