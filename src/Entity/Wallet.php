@@ -34,6 +34,12 @@ class Wallet
     private $color;
 
     /**
+     * @ORM\Column(type="float", nullable=false)
+     * @GQL\Field
+     */
+    private $amount = 0;
+
+    /**
      * @ORM\Column(type="integer", nullable=false)
      */
     private $user_id;
@@ -143,6 +149,18 @@ class Wallet
                 $transaction->setWallet(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAmount(): ?float
+    {
+        return $this->amount;
+    }
+
+    public function setAmount(float $amount): self
+    {
+        $this->amount = $amount;
 
         return $this;
     }

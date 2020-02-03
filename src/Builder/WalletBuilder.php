@@ -60,6 +60,10 @@ class WalletBuilder extends BaseBuilder
             $this->withColor($input->color);
         }
 
+        if ($input->amount !== null) {
+            $this->withAmount($input->amount);
+        }
+
         return $this;
     }
 
@@ -80,6 +84,13 @@ class WalletBuilder extends BaseBuilder
     public function withColor(string $color): self
     {
         $this->wallet->setColor($color);
+
+        return $this;
+    }
+
+    public function withAmount(float $amount): self
+    {
+        $this->wallet->setAmount($amount);
 
         return $this;
     }

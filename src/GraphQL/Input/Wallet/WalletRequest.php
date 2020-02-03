@@ -20,4 +20,9 @@ abstract class WalletRequest
      * @var string
      */
     public $color;
+
+    /**
+     * @var float
+     */
+    public $amount;
 }

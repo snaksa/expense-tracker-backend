@@ -28,6 +28,9 @@ final class Version20200116170121 extends AbstractMigration
         $table->addColumn('color', 'string')
             ->setNotnull(true);
 
+        $table->addColumn('amount', 'float')
+            ->setNotnull(true);
+
         $table->addColumn('user_id', 'integer')
             ->setNotnull(true)
             ->setUnsigned(true);
