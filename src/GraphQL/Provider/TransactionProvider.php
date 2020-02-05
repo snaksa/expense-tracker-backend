@@ -11,6 +11,7 @@ use App\GraphQL\Input\Transaction\TransactionCreateRequest;
 use App\GraphQL\Input\Transaction\TransactionDeleteRequest;
 use App\GraphQL\Input\Transaction\TransactionRecordsRequest;
 use App\GraphQL\Input\Transaction\TransactionUpdateRequest;
+use App\GraphQL\Types\TransactionsPaginatedResult;
 use App\Repository\TransactionRepository;
 use App\Repository\WalletRepository;
 use App\Services\AuthorizationService;
@@ -57,12 +58,12 @@ class TransactionProvider
     }
 
     /**
-     * @GQL\Query(type="[Transaction]")
+     * @GQL\Query(type="TransactionsPaginatedResult")
      *
      * @param TransactionRecordsRequest $input
-     * @return Transaction[]
+     * @return TransactionsPaginatedResult
      */
-    public function transactions(TransactionRecordsRequest $input): array
+    public function transactions(TransactionRecordsRequest $input): TransactionsPaginatedResult
     {
         if (!$this->authService->isLoggedIn()) {
             throw GraphQLException::fromString('Unauthorized access!');
@@ -77,7 +78,8 @@ class TransactionProvider
             }
         }
 
-        return $this->repository->findByWalletIds($input->walletIds);
+        $pager = $this->repository->findCollection($input);
+        return TransactionsPaginatedResult::fromPager($pager);
     }
 
     /**

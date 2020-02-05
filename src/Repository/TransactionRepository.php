@@ -3,8 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Transaction;
+use App\GraphQL\Input\Transaction\TransactionRecordsRequest;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Pagerfanta;
 
 /**
  * @method Transaction|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,18 +22,18 @@ class TransactionRepository extends ServiceEntityRepository
         parent::__construct($registry, Transaction::class);
     }
 
-    /**
-     * @param int[] $ids
-     * @return Transaction[]
-     */
-    public function findByWalletIds(array $ids)
+    public function findCollection(TransactionRecordsRequest $filters)
     {
-        return $this->createQueryBuilder('t')
+        $query = $this->createQueryBuilder('t')
             ->where('t.wallet_id IN (:ids)')
-            ->setParameters(['ids' => $ids])
-            ->orderBy('t.date', 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->setParameters(['ids' => $filters->walletIds])
+            ->orderBy('t.date', 'DESC');
+
+        $pager = new Pagerfanta(new DoctrineORMAdapter($query));
+        $pager->setMaxPerPage($filters->getLimit());
+        $pager->setCurrentPage($filters->getPage());
+
+        return $pager;
     }
 
     public function remove(Transaction $transaction)
