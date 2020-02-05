@@ -5,6 +5,7 @@ namespace App\GraphQL\Provider;
 use App\Builder\UserBuilder;
 use App\Entity\User;
 use App\Exception\GraphQLException;
+use App\Exception\InvalidPasswordException;
 use App\GraphQL\Input\User\UserLoginRequest;
 use App\GraphQL\Input\User\UserRegisterRequest;
 use App\Repository\UserRepository;
@@ -105,7 +106,11 @@ class UserProvider
             'email' => $input->email
         ]);
 
-        $this->authService->isPasswordValid($user, $input->password);
+        try {
+            $this->authService->isPasswordValid($user, $input->password);
+        } catch (InvalidPasswordException $ex) {
+            throw GraphQLException::fromString('Wrong credentials!');
+        }
 
         $user = $this->builder
             ->setUser($user)
