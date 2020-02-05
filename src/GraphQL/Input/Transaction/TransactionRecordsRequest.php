@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Input\Transaction;
 
+use App\Traits\PaginationUtils;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
@@ -9,6 +10,8 @@ use Overblog\GraphQLBundle\Annotation as GQL;
  */
 class TransactionRecordsRequest extends TransactionRequest
 {
+    use PaginationUtils;
+
     /**
      * @GQL\Field(type="[Int]")
      * @var int[]
