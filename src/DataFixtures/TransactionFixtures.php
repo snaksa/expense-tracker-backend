@@ -25,7 +25,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($transaction);
 
         $transaction = new Transaction();
-        $transaction->setValue(25);
+        $transaction->setValue(250);
         $transaction->setDescription('Friends loans');
         $transaction->setType(TransactionType::INCOME);
         $transaction->setDate($this->getCurrentDateTime()->modify('- 2 hour'));
