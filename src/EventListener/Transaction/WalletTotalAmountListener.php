@@ -33,10 +33,8 @@ class WalletTotalAmountListener
     {
         $wallet = $transaction->getWallet();
 
-        $totalAmount = 0;
-        foreach ($wallet->getTransactions() as $trans) {
-            $totalAmount += ($trans->getType() === TransactionType::EXPENSE ? -1 : 1) * $trans->getValue();
-        }
+        $totalAmount = $wallet->getAmount();
+        $totalAmount += ($transaction->getType() === TransactionType::EXPENSE ? -1 : 1) * $transaction->getValue();
 
         $wallet->setAmount($totalAmount);
         $this->walletRepository->save($wallet);
