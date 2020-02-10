@@ -23,31 +23,31 @@ class PaginatedResult
      * @GQL\Field(type="Int!")
      * @var int
      */
-    public $currentPage;
+    public $currentPage = 0;
 
     /**
      * @GQL\Field(type="Int!")
      * @var int
      */
-    public $totalPages;
+    public $totalPages = 0;
 
     /**
      * @GQL\Field(type="Int!")
      * @var int
      */
-    public $totalResults;
+    public $totalResults = 0;
 
     /**
      * @GQL\Field(type="Boolean!")
      * @var bool
      */
-    public $hasNextPage;
+    public $hasNextPage = false;
 
     /**
      * @GQL\Field(type="Boolean!")
      * @var bool
      */
-    public $hasPrevPage;
+    public $hasPrevPage = false;
 
     /**
      * Creates new instance from a pager.

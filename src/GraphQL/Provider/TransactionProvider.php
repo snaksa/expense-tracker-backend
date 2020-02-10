@@ -78,8 +78,15 @@ class TransactionProvider
             }
         }
 
-        $pager = $this->repository->findCollection($input);
-        return TransactionsPaginatedResult::fromPager($pager);
+        $records = $this->repository->findCollection($input);
+
+        if ($input->getUnlimited()) {
+            $result = new TransactionsPaginatedResult();
+            $result->data = $records;
+            return $result;
+        }
+
+        return TransactionsPaginatedResult::fromPager($records);
     }
 
     /**
