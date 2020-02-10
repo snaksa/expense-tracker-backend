@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\GraphQL\Types\TransactionType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -52,10 +53,37 @@ class Category
     private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="category")
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="category", cascade={"persist", "remove"})
      * @GQL\Field(type="[Transaction]")
      */
     private $transactions;
+
+    /**
+     * @GQL\Field(type="Int", resolve="value.getTransactionsCount()")
+     */
+    private $transactionsCount;
+
+    /**
+     * @GQL\Field(type="Float", resolve="value.getBalance()")
+     */
+    private $balance;
+
+    public function getTransactionsCount(): int
+    {
+        return $this->getTransactions()->count();
+    }
+
+    public function getBalance(): float
+    {
+        $total = 0;
+        /**@var Transaction[] $transactions*/
+        $transactions = $this->getTransactions()->toArray();
+        foreach ($transactions as $transaction) {
+            $total += ($transaction->getType() === TransactionType::EXPENSE ? -1 : 1) * $transaction->getValue();
+        }
+
+        return $total;
+    }
 
     public function __construct()
     {
@@ -97,7 +125,7 @@ class Category
 
         return $this;
     }
-    
+
     public function getIcon(): ?int
     {
         return $this->icon;

@@ -29,14 +29,21 @@ class WalletTotalAmountListener
         $this->update($transaction);
     }
 
+    public function postRemove(Transaction $transaction, LifecycleEventArgs $args)
+    {
+        $this->update($transaction);
+    }
+
     public function update(Transaction $transaction)
     {
         $wallet = $transaction->getWallet();
 
-        $totalAmount = $wallet->getAmount();
-        $totalAmount += ($transaction->getType() === TransactionType::EXPENSE ? -1 : 1) * $transaction->getValue();
+        $amount = 0;
+        foreach ($wallet->getTransactions() as $t) {
+            $amount += ($t->getType() === TransactionType::EXPENSE ? -1 : 1) * $t->getValue();
+        }
 
-        $wallet->setAmount($totalAmount);
+        $wallet->setAmount($wallet->getInitialAmount() + $amount);
         $this->walletRepository->save($wallet);
     }
 }

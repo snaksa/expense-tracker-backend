@@ -40,6 +40,12 @@ class Wallet
     private $amount = 0;
 
     /**
+     * @ORM\Column(type="float", nullable=false)
+     * @GQL\Field
+     */
+    private $initial_amount = 0;
+
+    /**
      * @ORM\Column(type="integer", nullable=false)
      */
     private $user_id;
@@ -52,7 +58,7 @@ class Wallet
     private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="wallet")
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="wallet", cascade={"persist", "remove"})
      * @GQL\Field(type="[Transaction]")
      */
     private $transactions;
@@ -153,7 +159,7 @@ class Wallet
         return $this;
     }
 
-    public function getAmount(): ?float
+    public function getAmount(): float
     {
         return $this->amount;
     }
@@ -161,6 +167,18 @@ class Wallet
     public function setAmount(float $amount): self
     {
         $this->amount = $amount;
+
+        return $this;
+    }
+
+    public function getInitialAmount(): float
+    {
+        return $this->initial_amount;
+    }
+
+    public function setInitialAmount(float $initialAmount): self
+    {
+        $this->initial_amount = $initialAmount;
 
         return $this;
     }
