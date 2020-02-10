@@ -29,7 +29,7 @@ final class Version20200116165853 extends AbstractMigration
             ->setNotnull(true);
 
         $table->addColumn('icon', 'integer')
-            ->setNotnull(true);
+            ->setNotnull(false);
 
         $table->addColumn('user_id', 'integer')
             ->setNotnull(false)

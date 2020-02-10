@@ -34,7 +34,7 @@ class Category
     private $color;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
+     * @ORM\Column(type="integer", nullable=true)
      * @GQL\Field
      */
     private $icon;
@@ -97,13 +97,13 @@ class Category
 
         return $this;
     }
-
-    public function getIcon(): int
+    
+    public function getIcon(): ?int
     {
         return $this->icon;
     }
 
-    public function setIcon(int $icon): self
+    public function setIcon(?int $icon): self
     {
         $this->icon = $icon;
 

@@ -18,6 +18,11 @@ trait PaginationUtils
     public $page;
 
     /**
+     * @GQL\Field(type="Boolean")
+     */
+    public $unlimited = false;
+
+    /**
      * @return int
      */
     public function getPage(): int
@@ -51,5 +56,13 @@ trait PaginationUtils
     public function getOffset(): int
     {
         return ($this->getPage() - 1) * $this->getLimit();
+    }
+
+    /**
+     * @return bool
+     */
+    public function getUnlimited(): bool
+    {
+        return $this->unlimited;
     }
 }

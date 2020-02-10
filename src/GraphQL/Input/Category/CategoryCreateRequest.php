@@ -20,10 +20,4 @@ class CategoryCreateRequest extends CategoryRequest
      * @var string
      */
     public $color;
-
-    /**
-     * @GQL\Field(type="Int!")
-     * @var integer
-     */
-    public $icon;
 }

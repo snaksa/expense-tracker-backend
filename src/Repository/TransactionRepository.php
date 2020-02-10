@@ -29,6 +29,10 @@ class TransactionRepository extends ServiceEntityRepository
             ->setParameters(['ids' => $filters->walletIds])
             ->orderBy('t.date', 'DESC');
 
+        if ($filters->getUnlimited()) {
+            return $query->getQuery()->getResult();
+        }
+
         $pager = new Pagerfanta(new DoctrineORMAdapter($query));
         $pager->setMaxPerPage($filters->getLimit());
         $pager->setCurrentPage($filters->getPage());
