@@ -18,7 +18,7 @@ class DateTime
      */
     public static function serialize(\DateTimeInterface $value)
     {
-        return $value->format('jS F H:i');
+        return $value->format('Y-m-d H:i:s');
     }
 
     /**

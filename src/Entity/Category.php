@@ -53,7 +53,12 @@ class Category
     private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="category", cascade={"persist", "remove"})
+     * @ORM\OneToMany(
+     *     targetEntity="App\Entity\Transaction",
+     *     mappedBy="category",
+     *     cascade={"persist", "remove"},
+     *     orphanRemoval=true
+     * )
      * @GQL\Field(type="[Transaction]")
      */
     private $transactions;
@@ -70,19 +75,12 @@ class Category
 
     public function getTransactionsCount(): int
     {
-        return $this->getTransactions()->count();
+        return 0;
     }
 
     public function getBalance(): float
     {
-        $total = 0;
-        /**@var Transaction[] $transactions*/
-        $transactions = $this->getTransactions()->toArray();
-        foreach ($transactions as $transaction) {
-            $total += ($transaction->getType() === TransactionType::EXPENSE ? -1 : 1) * $transaction->getValue();
-        }
-
-        return $total;
+        return 0;
     }
 
     public function __construct()

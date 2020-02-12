@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\GraphQL\Types\TransactionType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -161,7 +162,14 @@ class Wallet
 
     public function getAmount(): float
     {
-        return $this->amount;
+        $total = 0;
+        /**@var Transaction[] $transactions*/
+        $transactions = $this->getTransactions()->toArray();
+        foreach ($transactions as $transaction) {
+            $total += ($transaction->getType() === TransactionType::EXPENSE ? -1 : 1) * $transaction->getValue();
+        }
+
+        return $this->getInitialAmount() + $total;
     }
 
     public function setAmount(float $amount): self

@@ -20,10 +20,3 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
-
-    App\EventListener\Transaction\TotalAmountListener:
-        class: App\EventListener\Transaction\WalletTotalAmountListener
-        tags:
-            - { name: doctrine.orm.entity_listener, event: postPersist, entity: App\Entity\Transaction, lazy: true }
-            - { name: doctrine.orm.entity_listener, event: postUpdate, entity: App\Entity\Transaction, lazy: true }
-            - { name: doctrine.orm.entity_listener, event: postRemove, entity: App\Entity\Transaction, lazy: true }
