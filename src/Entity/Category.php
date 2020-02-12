@@ -75,12 +75,19 @@ class Category
 
     public function getTransactionsCount(): int
     {
-        return 0;
+        return $this->getTransactions()->count();
     }
 
     public function getBalance(): float
     {
-        return 0;
+        $total = 0;
+        /**@var Transaction[] $transactions */
+        $transactions = $this->getTransactions()->toArray();
+        foreach ($transactions as $transaction) {
+            $total += ($transaction->getType() === TransactionType::EXPENSE ? -1 : 1) * $transaction->getValue();
+        }
+
+        return $total;
     }
 
     public function __construct()
