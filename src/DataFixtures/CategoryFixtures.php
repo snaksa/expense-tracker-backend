@@ -28,11 +28,35 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($category);
 
         $category = new Category();
+        $category->setName('Gaming');
+        $category->setColor('#C3B892');
+        $category->setIcon(2);
+        $category->setUser($this->getReference('user_demo'));
+        $this->setReference('category_gaming', $category);
+        $manager->persist($category);
+
+        $category = new Category();
+        $category->setName('Fuel');
+        $category->setColor('#A84322');
+        $category->setIcon(2);
+        $category->setUser($this->getReference('user_demo'));
+        $this->setReference('category_fuel', $category);
+        $manager->persist($category);
+
+        $category = new Category();
         $category->setName('Income');
         $category->setColor('#738F92');
         $category->setIcon(2);
         $category->setUser($this->getReference('user_demo'));
         $this->setReference('category_income', $category);
+        $manager->persist($category);
+
+        $category = new Category();
+        $category->setName('OLX');
+        $category->setColor('#A33492');
+        $category->setIcon(2);
+        $category->setUser($this->getReference('user_demo'));
+        $this->setReference('category_olx', $category);
         $manager->persist($category);
 
         $manager->flush();

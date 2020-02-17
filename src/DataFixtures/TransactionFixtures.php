@@ -15,59 +15,54 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager)
     {
-        $transaction = new Transaction();
-        $transaction->setValue(12.54);
-        $transaction->setDescription('Meat for dinner');
-        $transaction->setType(TransactionType::EXPENSE);
-        $transaction->setDate($this->getCurrentDateTime()->modify('- 2 day'));
-        $transaction->setCategory($this->getReference('category_food'));
-        $transaction->setWallet($this->getReference('user_demo_wallet_cash'));
-        $manager->persist($transaction);
+        $wallets = [
+            $this->getReference('user_demo_wallet_cash'),
+            $this->getReference('user_demo_wallet_bank')
+        ];
 
-        $transaction = new Transaction();
-        $transaction->setValue(250);
-        $transaction->setDescription('Friends loans');
-        $transaction->setType(TransactionType::INCOME);
-        $transaction->setDate($this->getCurrentDateTime()->modify('- 2 hour'));
-        $transaction->setCategory($this->getReference('category_income'));
-        $transaction->setWallet($this->getReference('user_demo_wallet_cash'));
-        $manager->persist($transaction);
+        $incomeCategories = [
+            $this->getReference('category_income'),
+            $this->getReference('category_olx'),
+        ];
 
-        $transaction = new Transaction();
-        $transaction->setValue(32.99);
-        $transaction->setDescription('New jeans');
-        $transaction->setType(TransactionType::EXPENSE);
-        $transaction->setDate($this->getCurrentDateTime()->modify('- 1 day'));
-        $transaction->setCategory($this->getReference('category_clothes'));
-        $transaction->setWallet($this->getReference('user_demo_wallet_bank'));
-        $manager->persist($transaction);
+        $categories = [
+            $this->getReference('category_food'),
+            $this->getReference('category_gaming'),
+            $this->getReference('category_fuel'),
+            $this->getReference('category_clothes')
+        ];
 
-        $transaction = new Transaction();
-        $transaction->setValue(800);
-        $transaction->setDescription('Salary');
-        $transaction->setType(TransactionType::INCOME);
-        $transaction->setDate($this->getCurrentDateTime()->modify('- 2 minute'));
-        $transaction->setCategory($this->getReference('category_income'));
-        $transaction->setWallet($this->getReference('user_demo_wallet_bank'));
-        $manager->persist($transaction);
+        foreach ($wallets as $wallet) {
+            foreach ($incomeCategories as $category) {
+                $transaction = new Transaction();
+                $transaction->setValue(rand(400, 600));
+                $transaction->setDescription('Salary');
+                $transaction->setType(TransactionType::INCOME);
+                $transaction->setDate($this->getCurrentDateTime()->modify('- 2 day'));
+                $transaction->setCategory($category);
+                $transaction->setWallet($wallet);
+                $manager->persist($transaction);
+            }
+        }
 
-        $transaction = new Transaction();
-        $transaction->setValue(8);
-        $transaction->setDescription('New t-shirt');
-        $transaction->setType(TransactionType::EXPENSE);
-        $transaction->setDate($this->getCurrentDateTime()->modify('- 2 day'));
-        $transaction->setCategory($this->getReference('category_clothes'));
-        $transaction->setWallet($this->getReference('user_demo_wallet_bank'));
-        $manager->persist($transaction);
-
-        $transaction = new Transaction();
-        $transaction->setValue(23.49);
-        $transaction->setDescription('Bottle of wine');
-        $transaction->setType(TransactionType::EXPENSE);
-        $transaction->setDate($this->getCurrentDateTime());
-        $transaction->setCategory($this->getReference('category_food'));
-        $transaction->setWallet($this->getReference('user_demo_wallet_cash'));
-        $manager->persist($transaction);
+        foreach ($wallets as $wallet) {
+            foreach ($categories as $category) {
+                $count = 0;
+                while ($count < 10) {
+                    $randomDays = rand(1, 50);
+                    $amount = rand(10, 100) / 10;
+                    $transaction = new Transaction();
+                    $transaction->setValue($amount);
+                    $transaction->setDescription('Expense record');
+                    $transaction->setType(TransactionType::EXPENSE);
+                    $transaction->setDate($this->getCurrentDateTime()->modify("- {$randomDays} day"));
+                    $transaction->setCategory($category);
+                    $transaction->setWallet($wallet);
+                    $manager->persist($transaction);
+                    $count++;
+                }
+            }
+        }
 
         $manager->flush();
     }
