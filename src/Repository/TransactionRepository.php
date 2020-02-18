@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Transaction;
 use App\GraphQL\Input\Transaction\TransactionRecordsRequest;
+use App\GraphQL\Types\TransactionType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
@@ -24,9 +25,17 @@ class TransactionRepository extends ServiceEntityRepository
 
     public function findCollection(TransactionRecordsRequest $filters)
     {
+        $where = ['t.wallet_id IN (:ids)'];
+        $params = ['ids' => $filters->walletIds];
+
+        if ($filters->date) {
+            $where[] = 't.date >= :date';
+            $params['date'] = $filters->date;
+        }
+
         $query = $this->createQueryBuilder('t')
-            ->where('t.wallet_id IN (:ids)')
-            ->setParameters(['ids' => $filters->walletIds])
+            ->where(implode(' AND ', $where))
+            ->setParameters($params)
             ->orderBy('t.date', 'DESC');
 
         if ($filters->getUnlimited()) {
@@ -38,6 +47,29 @@ class TransactionRepository extends ServiceEntityRepository
         $pager->setCurrentPage($filters->getPage());
 
         return $pager;
+    }
+
+    public function findSpendingFlow(TransactionRecordsRequest $filters)
+    {
+        $where = ['t.type = :type', 't.wallet_id IN (:ids)'];
+        $params = [
+            'ids' => $filters->walletIds,
+            'type' => TransactionType::EXPENSE
+        ];
+
+        if ($filters->date) {
+            $where[] = 't.date >= :date';
+            $params['date'] = $filters->date;
+        }
+
+        return $this->createQueryBuilder('t')
+            ->select("DATE_FORMAT(t.date, '%Y-%m-%d') as date, SUM(t.value) as total")
+            ->where(join(' AND ', $where))
+            ->setParameters($params)
+            ->orderBy('t.date', 'ASC')
+            ->groupBy('date')
+            ->getQuery()
+            ->getResult();
     }
 
     public function remove(Transaction $transaction)

@@ -61,7 +61,7 @@ trait PaginationUtils
     /**
      * @return bool
      */
-    public function getUnlimited(): bool
+    public function getUnlimited(): ?bool
     {
         return $this->unlimited;
     }

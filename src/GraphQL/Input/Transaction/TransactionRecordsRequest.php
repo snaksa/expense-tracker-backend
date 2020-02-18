@@ -17,4 +17,16 @@ class TransactionRecordsRequest extends TransactionRequest
      * @var int[]
      */
     public $walletIds;
+
+    /**
+     * @GQL\Field(type="[Int]")
+     * @var int[]
+     */
+    public $categoryIds;
+
+    /**
+     * @GQL\Field(type="String")
+     * @var string
+     */
+    public $date;
 }

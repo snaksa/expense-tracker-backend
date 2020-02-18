@@ -11,6 +11,24 @@ trait DateUtils
     protected $dateTimeFormat = 'Y-m-d H:i:s';
     protected $dateFormat = 'Y-m-d';
 
+    public function createFromFormat(
+        string $date,
+        ?string $format = null,
+        DateTimeZone $timezone = null,
+        bool $roundHours = false
+    ): ?DateTime {
+        $format = $format ?? $this->dateTimeFormat;
+        $timezone = $timezone ?? $this->getUTCTimeZone();
+
+        $dt = DateTime::createFromFormat($format, $date, $timezone);
+        if ($roundHours && $dt) {
+            $dt->setTime(0, 0);
+        }
+
+        return $dt ? $dt : null;
+    }
+
+
     /**
      * @param DateTimeInterface $date
      * @param string|null $format
