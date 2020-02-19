@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Transaction;
+use App\GraphQL\Input\Category\CategoryRecordsRequest;
 use App\GraphQL\Input\Transaction\TransactionRecordsRequest;
 use App\GraphQL\Types\TransactionType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -68,6 +69,58 @@ class TransactionRepository extends ServiceEntityRepository
             ->setParameters($params)
             ->orderBy('t.date', 'ASC')
             ->groupBy('date')
+            ->getQuery()
+            ->getResult();
+    }
+
+
+    public function findCategorySpendingFlow(CategoryRecordsRequest $filters)
+    {
+        $where = ['t.wallet_id IN (:ids)', 't.type = :type'];
+        $params = [
+            'ids' => $filters->walletIds,
+            'type' => TransactionType::EXPENSE
+        ];
+
+        if ($filters->date) {
+            $where[] = 't.date >= :date';
+            $params['date'] = $filters->date;
+        }
+
+        return $this->createQueryBuilder('t')
+            ->select("DATE_FORMAT(t.date, '%Y-%m-%d') as date, SUM(t.value) as total, t.category_id as category")
+            ->where(join(' AND ', $where))
+            ->setParameters($params)
+            ->orderBy('t.date', 'ASC')
+            ->groupBy('date')
+            ->addGroupBy('t.category_id')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findCategorySpendingPie(CategoryRecordsRequest $filters)
+    {
+        $where = ['t.wallet_id IN (:ids)'];
+        $params = [
+            'ids' => $filters->walletIds
+        ];
+
+        if ($filters->type) {
+            $where[] = 't.type = :type';
+            $params['type'] = $filters->type->value;
+        }
+
+        if ($filters->date) {
+            $where[] = 't.date >= :date';
+            $params['date'] = $filters->date;
+        }
+
+        return $this->createQueryBuilder('t')
+            ->select("SUM(t.value) as total, c.name as category, c.color as color")
+            ->leftJoin('t.category', 'c')
+            ->where(join(' AND ', $where))
+            ->setParameters($params)
+            ->addGroupBy('t.category_id')
             ->getQuery()
             ->getResult();
     }

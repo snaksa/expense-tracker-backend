@@ -21,11 +21,18 @@ class AreaChart
      */
     public $data = [];
 
-    public static function fromData(array $header, array $data)
+    /**
+     * @GQL\Field(type="[String]")
+     * @var array
+     */
+    public $colors = [];
+
+    public static function fromData(array $header, array $data, array $colors = [])
     {
         $result = new self();
         $result->header = $header;
         $result->data = $data;
+        $result->colors = $colors;
         return $result;
     }
 }
