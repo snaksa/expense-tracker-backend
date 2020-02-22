@@ -7,6 +7,7 @@ use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
  * @GQL\Type
+ * @ORM\Table(name="transaction_record")
  * @ORM\Entity(repositoryClass="App\Repository\TransactionRepository")
  */
 class Transaction

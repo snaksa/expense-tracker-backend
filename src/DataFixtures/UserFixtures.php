@@ -25,15 +25,22 @@ class UserFixtures extends Fixture
         $user = new User();
         $user->setEmail('demo@gmail.com');
         $user->setRoles(['ROLE_USER']);
-
         $password = $this->passwordEncoder
             ->encodePassword($user, '123456');
-
         $user->setPassword($password);
-
+        $user->setApiKey('mainUser');
         $manager->persist($user);
-
         $this->setReference('user_demo', $user);
+
+        $user = new User();
+        $user->setEmail('demo2@gmail.com');
+        $user->setRoles(['ROLE_USER']);
+        $password = $this->passwordEncoder
+            ->encodePassword($user, '123456');
+        $user->setPassword($password);
+        $user->setApiKey('secondUser');
+        $manager->persist($user);
+        $this->setReference('user_demo2', $user);
 
         $manager->flush();
     }

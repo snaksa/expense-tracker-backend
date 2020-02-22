@@ -14,7 +14,7 @@ final class Version20200116171617 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $table = $schema->createTable('transaction');
+        $table = $schema->createTable('transaction_record');
 
         $table->addColumn('id', 'integer')
             ->setAutoincrement(true)
@@ -48,19 +48,19 @@ final class Version20200116171617 extends AbstractMigration
             ['wallet_id'],
             ['id'],
             ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'],
-            'fk_transaction_wallet'
+            'fk_transaction_record_wallet'
         );
         $table->addForeignKeyConstraint(
             'category',
             ['category_id'],
             ['id'],
             ['onUpdate' => 'CASCADE', 'onDelete' => 'CASCADE'],
-            'fk_transaction_category'
+            'fk_transaction_record_category'
         );
     }
 
     public function down(Schema $schema): void
     {
-        $schema->dropTable('transaction');
+        $schema->dropTable('transaction_record');
     }
 }

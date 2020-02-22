@@ -25,6 +25,9 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.3",
+        "kunicmarko/graphql-test": "^0.1.0",
+        "liip/functional-test-bundle": "^4.0.0",
+        "liip/test-fixtures-bundle": "^1.0.0",
         "overblog/graphiql-bundle": "^0.2.0",
         "phpro/grumphp": "^0.17.2",
         "symfony/maker-bundle": "^1.14",
