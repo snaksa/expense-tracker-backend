@@ -6,6 +6,8 @@ use App\Entity\Category;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 
 /**
  * @method Category|null find($id, $lockMode = null, $lockVersion = null)
@@ -33,15 +35,39 @@ class CategoryRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function remove(Category $category)
+    /**
+     * @param int $id
+     * @return Category|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findOneById(int $id): ?Category
     {
-        $this->_em->remove($category);
-        $this->_em->flush();
+        return $this->createQueryBuilder('t')
+            ->where('t.id = :id')
+            ->setParameters(['id' => $id])
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
+    /**
+     * @param Category $category
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
     public function save(Category $category)
     {
         $this->_em->persist($category);
+        $this->_em->flush();
+    }
+
+    /**
+     * @param Category $category
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function remove(Category $category)
+    {
+        $this->_em->remove($category);
         $this->_em->flush();
     }
 }

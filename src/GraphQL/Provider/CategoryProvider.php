@@ -118,6 +118,8 @@ class CategoryProvider
      *
      * @return Category
      * @throws EntityNotFoundException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function updateCategory(CategoryUpdateRequest $input): Category
     {
@@ -144,6 +146,9 @@ class CategoryProvider
      * @param CategoryDeleteRequest $input
      *
      * @return Category
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function deleteCategory(CategoryDeleteRequest $input): Category
     {
@@ -155,7 +160,7 @@ class CategoryProvider
         $category = $this->repository->findOneById($input->id);
 
         if ($category->getUserId() !== $this->authService->getCurrentUser()->getId()) {
-            throw GraphQLException::fromString('Unauthorized access!');
+            throw GraphQLException::fromString('Unauthorized operation!');
         }
 
         $clone = clone $category;

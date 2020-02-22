@@ -59,6 +59,14 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
         $this->setReference('category_olx', $category);
         $manager->persist($category);
 
+        $category = new Category();
+        $category->setName('Food');
+        $category->setColor('#A33492');
+        $category->setIcon(2);
+        $category->setUser($this->getReference('user_demo2'));
+        $this->setReference('category_food_2', $category);
+        $manager->persist($category);
+
         $manager->flush();
     }
 
