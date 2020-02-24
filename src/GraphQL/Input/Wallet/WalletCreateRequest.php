@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Input\Wallet;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
@@ -10,12 +11,14 @@ use Overblog\GraphQLBundle\Annotation as GQL;
 class WalletCreateRequest extends WalletRequest
 {
     /**
+     * @Assert\NotBlank(message="Name should not be empty!")
      * @GQL\Field(type="String!")
      * @var string
      */
     public $name;
 
     /**
+     * @Assert\NotBlank(message="Color should not be empty!")
      * @GQL\Field(type="String!")
      * @var string
      */

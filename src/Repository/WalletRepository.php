@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Wallet;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\NonUniqueResultException;
 
 /**
  * @method Wallet|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,6 +18,20 @@ class WalletRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Wallet::class);
+    }
+
+    /**
+     * @param int $id
+     * @return Wallet|null
+     * @throws NonUniqueResultException
+     */
+    public function findOneById(int $id): ?Wallet
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.id = :id')
+            ->setParameters(['id' => $id])
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
