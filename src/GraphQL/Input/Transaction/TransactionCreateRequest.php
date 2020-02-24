@@ -3,7 +3,8 @@
 namespace App\GraphQL\Input\Transaction;
 
 use App\GraphQL\Types\TransactionType;
-use App\Validator\Constraints as Assert;
+use App\Validator\Constraints as CustomAssert;
+use Symfony\Component\Validator\Constraints as Assert;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
@@ -12,39 +13,44 @@ use Overblog\GraphQLBundle\Annotation as GQL;
 class TransactionCreateRequest extends TransactionRequest
 {
     /**
+     * @Assert\NotBlank(message="Description should not be empty!")
      * @GQL\Field(type="String!")
      * @var string
      */
     public $description;
 
     /**
+     * @Assert\NotBlank(message="Value should not be empty!")
      * @GQL\Field(type="Float!")
      * @var float
      */
     public $value;
 
     /**
+     * @Assert\NotBlank(message="Type should not be empty!")
      * @GQL\Field(type="TransactionType!")
      * @var TransactionType
      */
     public $type;
 
     /**
-     * @GQL\Field(type="Int!")
-     * @Assert\EntityExists(
+     * @Assert\NotBlank(message="Category should not be empty!")
+     * @CustomAssert\EntityExists(
      *  message="Category not found!",
      *  entityClass="App\Entity\Category"
      * )
+     * @GQL\Field(type="Int!")
      * @var integer
      */
     public $categoryId;
 
     /**
-     * @GQL\Field(type="Int!")
-     * @Assert\EntityExists(
+     * @Assert\NotBlank(message="Wallet should not be empty!")
+     * @CustomAssert\EntityExists(
      *  message="Wallet not found!",
      *  entityClass="App\Entity\Wallet"
      * )
+     * @GQL\Field(type="Int!")
      * @var integer
      */
     public $walletId;

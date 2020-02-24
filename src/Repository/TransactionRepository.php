@@ -8,6 +8,7 @@ use App\GraphQL\Input\Transaction\TransactionRecordsRequest;
 use App\GraphQL\Types\TransactionType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\NonUniqueResultException;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
 
@@ -24,6 +25,20 @@ class TransactionRepository extends ServiceEntityRepository
         parent::__construct($registry, Transaction::class);
     }
 
+    /**
+     * @param int $id
+     * @return Transaction|null
+     * @throws NonUniqueResultException
+     */
+    public function findOneById(int $id): ?Transaction
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.id = :id')
+            ->setParameters(['id' => $id])
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function findCollection(TransactionRecordsRequest $filters)
     {
         $where = ['t.wallet_id IN (:ids)'];
@@ -38,10 +53,6 @@ class TransactionRepository extends ServiceEntityRepository
             ->where(implode(' AND ', $where))
             ->setParameters($params)
             ->orderBy('t.date', 'DESC');
-
-        if ($filters->getUnlimited()) {
-            return $query->getQuery()->getResult();
-        }
 
         $pager = new Pagerfanta(new DoctrineORMAdapter($query));
         $pager->setMaxPerPage($filters->getLimit());
