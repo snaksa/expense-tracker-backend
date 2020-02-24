@@ -12,6 +12,7 @@ use App\GraphQL\Input\Wallet\WalletUpdateRequest;
 use App\Repository\WalletRepository;
 use App\Services\AuthorizationService;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\NonUniqueResultException;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
@@ -66,6 +67,7 @@ class WalletProvider
      * @param int $id
      *
      * @return Wallet
+     * @throws NonUniqueResultException
      */
     public function wallet(int $id): Wallet
     {
@@ -143,6 +145,7 @@ class WalletProvider
      * @param WalletDeleteRequest $input
      *
      * @return Wallet
+     * @throws NonUniqueResultException
      */
     public function deleteWallet(WalletDeleteRequest $input): Wallet
     {
@@ -154,7 +157,7 @@ class WalletProvider
         $wallet = $this->repository->findOneById($input->id);
 
         if ($wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
-            throw GraphQLException::fromString('Unauthorized access!');
+            throw GraphQLException::fromString('Unauthorized operation!');
         }
 
         $clone = clone $wallet;
