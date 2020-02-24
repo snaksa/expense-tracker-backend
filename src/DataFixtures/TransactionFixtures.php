@@ -17,7 +17,8 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
     {
         $wallets = [
             $this->getReference('user_demo_wallet_cash'),
-            $this->getReference('user_demo_wallet_bank')
+            $this->getReference('user_demo_wallet_bank'),
+            $this->getReference('user_demo2_wallet_loan')
         ];
 
         $incomeCategories = [
@@ -42,6 +43,10 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
                 $transaction->setCategory($category);
                 $transaction->setWallet($wallet);
                 $manager->persist($transaction);
+                $this->setReference(
+                    'transaction_' . $wallet->getName() . '_' . $category->getName(),
+                    $transaction
+                );
             }
         }
 
@@ -59,6 +64,10 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
                     $transaction->setCategory($category);
                     $transaction->setWallet($wallet);
                     $manager->persist($transaction);
+                    $this->setReference(
+                        'transaction_' . $wallet->getName() . '_' . $category->getName() . '_' . $count,
+                        $transaction
+                    );
                     $count++;
                 }
             }

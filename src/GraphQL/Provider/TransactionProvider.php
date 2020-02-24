@@ -80,12 +80,6 @@ class TransactionProvider
 
         $records = $this->repository->findCollection($input);
 
-        if ($input->getUnlimited()) {
-            $result = new TransactionsPaginatedResult();
-            $result->data = $records;
-            return $result;
-        }
-
         return TransactionsPaginatedResult::fromPager($records);
     }
 
@@ -95,6 +89,7 @@ class TransactionProvider
      * @param int $id
      *
      * @return Transaction
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function transaction(int $id): Transaction
     {
@@ -130,12 +125,16 @@ class TransactionProvider
             throw GraphQLException::fromString('Unauthorized access!');
         }
 
-        $transaction = $this->builder
-            ->create()
-            ->bind($input)
-            ->build();
+        try {
+            $transaction = $this->builder
+                ->create()
+                ->bind($input)
+                ->build();
 
-        $this->repository->save($transaction);
+            $this->repository->save($transaction);
+        } catch (UnauthorizedOperationException $ex) {
+            throw GraphQLException::fromString('Unauthorized operation!');
+        }
 
         return $transaction;
     }
@@ -173,6 +172,7 @@ class TransactionProvider
      * @param TransactionDeleteRequest $input
      *
      * @return Transaction
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function deleteTransaction(TransactionDeleteRequest $input): Transaction
     {
@@ -184,7 +184,7 @@ class TransactionProvider
         $transaction = $this->repository->findOneById($input->id);
 
         if ($transaction->getWallet()->getUserId() !== $this->authService->getCurrentUser()->getId()) {
-            throw GraphQLException::fromString('Unauthorized access!');
+            throw GraphQLException::fromString('Unauthorized operation!');
         }
 
         $clone = clone $transaction;
