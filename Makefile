@@ -41,7 +41,7 @@ migrate:
 
 fixtures:
 	$(info 📦 Make: Running migrations)
-	@docker-compose run --rm php bin/console doctrine:fixtures:load --quiet
+	@docker-compose run --rm php bin/console doctrine:fixtures:load --quiet --env=fixtures
 
 ssh:
 	$(info 💻 Make: SSH into PHP container.)

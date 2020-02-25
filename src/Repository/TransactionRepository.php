@@ -78,7 +78,7 @@ class TransactionRepository extends ServiceEntityRepository
             ->select("DATE_FORMAT(t.date, '%Y-%m-%d') as date, SUM(t.value) as total")
             ->where(join(' AND ', $where))
             ->setParameters($params)
-            ->orderBy('t.date', 'ASC')
+            ->orderBy('date', 'ASC')
             ->groupBy('date')
             ->getQuery()
             ->getResult();
@@ -102,7 +102,7 @@ class TransactionRepository extends ServiceEntityRepository
             ->select("DATE_FORMAT(t.date, '%Y-%m-%d') as date, SUM(t.value) as total, t.category_id as category")
             ->where(join(' AND ', $where))
             ->setParameters($params)
-            ->orderBy('t.date', 'ASC')
+            ->orderBy('date', 'ASC')
             ->groupBy('date')
             ->addGroupBy('t.category_id')
             ->getQuery()
