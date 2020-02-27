@@ -21,6 +21,12 @@ final class Version20200116164431 extends AbstractMigration
             ->setUnsigned(true)
             ->setNotnull(true);
 
+        $table->addColumn('first_name', 'string')
+            ->setNotnull(false);
+
+        $table->addColumn('last_name', 'string')
+            ->setNotnull(false);
+
         $table->addColumn('email', 'string')
             ->setNotnull(true)
             ->setLength(180);
@@ -36,6 +42,12 @@ final class Version20200116164431 extends AbstractMigration
 
         $table->addColumn('roles', 'json')
                 ->setNotnull(true);
+
+        $table->addColumn('currency', 'string')
+            ->setNotnull(false);
+
+        $table->addColumn('language', 'string')
+            ->setNotnull(false);
 
         $table->setPrimaryKey(['id']);
         $table->addUniqueIndex(['email']);

@@ -54,6 +54,22 @@ class UserBuilder extends BaseBuilder
             $this->withEmail($input->email);
         }
 
+        if ($input->firstName !== null) {
+            $this->withFirstName($input->firstName);
+        }
+
+        if ($input->lastName !== null) {
+            $this->withLastName($input->lastName);
+        }
+
+        if ($input->currency !== null) {
+            $this->withCurrency($input->currency);
+        }
+
+        if ($input->language !== null) {
+            $this->withLanguage($input->language);
+        }
+
         if ($input->password !== null) {
             if ($input->password !== $input->confirmPassword) {
                 throw new PasswordConfirmationException();
@@ -75,6 +91,34 @@ class UserBuilder extends BaseBuilder
     public function withEmail(string $email): self
     {
         $this->user->setEmail($email);
+
+        return $this;
+    }
+
+    public function withFirstName(string $firstName): self
+    {
+        $this->user->setFirstName($firstName);
+
+        return $this;
+    }
+
+    public function withLastName(string $lastName): self
+    {
+        $this->user->setLastName($lastName);
+
+        return $this;
+    }
+
+    public function withCurrency(string $currency): self
+    {
+        $this->user->setCurrency($currency);
+
+        return $this;
+    }
+
+    public function withLanguage(string $language): self
+    {
+        $this->user->setLanguage($language);
 
         return $this;
     }

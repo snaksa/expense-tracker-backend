@@ -24,6 +24,8 @@ class UserFixtures extends Fixture
     {
         $user = new User();
         $user->setEmail('demo@gmail.com');
+        $user->setFirstName('Demo');
+        $user->setLastName('User');
         $user->setRoles(['ROLE_USER']);
         $password = $this->passwordEncoder
             ->encodePassword($user, '123456');
@@ -34,6 +36,8 @@ class UserFixtures extends Fixture
 
         $user = new User();
         $user->setEmail('demo2@gmail.com');
+        $user->setFirstName('John');
+        $user->setLastName('Doe');
         $user->setRoles(['ROLE_USER']);
         $password = $this->passwordEncoder
             ->encodePassword($user, '123456');
