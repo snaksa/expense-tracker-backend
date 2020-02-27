@@ -8,6 +8,7 @@ use App\Exception\GraphQLException;
 use App\Exception\InvalidPasswordException;
 use App\GraphQL\Input\User\UserLoginRequest;
 use App\GraphQL\Input\User\UserRegisterRequest;
+use App\GraphQL\Input\User\UserUpdateRequest;
 use App\Repository\UserRepository;
 use App\Services\AuthorizationService;
 use App\Traits\DateUtils;
@@ -120,5 +121,27 @@ class UserProvider
         $this->repository->save($user);
 
         return $user->getApiKey();
+    }
+
+    /**
+     * @GQL\Mutation(type="User")
+     *
+     * @param UserUpdateRequest $input
+     *
+     * @return User
+     * @throws \Exception
+     */
+    public function updateUser(UserUpdateRequest $input): User
+    {
+        $user = $this->authService->getCurrentUser();
+
+        $user = $this->builder
+            ->setUser($user)
+            ->bind($input)
+            ->build();
+
+        $this->repository->save($user);
+
+        return $user;
     }
 }

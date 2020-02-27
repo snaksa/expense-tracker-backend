@@ -4,45 +4,38 @@ namespace App\GraphQL\Input\User;
 
 use Overblog\GraphQLBundle\Annotation as GQL;
 
-abstract class UserRequest
+/**
+ * @GQL\Input
+ */
+class UserUpdateRequest extends UserRequest
 {
     /**
-     * @var integer
-     */
-    public $id;
-
-    /**
+     * @GQL\Field(type="String")
      * @var string
      */
     public $firstName;
 
     /**
+     * @GQL\Field(type="String")
      * @var string
      */
     public $lastName;
 
     /**
+     * @GQL\Field(type="String")
      * @var string
      */
     public $email;
 
     /**
+     * @GQL\Field(type="String")
      * @var string
      */
     public $currency;
 
     /**
+     * @GQL\Field(type="String")
      * @var string
      */
     public $language;
-
-    /**
-     * @var string
-     */
-    public $password;
-
-    /**
-     * @var string
-     */
-    public $confirmPassword;
 }
