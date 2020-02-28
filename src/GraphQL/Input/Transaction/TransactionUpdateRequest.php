@@ -12,6 +12,12 @@ use Overblog\GraphQLBundle\Annotation as GQL;
 class TransactionUpdateRequest extends TransactionRequest
 {
     /**
+     * @GQL\Field(type="String")
+     * @var string
+     */
+    public $date;
+
+    /**
      * @GQL\Field(type="Int!")
      * @Assert\EntityExists(
      *  message="Transaction not found!",

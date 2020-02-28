@@ -15,6 +15,11 @@ abstract class TransactionRequest
     /**
      * @var string
      */
+    public $date;
+
+    /**
+     * @var string
+     */
     public $description;
     /**
      * @var float
