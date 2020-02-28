@@ -352,6 +352,7 @@ class TransactionProviderTest extends BaseTestCase
             'type' => new EnumType('EXPENSE'),
             'categoryId' => $this->category->getId(),
             'walletId' => $this->wallet->getId(),
+            'date' => '2019-12-12 12:12:12'
         ];
 
         $this->mutation(
@@ -362,6 +363,7 @@ class TransactionProviderTest extends BaseTestCase
             [
                 'description',
                 'value',
+                'date',
                 'category' => ['id'],
                 'wallet' => ['id']
             ]
@@ -377,6 +379,7 @@ class TransactionProviderTest extends BaseTestCase
             'value' => 10,
             'category' => ['id' => $this->category->getId()],
             'wallet' => ['id' => $this->wallet->getId()],
+            'date' => '2019-12-12 12:12:12'
         ];
 
         $this->assertEquals($expected, $content['createTransaction']);
@@ -393,6 +396,7 @@ class TransactionProviderTest extends BaseTestCase
             'type' => new EnumType('EXPENSE'),
             'categoryId' => $this->category->getId(),
             'walletId' => $this->wallet->getId(),
+            'date' => '2019-12-12 12:12:12'
         ];
 
         $this->mutation(
@@ -419,6 +423,7 @@ class TransactionProviderTest extends BaseTestCase
             'type' => new EnumType('EXPENSE'),
             'categoryId' => -1,
             'walletId' => $this->wallet->getId(),
+            'date' => '2019-12-12 12:12:12'
         ];
 
         $this->mutation(
@@ -445,6 +450,7 @@ class TransactionProviderTest extends BaseTestCase
             'type' => new EnumType('EXPENSE'),
             'categoryId' => $this->category->getId(),
             'walletId' => -1,
+            'date' => '2019-12-12 12:12:12'
         ];
 
         $this->mutation(
@@ -475,6 +481,7 @@ class TransactionProviderTest extends BaseTestCase
             'type' => new EnumType('EXPENSE'),
             'categoryId' => $this->category->getId(),
             'walletId' => $this->wallet->getId(),
+            'date' => '2019-12-12 12:12:12'
         ];
 
         $this->mutation(
@@ -507,6 +514,7 @@ class TransactionProviderTest extends BaseTestCase
             'type' => new EnumType('EXPENSE'),
             'categoryId' => $this->category->getId(),
             'walletId' => $this->wallet->getId(),
+            'date' => '2019-12-12 12:12:12'
         ];
 
         $this->mutation(
@@ -549,6 +557,7 @@ class TransactionProviderTest extends BaseTestCase
             'type' => new EnumType('EXPENSE'),
             'categoryId' => $this->category->getId(),
             'walletId' => $this->wallet->getId(),
+            'date' => '2019-12-12 12:12:12'
         ];
 
         $this->mutation(
@@ -560,6 +569,7 @@ class TransactionProviderTest extends BaseTestCase
                 'id',
                 'description',
                 'value',
+                'date',
                 'category' => ['id'],
                 'wallet' => ['id']
             ]
@@ -576,6 +586,7 @@ class TransactionProviderTest extends BaseTestCase
             'value' => 10,
             'category' => ['id' => $this->category->getId()],
             'wallet' => ['id' => $this->wallet->getId()],
+            'date' => '2019-12-12 12:12:12'
         ];
 
         $this->assertEquals($expected, $content['updateTransaction']);

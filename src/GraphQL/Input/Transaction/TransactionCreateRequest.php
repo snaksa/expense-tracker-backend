@@ -13,6 +13,13 @@ use Overblog\GraphQLBundle\Annotation as GQL;
 class TransactionCreateRequest extends TransactionRequest
 {
     /**
+     * @Assert\NotBlank(message="Date should not be empty!")
+     * @GQL\Field(type="String!")
+     * @var string
+     */
+    public $date;
+
+    /**
      * @Assert\NotBlank(message="Description should not be empty!")
      * @GQL\Field(type="String!")
      * @var string

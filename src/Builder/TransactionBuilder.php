@@ -7,12 +7,16 @@ use App\Entity\Transaction;
 use App\Entity\Wallet;
 use App\Exception\UnauthorizedOperationException;
 use App\GraphQL\Input\Transaction\TransactionRequest;
+use App\GraphQL\Types\DateTime;
 use App\Services\AuthorizationService;
+use App\Traits\DateUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 
 class TransactionBuilder extends BaseBuilder
 {
+    use DateUtils;
+
     /**
      * @var Transaction
      */
@@ -46,6 +50,11 @@ class TransactionBuilder extends BaseBuilder
     {
         if ($input->id !== null) {
             $this->setTransaction($this->findEntity($input->id, Transaction::class));
+        }
+
+        if ($input->date !== null) {
+            $date = $this->createFromFormat($input->date, $this->dateTimeFormat);
+            $this->withDate($date);
         }
 
         if ($input->description !== null) {
@@ -85,6 +94,13 @@ class TransactionBuilder extends BaseBuilder
     public function withDescription(string $description): self
     {
         $this->transaction->setDescription($description);
+
+        return $this;
+    }
+
+    public function withDate(\DateTime $date): self
+    {
+        $this->transaction->setDate($date);
 
         return $this;
     }
