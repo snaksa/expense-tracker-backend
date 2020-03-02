@@ -5,9 +5,11 @@ namespace App\Builder;
 use App\Entity\Category;
 use App\Entity\Transaction;
 use App\Entity\Wallet;
+use App\Exception\RequiredEntityException;
 use App\Exception\UnauthorizedOperationException;
 use App\GraphQL\Input\Transaction\TransactionRequest;
 use App\GraphQL\Types\DateTime;
+use App\GraphQL\Types\TransactionType;
 use App\Services\AuthorizationService;
 use App\Traits\DateUtils;
 use Doctrine\ORM\EntityManagerInterface;
@@ -77,8 +79,21 @@ class TransactionBuilder extends BaseBuilder
             $this->withWallet($this->findEntity($input->walletId, Wallet::class));
         }
 
+        if ($input->walletReceiverId !== null) {
+            $this->withWalletReceiver($this->findEntity($input->walletReceiverId, Wallet::class));
+
+            $userId = $this->transaction->getWalletReceiver()->getUserId();
+            if ($userId !== $this->authorizationService->getCurrentUser()->getId()) {
+                throw new UnauthorizedOperationException();
+            }
+        }
+
         if ($this->transaction->getWallet()->getUserId() !== $this->authorizationService->getCurrentUser()->getId()) {
             throw new UnauthorizedOperationException();
+        }
+
+        if ($this->transaction->getType() !== TransactionType::TRANSFER && !$this->transaction->getCategory()) {
+            throw new RequiredEntityException('Category is required for EXPENSE/INCOME records');
         }
 
         return $this;
@@ -129,6 +144,13 @@ class TransactionBuilder extends BaseBuilder
     public function withWallet(Wallet $wallet): self
     {
         $this->transaction->setWallet($wallet);
+
+        return $this;
+    }
+
+    public function withWalletReceiver(Wallet $wallet): self
+    {
+        $this->transaction->setWalletReceiver($wallet);
 
         return $this;
     }

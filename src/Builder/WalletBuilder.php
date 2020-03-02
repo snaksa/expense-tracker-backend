@@ -90,7 +90,7 @@ class WalletBuilder extends BaseBuilder
 
     public function withAmount(float $amount): self
     {
-        $this->wallet->setAmount($amount);
+        $this->wallet->setInitialAmount($amount);
 
         return $this;
     }
