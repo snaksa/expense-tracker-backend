@@ -41,12 +41,12 @@ class TransactionCreateRequest extends TransactionRequest
     public $type;
 
     /**
-     * @Assert\NotBlank(message="Category should not be empty!")
      * @CustomAssert\EntityExists(
      *  message="Category not found!",
-     *  entityClass="App\Entity\Category"
+     *  entityClass="App\Entity\Category",
+     *  allowNull=true
      * )
-     * @GQL\Field(type="Int!")
+     * @GQL\Field(type="Int")
      * @var integer
      */
     public $categoryId;
@@ -61,4 +61,15 @@ class TransactionCreateRequest extends TransactionRequest
      * @var integer
      */
     public $walletId;
+
+    /**
+     * @CustomAssert\EntityExists(
+     *  message="Wallet Receiver not found!",
+     *  entityClass="App\Entity\Wallet",
+     *  allowNull=true
+     * )
+     * @GQL\Field(type="Int")
+     * @var integer
+     */
+    public $walletReceiverId;
 }

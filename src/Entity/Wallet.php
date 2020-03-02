@@ -59,14 +59,21 @@ class Wallet
     private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="wallet", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="wallet")
      * @GQL\Field(type="[Transaction]")
      */
     private $transactions;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="wallet_receiver")
+     * @GQL\Field(type="[Transaction]")
+     */
+    private $transferInTransactions;
+
     public function __construct()
     {
         $this->transactions = new ArrayCollection();
+        $this->transferInTransactions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -163,10 +170,18 @@ class Wallet
     public function getAmount(): float
     {
         $total = 0;
-        /**@var Transaction[] $transactions*/
+        /**@var Transaction[] $transactions */
         $transactions = $this->getTransactions()->toArray();
         foreach ($transactions as $transaction) {
-            $total += ($transaction->getType() === TransactionType::EXPENSE ? -1 : 1) * $transaction->getValue();
+            $total += (
+                in_array(
+                    $transaction->getType(),
+                    [TransactionType::EXPENSE, TransactionType::TRANSFER]
+                ) ? -1 : 1) * $transaction->getValue();
+        }
+
+        foreach ($this->getTransferInTransactions() as $transaction) {
+            $total += $transaction->getValue();
         }
 
         return $this->getInitialAmount() + $total;
@@ -187,6 +202,37 @@ class Wallet
     public function setInitialAmount(float $initialAmount): self
     {
         $this->initial_amount = $initialAmount;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Transaction[]
+     */
+    public function getTransferInTransactions(): Collection
+    {
+        return $this->transferInTransactions;
+    }
+
+    public function addTransferInTransaction(Transaction $transferInTransaction): self
+    {
+        if (!$this->transferInTransactions->contains($transferInTransaction)) {
+            $this->transferInTransactions[] = $transferInTransaction;
+            $transferInTransaction->setWalletReceiver($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransferInTransaction(Transaction $transferInTransaction): self
+    {
+        if ($this->transferInTransactions->contains($transferInTransaction)) {
+            $this->transferInTransactions->removeElement($transferInTransaction);
+            // set the owning side to null (unless already changed)
+            if ($transferInTransaction->getWalletReceiver() === $this) {
+                $transferInTransaction->setWalletReceiver(null);
+            }
+        }
 
         return $this;
     }

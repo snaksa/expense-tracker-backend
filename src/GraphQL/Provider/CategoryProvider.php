@@ -12,6 +12,9 @@ use App\GraphQL\Input\Category\CategoryUpdateRequest;
 use App\Repository\CategoryRepository;
 use App\Services\AuthorizationService;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
@@ -66,6 +69,7 @@ class CategoryProvider
      * @param int $id
      *
      * @return Category
+     * @throws NonUniqueResultException
      */
     public function category(int $id): Category
     {
@@ -94,6 +98,8 @@ class CategoryProvider
      *
      * @return Category
      * @throws EntityNotFoundException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function createCategory(CategoryCreateRequest $input): Category
     {

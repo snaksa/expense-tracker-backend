@@ -66,4 +66,15 @@ class TransactionUpdateRequest extends TransactionRequest
      * @var integer
      */
     public $walletId;
+
+    /**
+     * @Assert\EntityExists(
+     *  message="Wallet Receiver not found!",
+     *  entityClass="App\Entity\Wallet",
+     *  allowNull=true
+     * )
+     * @GQL\Field(type="Int")
+     * @var integer
+     */
+    public $walletReceiverId;
 }

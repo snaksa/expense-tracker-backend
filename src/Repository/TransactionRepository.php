@@ -41,7 +41,7 @@ class TransactionRepository extends ServiceEntityRepository
 
     public function findCollection(TransactionRecordsRequest $filters)
     {
-        $where = ['t.wallet_id IN (:ids)'];
+        $where = ['(t.wallet_id IN (:ids) OR t.wallet_receiver_id IN (:ids))'];
         $params = ['ids' => $filters->walletIds];
 
         if ($filters->date) {
@@ -134,6 +134,21 @@ class TransactionRepository extends ServiceEntityRepository
             ->addGroupBy('t.category_id')
             ->getQuery()
             ->getResult();
+    }
+
+    public function removeByWalletId(int $walletId)
+    {
+        $transactions = $this->createQueryBuilder('t')
+            ->where('t.wallet_id = :id OR t.wallet_receiver_id = :id')
+            ->setParameters(['id' => $walletId])
+            ->getQuery()
+            ->getResult();
+
+        foreach ($transactions as $transaction) {
+            $this->_em->remove($transaction);
+        }
+
+        $this->_em->flush();
     }
 
     public function remove(Transaction $transaction)

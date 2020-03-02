@@ -40,4 +40,9 @@ abstract class TransactionRequest
      * @var integer
      */
     public $walletId;
+
+    /**
+     * @var integer
+     */
+    public $walletReceiverId;
 }

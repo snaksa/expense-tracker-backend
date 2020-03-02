@@ -47,25 +47,37 @@ class Transaction
     private $date;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $wallet_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Wallet", inversedBy="transactions")
-     * @ORM\JoinColumn(name="wallet_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="wallet_id", referencedColumnName="id", nullable=true)
      * @GQL\Field(type="Wallet")
      */
     private $wallet;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $wallet_receiver_id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Wallet", inversedBy="transactions")
+     * @ORM\JoinColumn(name="wallet_receiver_id", referencedColumnName="id", nullable=true)
+     * @GQL\Field(type="Wallet", name="walletReceiver", resolve="value.getWalletReceiver()")
+     */
+    private $wallet_receiver;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $category_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="transactions")
-     * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=true)
      * @GQL\Field(type="Category")
      */
     private $category;
@@ -172,6 +184,30 @@ class Transaction
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    public function getWalletReceiverId(): ?int
+    {
+        return $this->wallet_receiver_id;
+    }
+
+    public function setWalletReceiverId(int $wallet_receiver_id): self
+    {
+        $this->wallet_receiver_id = $wallet_receiver_id;
+
+        return $this;
+    }
+
+    public function getWalletReceiver(): ?Wallet
+    {
+        return $this->wallet_receiver;
+    }
+
+    public function setWalletReceiver(?Wallet $wallet_receiver): self
+    {
+        $this->wallet_receiver = $wallet_receiver;
 
         return $this;
     }

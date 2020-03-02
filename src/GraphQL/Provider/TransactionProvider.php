@@ -6,6 +6,7 @@ use App\Builder\TransactionBuilder;
 use App\Entity\Transaction;
 use App\Entity\Wallet;
 use App\Exception\GraphQLException;
+use App\Exception\RequiredEntityException;
 use App\Exception\UnauthorizedOperationException;
 use App\GraphQL\Input\Transaction\TransactionCreateRequest;
 use App\GraphQL\Input\Transaction\TransactionDeleteRequest;
@@ -134,7 +135,10 @@ class TransactionProvider
             $this->repository->save($transaction);
         } catch (UnauthorizedOperationException $ex) {
             throw GraphQLException::fromString('Unauthorized operation!');
+        } catch (RequiredEntityException $ex) {
+            throw GraphQLException::fromString($ex->getMessage());
         }
+
 
         return $transaction;
     }

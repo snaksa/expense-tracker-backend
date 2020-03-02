@@ -9,6 +9,8 @@ use App\Exception\UnauthorizedOperationException;
 use App\GraphQL\Input\Wallet\WalletCreateRequest;
 use App\GraphQL\Input\Wallet\WalletDeleteRequest;
 use App\GraphQL\Input\Wallet\WalletUpdateRequest;
+use App\GraphQL\Types\TransactionType;
+use App\Repository\TransactionRepository;
 use App\Repository\WalletRepository;
 use App\Services\AuthorizationService;
 use Doctrine\ORM\EntityNotFoundException;
@@ -28,6 +30,11 @@ class WalletProvider
     private $repository;
 
     /**
+     * @var TransactionRepository
+     */
+    private $transactionRepository;
+
+    /**
      * @var WalletBuilder
      */
     private $builder;
@@ -39,10 +46,12 @@ class WalletProvider
 
     public function __construct(
         WalletRepository $repository,
+        TransactionRepository $transactionRepository,
         WalletBuilder $builder,
         AuthorizationService $authService
     ) {
         $this->repository = $repository;
+        $this->transactionRepository = $transactionRepository;
         $this->builder = $builder;
         $this->authService = $authService;
     }
@@ -159,6 +168,20 @@ class WalletProvider
         if ($wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
             throw GraphQLException::fromString('Unauthorized operation!');
         }
+
+        foreach ($wallet->getTransactions() as $transaction) {
+            if ($transaction->getType() === TransactionType::TRANSFER) {
+                $transaction->setWallet(null);
+                $this->transactionRepository->save($transaction);
+            }
+        }
+
+        foreach ($wallet->getTransferInTransactions() as $transaction) {
+            $transaction->setWalletReceiver(null);
+            $this->transactionRepository->save($transaction);
+        }
+
+        $this->transactionRepository->removeByWalletId($wallet->getId());
 
         $clone = clone $wallet;
 
