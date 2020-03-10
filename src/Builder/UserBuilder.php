@@ -72,10 +72,8 @@ class UserBuilder extends BaseBuilder
 
         if ($input->password !== null) {
             if ($input->password !== $input->confirmPassword) {
-                throw new PasswordConfirmationException();
+                throw new PasswordConfirmationException('Passwords do not match');
             }
-
-            $this->withPassword($input->password);
         }
 
         return $this;
@@ -119,25 +117,6 @@ class UserBuilder extends BaseBuilder
     public function withLanguage(string $language): self
     {
         $this->user->setLanguage($language);
-
-        return $this;
-    }
-
-    public function withPassword(string $password): self
-    {
-        $password = $this->passwordEncoder->encodePassword($this->user, $password);
-        $this->user->setPassword($password);
-
-        return $this;
-    }
-
-    public function withApiKey(): self
-    {
-        $apiKey = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
-        $expiryDate = $this->getCurrentDateTime()->modify('+ 3 hours');
-
-        $this->user->setApiKey($apiKey);
-        $this->user->setApiKeyExpiryDate($expiryDate);
 
         return $this;
     }

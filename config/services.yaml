@@ -2,6 +2,15 @@ imports:
     - { resource: graphql.yaml }
 
 parameters:
+    cognito.client.id: '%env(COGNITO_CLIENT_ID)%'
+    cognito.client.secret: '%env(COGNITO_CLIENT_SECRET)%'
+    cognito.user.pool: '%env(COGNITO_POOL)%'
+    cognito.config:
+        version: '%env(COGNITO_VERSION)%'
+        region: '%env(COGNITO_REGION)%'
+        credentials:
+            key: '%env(COGNITO_AWS_KEY)%'
+            secret: '%env(COGNITO_AWS_SECRET)%'
 
 services:
     # default configuration for services in *this* file
@@ -21,3 +30,17 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+
+    Aws\CognitoIdentityProvider\CognitoIdentityProviderClient:
+        arguments:
+            $args: '%cognito.config%'
+
+    expenses.cognito.provider:
+        alias: Aws\CognitoIdentityProvider\CognitoIdentityProviderClient
+
+    App\Services\UserService:
+        arguments:
+            $clientId: '%cognito.client.id%'
+            $secretKey: '%cognito.client.secret%'
+            $poolId: '%cognito.user.pool%'
+            $cognitoClient: '@expenses.cognito.provider'

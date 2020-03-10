@@ -45,4 +45,19 @@ abstract class UserRequest
      * @var string
      */
     public $confirmPassword;
+
+    /**
+     * @var string
+     */
+    public $oldPassword;
+
+    /**
+     * @var string
+     */
+    public $newPassword;
+
+    /**
+     * @var string
+     */
+    public $code;
 }

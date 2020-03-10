@@ -4,13 +4,21 @@ namespace App\GraphQL\Provider;
 
 use App\Builder\UserBuilder;
 use App\Entity\User;
+use App\Exception\Cognito\CognitoException;
+use App\Exception\Cognito\UsernameExistsException;
 use App\Exception\GraphQLException;
-use App\Exception\InvalidPasswordException;
+use App\Exception\PasswordConfirmationException;
+use App\GraphQL\Input\User\UserChangePasswordRequest;
+use App\GraphQL\Input\User\UserForgotPasswordConfirmationRequest;
+use App\GraphQL\Input\User\UserForgotPasswordRequest;
 use App\GraphQL\Input\User\UserLoginRequest;
 use App\GraphQL\Input\User\UserRegisterRequest;
+use App\GraphQL\Input\User\UserRegistrationConfirmationRequest;
 use App\GraphQL\Input\User\UserUpdateRequest;
+use App\GraphQL\Types\AuthResponse;
 use App\Repository\UserRepository;
 use App\Services\AuthorizationService;
+use App\Services\UserService;
 use App\Traits\DateUtils;
 use Doctrine\ORM\EntityNotFoundException;
 use Overblog\GraphQLBundle\Annotation as GQL;
@@ -39,25 +47,32 @@ class UserProvider
      */
     private $authService;
 
+    /**
+     * @var UserService
+     */
+    private $userService;
+
     public function __construct(
         UserRepository $repository,
         UserBuilder $builder,
-        AuthorizationService $authorizationService
+        AuthorizationService $authorizationService,
+        UserService $userService
     ) {
         $this->repository = $repository;
         $this->builder = $builder;
         $this->authService = $authorizationService;
+        $this->userService = $userService;
     }
 
-    /**
-     * @GQL\Query(type="[User]")
-     *
-     * @return User[]
-     */
-    public function users(): array
-    {
-        return $this->repository->findAll();
-    }
+//    /**
+//     * @GQL\Query(type="[User]")
+//     *
+//     * @return User[]
+//     */
+//    public function users(): array
+//    {
+//        return $this->repository->findAll();
+//    }
 
     /**
      * @GQL\Query(type="User")
@@ -77,50 +92,133 @@ class UserProvider
      * @GQL\Mutation(type="User")
      *
      * @param UserRegisterRequest $input
-     *
      * @return User
-     * @throws EntityNotFoundException
      */
     public function registerUser(UserRegisterRequest $input): User
     {
-        $user = $this->builder
-            ->create()
-            ->bind($input)
-            ->build();
+        $auth = null;
+        try {
+            $user = $this->builder
+                ->create()
+                ->bind($input)
+                ->build();
 
-        $this->repository->save($user);
+            // Check if user already exists
+            $existingUser = $this->repository->findOneBy(['email' => $user->getEmail()]);
+            if ($existingUser) {
+                throw UsernameExistsException::fromString(
+                    'User with this email already exists',
+                    UsernameExistsException::class
+                );
+            }
 
-        return $user;
+            // Create user in Cognito
+            $externalId = $this->userService->createUser($user->getEmail(), $input->password);
+            $user->setExternalId($externalId);
+
+            $this->repository->save($user);
+
+            return $user;
+        } catch (EntityNotFoundException|PasswordConfirmationException|CognitoException $ex) {
+            throw GraphQLException::fromString($ex->getMessage());
+        }
     }
 
     /**
-     * @GQL\Mutation(type="String")
+     * @GQL\Mutation(type="Boolean")
+     *
+     * @param UserRegistrationConfirmationRequest $input
+     * @return bool
+     */
+    public function confirmRegistration(UserRegistrationConfirmationRequest $input): bool
+    {
+        try {
+            $this->userService
+                ->confirmRegistration($input->email, $input->code);
+
+            return true;
+        } catch (CognitoException $ex) {
+            throw GraphQLException::fromString($ex->getMessage());
+        }
+    }
+
+    /**
+     * @GQL\Mutation(type="AuthResponse")
      *
      * @param UserLoginRequest $input
-     *
-     * @return string
-     * @throws \Exception
+     * @return AuthResponse
      */
-    public function loginUser(UserLoginRequest $input): string
+    public function loginUser(UserLoginRequest $input): AuthResponse
     {
-        $user = $this->repository->findOneBy([
-            'email' => $input->email
-        ]);
-
+        $auth = null;
         try {
-            $this->authService->isPasswordValid($user, $input->password);
-        } catch (InvalidPasswordException $ex) {
-            throw GraphQLException::fromString('Wrong credentials!');
+            $auth = $this->userService->loginUser($input->email, $input->password);
+        } catch (CognitoException $ex) {
+            throw GraphQLException::fromString($ex->getMessage());
         }
 
-        $user = $this->builder
-            ->setUser($user)
-            ->withApiKey()
-            ->build();
+        return $auth;
+    }
 
-        $this->repository->save($user);
+    /**
+     * @GQL\Mutation(type="Boolean")
+     *
+     * @param UserChangePasswordRequest $input
+     * @return bool
+     */
+    public function changePassword(UserChangePasswordRequest $input): bool
+    {
+        if (!$this->authService->isLoggedIn()) {
+            throw GraphQLException::fromString('Unauthorized access!');
+        }
 
-        return $user->getApiKey();
+        try {
+            $token = $this->authService->getCurrentUser()->getApiKey();
+            $this->userService
+                ->changePassword($input->oldPassword, $input->newPassword, $token);
+
+            return true;
+        } catch (CognitoException $ex) {
+            throw GraphQLException::fromString($ex->getMessage());
+        }
+    }
+
+    /**
+     * @GQL\Mutation(type="Boolean")
+     *
+     * @param UserForgotPasswordRequest $input
+     * @return bool
+     */
+    public function forgotPassword(UserForgotPasswordRequest $input): bool
+    {
+        $auth = null;
+        try {
+            $this->userService->forgotPassword($input->email);
+
+            return true;
+        } catch (CognitoException $ex) {
+            throw GraphQLException::fromString($ex->getMessage());
+        }
+    }
+
+    /**
+     * @GQL\Mutation(type="Boolean")
+     *
+     * @param UserForgotPasswordConfirmationRequest $input
+     *
+     * @return bool
+     */
+    public function forgotPasswordConfirmation(UserForgotPasswordConfirmationRequest $input): bool
+    {
+        $auth = null;
+        try {
+            $this->userService
+                ->confirmForgotPassword($input->email, $input->password, $input->code);
+
+            return true;
+        } catch (CognitoException $ex) {
+            throw GraphQLException::fromString($ex->getMessage());
+        }
     }
 
     /**

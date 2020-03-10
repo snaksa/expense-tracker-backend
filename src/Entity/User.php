@@ -23,6 +23,11 @@ class User implements UserInterface
     private $id;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $externalId;
+
+    /**
      * @var string
      * @ORM\Column(type="string", nullable=true)
      * @GQL\Field(type="String", name="firstName", resolve="value.getFirstName()")
@@ -51,7 +56,7 @@ class User implements UserInterface
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
-    private $password;
+    private $password = '1';
 
     /**
      * @var string The API key
@@ -313,6 +318,18 @@ class User implements UserInterface
     public function setLanguage(?string $language): self
     {
         $this->language = $language;
+
+        return $this;
+    }
+
+    public function getExternalId(): ?string
+    {
+        return $this->externalId;
+    }
+
+    public function setExternalId(string $externalId): self
+    {
+        $this->externalId = $externalId;
 
         return $this;
     }

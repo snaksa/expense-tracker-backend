@@ -34,13 +34,11 @@ class AuthorizationService
 
     public function isLoggedIn(): bool
     {
-        $isLoggedIn = false;
         try {
-            $isLoggedIn = $this->getCurrentUser()->getId() != '';
+            return $this->getCurrentUser()->getId() !== '';
         } catch (NotAuthenticatedException $e) {
+            return false;
         }
-
-        return $isLoggedIn;
     }
 
     /**

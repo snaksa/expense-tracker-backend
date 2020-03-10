@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Repository\UserRepository;
+use App\Services\UserService;
 use App\Traits\DateUtils;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,11 +18,20 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 {
     use DateUtils;
 
+    /**
+     * @var UserRepository
+     */
     private $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    /**
+     * @var UserService
+     */
+    private $userService;
+
+    public function __construct(UserRepository $userRepository, UserService $userService)
     {
         $this->userRepository = $userRepository;
+        $this->userService = $userService;
     }
 
     public function supports(Request $request)
@@ -39,8 +49,15 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         $apiToken = $credentials['token'];
+        $user = $this->userService->getUser($apiToken);
+        if (!$user) {
+            return null;
+        }
 
-        $user = $this->userRepository->findOneBy(['api_key' => $apiToken]);
+        $externalId = $user['Username'];
+        $user = $this->userRepository->findOneBy(['externalId' => $externalId]);
+        $user->setApiKey($apiToken);
+
         return $user;
     }
 
