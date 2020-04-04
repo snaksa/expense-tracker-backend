@@ -6,7 +6,9 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
         && curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
         && php composer-setup.php && rm composer-setup.php* \
         && chmod +x composer.phar && mv composer.phar /usr/bin/composer \
-        && docker-php-ext-install pdo_mysql
+        && apt-get update \
+        && apt-get install -y libzip-dev zip \
+        && docker-php-ext-install pdo_mysql zip
 
 WORKDIR /var/www/html
 

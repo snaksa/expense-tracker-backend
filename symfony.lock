@@ -203,6 +203,9 @@
     "phpunit/php-file-iterator": {
         "version": "2.0.2"
     },
+    "phpunit/php-invoker": {
+        "version": "3.0.0"
+    },
     "phpunit/php-text-template": {
         "version": "1.2.1"
     },
@@ -237,6 +240,9 @@
     },
     "psr/log": {
         "version": "1.1.2"
+    },
+    "sebastian/code-unit": {
+        "version": "1.0.0"
     },
     "sebastian/code-unit-reverse-lookup": {
         "version": "1.0.1"
