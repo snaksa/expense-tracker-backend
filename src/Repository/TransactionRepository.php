@@ -41,8 +41,13 @@ class TransactionRepository extends ServiceEntityRepository
 
     public function findCollection(TransactionRecordsRequest $filters)
     {
-        $where = ['(t.wallet_id IN (:ids) OR t.wallet_receiver_id IN (:ids))'];
-        $params = ['ids' => $filters->walletIds];
+        $where = ['(t.wallet_id IN (:walletIds) OR t.wallet_receiver_id IN (:walletIds))'];
+        $params = ['walletIds' => $filters->walletIds];
+
+        if ($filters->categoryIds) {
+            $where[] = 't.category_id IN (:categoryIds)';
+            $params['categoryIds'] = $filters->categoryIds;
+        }
 
         if ($filters->date) {
             $where[] = 't.date >= :date';
@@ -63,11 +68,16 @@ class TransactionRepository extends ServiceEntityRepository
 
     public function findSpendingFlow(TransactionRecordsRequest $filters)
     {
-        $where = ['t.type = :type', 't.wallet_id IN (:ids)'];
+        $where = ['t.type = :type', 't.wallet_id IN (:walletIds)'];
         $params = [
-            'ids' => $filters->walletIds,
+            'walletIds' => $filters->walletIds,
             'type' => TransactionType::EXPENSE
         ];
+
+        if ($filters->categoryIds) {
+            $where[] = 't.category_id IN (:categoryIds)';
+            $params['categoryIds'] = $filters->categoryIds;
+        }
 
         if ($filters->date) {
             $where[] = 't.date >= :date';
@@ -87,11 +97,16 @@ class TransactionRepository extends ServiceEntityRepository
 
     public function findCategorySpendingFlow(CategoryRecordsRequest $filters)
     {
-        $where = ['t.wallet_id IN (:ids)', 't.type = :type'];
+        $where = ['t.wallet_id IN (:walletIds)', 't.type = :type'];
         $params = [
-            'ids' => $filters->walletIds,
+            'walletIds' => $filters->walletIds,
             'type' => TransactionType::EXPENSE
         ];
+
+        if ($filters->categoryIds) {
+            $where[] = 't.category_id IN (:categoryIds)';
+            $params['categoryIds'] = $filters->categoryIds;
+        }
 
         if ($filters->date) {
             $where[] = 't.date >= :date';
@@ -111,10 +126,15 @@ class TransactionRepository extends ServiceEntityRepository
 
     public function findCategorySpendingPie(CategoryRecordsRequest $filters)
     {
-        $where = ['t.wallet_id IN (:ids)'];
+        $where = ['t.wallet_id IN (:walletIds)'];
         $params = [
-            'ids' => $filters->walletIds
+            'walletIds' => $filters->walletIds
         ];
+
+        if ($filters->categoryIds) {
+            $where[] = 't.category_id IN (:categoryIds)';
+            $params['categoryIds'] = $filters->categoryIds;
+        }
 
         if ($filters->type) {
             $where[] = 't.type = :type';
