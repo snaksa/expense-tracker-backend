@@ -2,11 +2,14 @@
 
 namespace App\Security;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Traits\DateUtils;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -17,11 +20,20 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 {
     use DateUtils;
 
+    /**
+     * @var UserRepository
+     */
     private $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    /**
+     * @var JWTTokenManagerInterface
+     */
+    private $jwtManager;
+
+    public function __construct(UserRepository $userRepository, JWTTokenManagerInterface $jwtManager)
     {
         $this->userRepository = $userRepository;
+        $this->jwtManager = $jwtManager;
     }
 
     public function supports(Request $request)
@@ -39,9 +51,17 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         $apiToken = $credentials['token'];
+        $t = new PreAuthenticatedToken(new User(), $apiToken, 'key');
 
-        $user = $this->userRepository->findOneBy(['api_key' => $apiToken]);
-        return $user;
+        try {
+            $result = $this->jwtManager->decode($t);
+        } catch (\Exception $ex) {
+            return null;
+        }
+
+        $email = $result['username'];
+
+        return $this->userRepository->findOneBy(['email' => $email]);
     }
 
     public function checkCredentials($credentials, UserInterface $user)

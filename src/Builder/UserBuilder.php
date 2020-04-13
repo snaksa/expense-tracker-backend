@@ -8,6 +8,7 @@ use App\GraphQL\Input\User\UserRequest;
 use App\Traits\DateUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserBuilder extends BaseBuilder
@@ -20,13 +21,22 @@ class UserBuilder extends BaseBuilder
     private $user;
 
     /**
+     * @var JWTTokenManagerInterface
+     */
+    private $jwtManager;
+
+    /**
      * @var UserPasswordEncoderInterface
      */
     private $passwordEncoder;
 
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        UserPasswordEncoderInterface $passwordEncoder,
+        JWTTokenManagerInterface $jwtManager
+    ) {
         $this->passwordEncoder = $passwordEncoder;
+        $this->jwtManager = $jwtManager;
 
         parent::__construct($entityManager);
     }
@@ -131,15 +141,10 @@ class UserBuilder extends BaseBuilder
         return $this;
     }
 
-    public function withApiKey(): self
+    public function withApiKey(): string
     {
-        $apiKey = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
-        $expiryDate = $this->getCurrentDateTime()->modify('+ 3 hours');
-
-        $this->user->setApiKey($apiKey);
-        $this->user->setApiKeyExpiryDate($expiryDate);
-
-        return $this;
+        $this->jwtManager->setUserIdentityField('email');
+        return $this->jwtManager->create($this->user);
     }
 
     public function build(): User

@@ -13,21 +13,21 @@ class WalletFixtures extends Fixture implements DependentFixtureInterface
     {
         $wallet = new Wallet();
         $wallet->setName('Cash');
-        $wallet->setColor('#F0FF0F');
+        $wallet->setColor('#ffff4d');
         $wallet->setUser($this->getReference('user_demo'));
         $manager->persist($wallet);
         $this->setReference('user_demo_wallet_cash', $wallet);
 
         $wallet = new Wallet();
         $wallet->setName('Bank');
-        $wallet->setColor('#FF000F');
+        $wallet->setColor('#ff0000');
         $wallet->setUser($this->getReference('user_demo'));
         $manager->persist($wallet);
         $this->setReference('user_demo_wallet_bank', $wallet);
 
         $wallet = new Wallet();
         $wallet->setName('Loan');
-        $wallet->setColor('#FF0A0F');
+        $wallet->setColor('#0099ff');
         $wallet->setUser($this->getReference('user_demo2'));
         $manager->persist($wallet);
         $this->setReference('user_demo2_wallet_loan', $wallet);

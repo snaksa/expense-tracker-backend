@@ -50,16 +50,6 @@ class UserProvider
     }
 
     /**
-     * @GQL\Query(type="[User]")
-     *
-     * @return User[]
-     */
-    public function users(): array
-    {
-        return $this->repository->findAll();
-    }
-
-    /**
      * @GQL\Query(type="User")
      *
      * @return User
@@ -113,14 +103,9 @@ class UserProvider
             throw GraphQLException::fromString('Wrong credentials!');
         }
 
-        $user = $this->builder
+        return $this->builder
             ->setUser($user)
-            ->withApiKey()
-            ->build();
-
-        $this->repository->save($user);
-
-        return $user->getApiKey();
+            ->withApiKey();
     }
 
     /**

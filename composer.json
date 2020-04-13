@@ -9,6 +9,7 @@
         "ext-iconv": "*",
         "beberlei/doctrineextensions": "^1.2",
         "doctrine/annotations": "^1.8",
+        "lexik/jwt-authentication-bundle": "^2.6",
         "nelmio/cors-bundle": "^2.0",
         "overblog/graphql-bundle": "^0.13.1",
         "pagerfanta/pagerfanta": "^2.1",

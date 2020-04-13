@@ -30,7 +30,6 @@ class UserFixtures extends Fixture
         $password = $this->passwordEncoder
             ->encodePassword($user, '123456');
         $user->setPassword($password);
-        $user->setApiKey('mainUser');
         $manager->persist($user);
         $this->setReference('user_demo', $user);
 
@@ -42,7 +41,6 @@ class UserFixtures extends Fixture
         $password = $this->passwordEncoder
             ->encodePassword($user, '123456');
         $user->setPassword($password);
-        $user->setApiKey('secondUser');
         $manager->persist($user);
         $this->setReference('user_demo2', $user);
 
