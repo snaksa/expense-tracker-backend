@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Exception\PasswordConfirmationException;
 use App\GraphQL\Input\User\UserRegisterRequest;
 use Doctrine\ORM\EntityManager;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManager;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
 
@@ -16,7 +17,8 @@ class UserBuilderTest extends TestCase
     {
         $entityManagerMock = $this->createMock(EntityManager::class);
         $encoderMock = $this->createMock(UserPasswordEncoder::class);
-        $service = new UserBuilder($entityManagerMock, $encoderMock);
+        $jwtManagerMock = $this->createMock(JWTManager::class);
+        $service = new UserBuilder($entityManagerMock, $encoderMock, $jwtManagerMock);
 
         /**@var User $user*/
         $user = $service->create()->build();
@@ -26,8 +28,6 @@ class UserBuilderTest extends TestCase
 
     public function test_user_builder_bind_create_request()
     {
-        $user = (new User())->setId(1);
-
         $entityManagerMock = $this->createMock(EntityManager::class);
         $encoderMock = $this->createMock(UserPasswordEncoder::class);
         $encoderMock->method('encodePassword')
@@ -38,7 +38,8 @@ class UserBuilderTest extends TestCase
         $request->password = '123';
         $request->confirmPassword = '123';
 
-        $service = new UserBuilder($entityManagerMock, $encoderMock);
+        $jwtManagerMock = $this->createMock(JWTManager::class);
+        $service = new UserBuilder($entityManagerMock, $encoderMock, $jwtManagerMock);
 
         /**@var User $user*/
         $user = $service->create()->bind($request)->build();
@@ -59,7 +60,8 @@ class UserBuilderTest extends TestCase
         $request->password = '123';
         $request->confirmPassword = '1234';
 
-        $service = new UserBuilder($entityManagerMock, $encoderMock);
+        $jwtManagerMock = $this->createMock(JWTManager::class);
+        $service = new UserBuilder($entityManagerMock, $encoderMock, $jwtManagerMock);
 
         $this->expectException(PasswordConfirmationException::class);
 
@@ -71,12 +73,15 @@ class UserBuilderTest extends TestCase
         $entityManagerMock = $this->createMock(EntityManager::class);
         $encoderMock = $this->createMock(UserPasswordEncoder::class);
 
-        $service = new UserBuilder($entityManagerMock, $encoderMock);
+        $jwtManagerMock = $this->createMock(JWTManager::class);
+        $jwtManagerMock->method('setUserIdentityField')->willReturn(null);
+        $jwtManagerMock->method('create')->willReturn('123');
 
-        /**@var User $user*/
-        $user = $service->create()->withApiKey()->build();
+        $service = new UserBuilder($entityManagerMock, $encoderMock, $jwtManagerMock);
 
-        $this->assertIsString($user->getApiKey());
-        $this->assertNotNull($user->getApiKeyExpiryDate());
+        /**@var string $apiKey*/
+        $apiKey = $service->create()->withApiKey();
+
+        $this->assertIsString($apiKey);
     }
 }

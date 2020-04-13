@@ -13,7 +13,7 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
     {
         $category = new Category();
         $category->setName('Food');
-        $category->setColor('#F98F83');
+        $category->setColor('#f98f83');
         $category->setIcon(1);
         $category->setUser($this->getReference('user_demo'));
         $this->setReference('category_food', $category);
@@ -21,7 +21,7 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
 
         $category = new Category();
         $category->setName('Clothes');
-        $category->setColor('#A8B892');
+        $category->setColor('#0099ff');
         $category->setIcon(2);
         $category->setUser($this->getReference('user_demo'));
         $this->setReference('category_clothes', $category);
@@ -29,7 +29,7 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
 
         $category = new Category();
         $category->setName('Gaming');
-        $category->setColor('#C3B892');
+        $category->setColor('#00ff00');
         $category->setIcon(2);
         $category->setUser($this->getReference('user_demo'));
         $this->setReference('category_gaming', $category);
@@ -37,7 +37,7 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
 
         $category = new Category();
         $category->setName('Fuel');
-        $category->setColor('#A84322');
+        $category->setColor('#996633');
         $category->setIcon(2);
         $category->setUser($this->getReference('user_demo'));
         $this->setReference('category_fuel', $category);
@@ -45,7 +45,7 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
 
         $category = new Category();
         $category->setName('Income');
-        $category->setColor('#738F92');
+        $category->setColor('#00ffff');
         $category->setIcon(2);
         $category->setUser($this->getReference('user_demo'));
         $this->setReference('category_income', $category);
@@ -53,7 +53,7 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
 
         $category = new Category();
         $category->setName('OLX');
-        $category->setColor('#A33492');
+        $category->setColor('#DE60D4');
         $category->setIcon(2);
         $category->setUser($this->getReference('user_demo'));
         $this->setReference('category_olx', $category);
@@ -61,7 +61,7 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
 
         $category = new Category();
         $category->setName('Food');
-        $category->setColor('#A33492');
+        $category->setColor('#f98f83');
         $category->setIcon(2);
         $category->setUser($this->getReference('user_demo2'));
         $this->setReference('category_food_2', $category);
