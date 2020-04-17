@@ -70,16 +70,10 @@ class TransactionProvider
             throw GraphQLException::fromString('Unauthorized access!');
         }
 
-        /**@var Wallet[] $wallets */
-        $wallets = $this->walletRepository->findByIds($input->walletIds);
-
-        foreach ($wallets as $wallet) {
-            if ($wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
-                throw GraphQLException::fromString('Unauthorized access!');
-            }
-        }
-
-        $records = $this->repository->findCollection($input);
+        $records = $this->repository->findCollection(
+            $input,
+            $this->authService->getCurrentUser()->getId()
+        );
 
         return TransactionsPaginatedResult::fromPager($records);
     }

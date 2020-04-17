@@ -7,7 +7,6 @@ use App\Exception\GraphQLException;
 use App\GraphQL\Input\Category\CategoryRecordsRequest;
 use App\GraphQL\Input\Transaction\TransactionRecordsRequest;
 use App\GraphQL\Types\AreaChart;
-use App\GraphQL\Types\DateTime;
 use App\Repository\CategoryRepository;
 use App\Repository\TransactionRepository;
 use App\Services\AuthorizationService;
@@ -63,7 +62,10 @@ class ReportsProvider
         }
 
         /** @var Transaction[] $transactions */
-        $result = $this->transactionRepository->findSpendingFlow($input);
+        $result = $this->transactionRepository->findSpendingFlow(
+            $input,
+            $this->authService->getCurrentUser()->getId()
+        );
 
         $header = ['Date', 'Money'];
         $reportData = [];
@@ -115,7 +117,10 @@ class ReportsProvider
         }
 
         /** @var Transaction[] $transactions */
-        $result = $this->transactionRepository->findCategorySpendingFlow($input);
+        $result = $this->transactionRepository->findCategorySpendingFlow(
+            $input,
+            $this->authService->getCurrentUser()->getId()
+        );
 
         $categories = $this->categoryRepository->findUserCategories($this->authService->getCurrentUser());
 
@@ -181,7 +186,10 @@ class ReportsProvider
         }
 
         /** @var Transaction[] $transactions */
-        $result = $this->transactionRepository->findCategorySpendingPie($input);
+        $result = $this->transactionRepository->findCategorySpendingPie(
+            $input,
+            $this->authService->getCurrentUser()->getId()
+        );
 
         $header = ['Category', 'Money'];
         $colors = [];
