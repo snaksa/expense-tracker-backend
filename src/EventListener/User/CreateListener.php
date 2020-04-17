@@ -24,31 +24,31 @@ class CreateListener
         $categories = [
             [
                 'name' => 'Food',
-                'color' => 'purple'
+                'color' => '#f98f83'
             ],
             [
                 'name' => 'Clothes',
-                'color' => 'blue'
+                'color' => '#0099ff'
             ],
             [
                 'name' => 'Salary',
-                'color' => 'yellow'
+                'color' => '#00ffff'
             ],
             [
                 'name' => 'Fuel',
-                'color' => 'black'
+                'color' => '#996633'
             ],
             [
                 'name' => 'Electronics',
-                'color' => 'green'
+                'color' => '#DE60D4'
             ],
             [
                 'name' => 'Education',
-                'color' => 'red'
+                'color' => '#a6a6a6'
             ],
             [
                 'name' => 'Rent',
-                'color' => 'brown'
+                'color' => '#00ff00'
             ]
         ];
 

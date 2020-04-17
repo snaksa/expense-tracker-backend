@@ -77,10 +77,6 @@ class TransactionProviderTest extends BaseTestCase
 
         $transactions = array_slice($transactions, 0, 10);
 
-        $walletRepository = $this->createMock(WalletRepository::class);
-        $walletRepository->expects($this->once())->method('findByIds')->with([$this->wallet->getId()])->willReturn([$this->wallet]);
-        $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
-
         $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
@@ -130,10 +126,6 @@ class TransactionProviderTest extends BaseTestCase
 
         $transactions = array_slice($transactions, 0, 10);
 
-        $walletRepository = $this->createMock(WalletRepository::class);
-        $walletRepository->expects($this->once())->method('findByIds')->with([$this->wallet->getId()])->willReturn([$this->wallet]);
-        $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
-
         $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
@@ -171,10 +163,6 @@ class TransactionProviderTest extends BaseTestCase
      */
     public function can_not_retrieve_transactions_if_wallet_not_possessed_by_current_user(): void
     {
-        $walletRepository = $this->createMock(WalletRepository::class);
-        $walletRepository->expects($this->once())->method('findByIds')->with([$this->wallet->getId()])->willReturn([$this->wallet]);
-        $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
-
         $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->secondUser);
@@ -192,7 +180,10 @@ class TransactionProviderTest extends BaseTestCase
 
         $response = $this->client->getResponse();
         $this->assertOk($response);
-        $this->assertHasError('Unauthorized access!', $response);
+        $content = $this->getResponseContent($response);
+        $this->assertArrayHasKey('transactions', $content);
+        $this->assertArrayHasKey('data', $content['transactions']);
+        $this->assertEquals([], $content['transactions']['data']);
     }
 
     /**

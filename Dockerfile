@@ -18,6 +18,8 @@ COPY .docker/default.conf /etc/apache2/sites-available/000-default.conf
 RUN composer install
 RUN a2enmod rewrite
 
+RUN chown -R www-data:www-data config/jwt
+
 EXPOSE 80
 
 CMD /usr/sbin/apache2ctl -D FOREGROUND

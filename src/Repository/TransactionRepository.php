@@ -39,13 +39,19 @@ class TransactionRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function findCollection(TransactionRecordsRequest $filters)
+    public function findCollection(TransactionRecordsRequest $filters, int $userId)
     {
-        $where = ['(t.wallet_id IN (:walletIds) OR t.wallet_receiver_id IN (:walletIds))'];
-        $params = ['walletIds' => $filters->walletIds];
+        $where = [
+            '(t.wallet_id IN (:walletIds) OR t.wallet_receiver_id IN (:walletIds))',
+            '(w.user_id = :userId OR wr.user_id = :userId)'
+        ];
+        $params = [
+            'walletIds' => $filters->walletIds,
+            'userId' => $userId
+        ];
 
         if ($filters->categoryIds) {
-            $where[] = 't.category_id IN (:categoryIds)';
+            $where[] = 't.category_id IN (:categoryIds) AND c.user_id = :userId';
             $params['categoryIds'] = $filters->categoryIds;
         }
 
@@ -55,6 +61,9 @@ class TransactionRepository extends ServiceEntityRepository
         }
 
         $query = $this->createQueryBuilder('t')
+            ->leftJoin('t.wallet', 'w')
+            ->leftJoin('t.wallet_receiver', 'wr')
+            ->leftJoin('t.category', 'c')
             ->where(implode(' AND ', $where))
             ->setParameters($params)
             ->orderBy('t.date', 'DESC');
@@ -66,16 +75,17 @@ class TransactionRepository extends ServiceEntityRepository
         return $pager;
     }
 
-    public function findSpendingFlow(TransactionRecordsRequest $filters)
+    public function findSpendingFlow(TransactionRecordsRequest $filters, int $userId)
     {
-        $where = ['t.type = :type', 't.wallet_id IN (:walletIds)'];
+        $where = ['t.type = :type', 't.wallet_id IN (:walletIds)', 'w.user_id = :userId'];
         $params = [
             'walletIds' => $filters->walletIds,
-            'type' => TransactionType::EXPENSE
+            'type' => TransactionType::EXPENSE,
+            'userId' => $userId
         ];
 
         if ($filters->categoryIds) {
-            $where[] = 't.category_id IN (:categoryIds)';
+            $where[] = 't.category_id IN (:categoryIds) AND c.user_id = :userId';
             $params['categoryIds'] = $filters->categoryIds;
         }
 
@@ -86,6 +96,8 @@ class TransactionRepository extends ServiceEntityRepository
 
         return $this->createQueryBuilder('t')
             ->select("DATE_FORMAT(t.date, '%Y-%m-%d') as date, SUM(t.value) as total")
+            ->leftJoin('t.wallet', 'w')
+            ->leftJoin('t.category', 'c')
             ->where(join(' AND ', $where))
             ->setParameters($params)
             ->orderBy('date', 'ASC')
@@ -95,16 +107,17 @@ class TransactionRepository extends ServiceEntityRepository
     }
 
 
-    public function findCategorySpendingFlow(CategoryRecordsRequest $filters)
+    public function findCategorySpendingFlow(CategoryRecordsRequest $filters, int $userId)
     {
-        $where = ['t.wallet_id IN (:walletIds)', 't.type = :type'];
+        $where = ['t.wallet_id IN (:walletIds)', 't.type = :type', 'w.user_id = :userId'];
         $params = [
             'walletIds' => $filters->walletIds,
-            'type' => TransactionType::EXPENSE
+            'type' => TransactionType::EXPENSE,
+            'userId' => $userId
         ];
 
         if ($filters->categoryIds) {
-            $where[] = 't.category_id IN (:categoryIds)';
+            $where[] = 't.category_id IN (:categoryIds) AND c.user_id = :userId';
             $params['categoryIds'] = $filters->categoryIds;
         }
 
@@ -115,6 +128,8 @@ class TransactionRepository extends ServiceEntityRepository
 
         return $this->createQueryBuilder('t')
             ->select("DATE_FORMAT(t.date, '%Y-%m-%d') as date, SUM(t.value) as total, t.category_id as category")
+            ->leftJoin('t.wallet', 'w')
+            ->leftJoin('t.category', 'c')
             ->where(join(' AND ', $where))
             ->setParameters($params)
             ->orderBy('date', 'ASC')
@@ -124,15 +139,16 @@ class TransactionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findCategorySpendingPie(CategoryRecordsRequest $filters)
+    public function findCategorySpendingPie(CategoryRecordsRequest $filters, int $userId)
     {
-        $where = ['t.wallet_id IN (:walletIds)'];
+        $where = ['t.wallet_id IN (:walletIds)', 'w.user_id = :userId'];
         $params = [
-            'walletIds' => $filters->walletIds
+            'walletIds' => $filters->walletIds,
+            'userId' => $userId
         ];
 
         if ($filters->categoryIds) {
-            $where[] = 't.category_id IN (:categoryIds)';
+            $where[] = 't.category_id IN (:categoryIds) AND c.user_id = :userId';
             $params['categoryIds'] = $filters->categoryIds;
         }
 
@@ -148,6 +164,7 @@ class TransactionRepository extends ServiceEntityRepository
 
         return $this->createQueryBuilder('t')
             ->select("SUM(t.value) as total, c.name as category, c.color as color")
+            ->leftJoin('t.wallet', 'w')
             ->leftJoin('t.category', 'c')
             ->where(join(' AND ', $where))
             ->setParameters($params)
