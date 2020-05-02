@@ -6,13 +6,17 @@ use App\Builder\UserBuilder;
 use App\Entity\User;
 use App\Exception\GraphQLException;
 use App\Exception\InvalidPasswordException;
+use App\Exception\UserAlreadyExistsException;
 use App\GraphQL\Input\User\UserLoginRequest;
 use App\GraphQL\Input\User\UserRegisterRequest;
 use App\GraphQL\Input\User\UserUpdateRequest;
 use App\Repository\UserRepository;
 use App\Services\AuthorizationService;
 use App\Traits\DateUtils;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
@@ -53,6 +57,7 @@ class UserProvider
      * @GQL\Query(type="User")
      *
      * @return User
+     * @throws GraphQLException
      */
     public function me(): User
     {
@@ -70,15 +75,21 @@ class UserProvider
      *
      * @return User
      * @throws EntityNotFoundException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function registerUser(UserRegisterRequest $input): User
     {
-        $user = $this->builder
-            ->create()
-            ->bind($input)
-            ->build();
+        try {
+            $user = $this->builder
+                ->create()
+                ->bind($input)
+                ->build();
 
-        $this->repository->save($user);
+            $this->repository->save($user);
+        } catch (UserAlreadyExistsException $ex) {
+            throw GraphQLException::fromString($ex->getMessage());
+        }
 
         return $user;
     }

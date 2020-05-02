@@ -4,7 +4,9 @@ namespace App\EventListener\User;
 
 use App\Entity\Category;
 use App\Entity\User;
+use App\Entity\Wallet;
 use App\Repository\CategoryRepository;
+use App\Repository\WalletRepository;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 class CreateListener
@@ -14,9 +16,15 @@ class CreateListener
      */
     private $categoryRepository;
 
-    public function __construct(CategoryRepository $categoryRepository)
+    /**
+     * @var WalletRepository
+     */
+    private $walletRepository;
+
+    public function __construct(CategoryRepository $categoryRepository, WalletRepository $walletRepository)
     {
         $this->categoryRepository = $categoryRepository;
+        $this->walletRepository = $walletRepository;
     }
 
     public function postPersist(User $user, LifecycleEventArgs $args)
@@ -58,6 +66,26 @@ class CreateListener
             $category->setColor($cat['color']);
             $category->setUser($user);
             $this->categoryRepository->save($category);
+        }
+
+        $wallets = [
+            [
+                'name' => 'Cash',
+                'color' => '#f98f83',
+            ],
+            [
+                'name' => 'Bank',
+                'color' => '#a6a6a6',
+            ],
+        ];
+
+        foreach ($wallets as $w) {
+            $wallet = new Wallet();
+            $wallet->setName($w['name']);
+            $wallet->setUser($user);
+            $wallet->setInitialAmount(0);
+            $wallet->setColor($w['color']);
+            $this->walletRepository->save($wallet);
         }
     }
 }
