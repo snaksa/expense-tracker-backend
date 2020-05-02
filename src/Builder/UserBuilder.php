@@ -4,7 +4,9 @@ namespace App\Builder;
 
 use App\Entity\User;
 use App\Exception\PasswordConfirmationException;
+use App\Exception\UserAlreadyExistsException;
 use App\GraphQL\Input\User\UserRequest;
+use App\Repository\UserRepository;
 use App\Traits\DateUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
@@ -21,6 +23,11 @@ class UserBuilder extends BaseBuilder
     private $user;
 
     /**
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    /**
      * @var JWTTokenManagerInterface
      */
     private $jwtManager;
@@ -32,9 +39,11 @@ class UserBuilder extends BaseBuilder
 
     public function __construct(
         EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
         UserPasswordEncoderInterface $passwordEncoder,
         JWTTokenManagerInterface $jwtManager
     ) {
+        $this->userRepository = $userRepository;
         $this->passwordEncoder = $passwordEncoder;
         $this->jwtManager = $jwtManager;
 
@@ -53,6 +62,7 @@ class UserBuilder extends BaseBuilder
      * @param UserRequest $input
      * @return UserBuilder
      * @throws EntityNotFoundException
+     * @throws UserAlreadyExistsException
      */
     public function bind(UserRequest $input): self
     {
@@ -61,6 +71,11 @@ class UserBuilder extends BaseBuilder
         }
 
         if ($input->email !== null) {
+            $user = $this->userRepository->findOneBy(['email' => $input->email]);
+            if ($user && $user->getId() !== $this->user->getId()) {
+                throw new UserAlreadyExistsException('User with this email already exists');
+            }
+
             $this->withEmail($input->email);
         }
 
