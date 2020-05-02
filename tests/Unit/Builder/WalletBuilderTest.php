@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Unit\Entity;
+namespace App\Tests\Unit\Builder;
 
 use App\Builder\WalletBuilder;
 use App\Entity\User;
