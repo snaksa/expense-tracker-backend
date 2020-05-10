@@ -1,11 +1,11 @@
-#Expenses Tracker
+# Expenses Tracker
 > Manage your finances and stop wondering where you spent your money.
 
-##Prerequisites
+## Prerequisites
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
-##Run 
+## Run 
 - Clone the project
 ```
 git clone git@github.com:snaksa/expense-tracker-backend.git
