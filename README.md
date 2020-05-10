@@ -7,40 +7,40 @@
 
 ## Run 
 - Clone the project
-```
-git clone git@github.com:snaksa/expense-tracker-backend.git
-cd expense-tracker-backend
-```
+  ```
+  git clone git@github.com:snaksa/expense-tracker-backend.git
+  cd expense-tracker-backend
+  ```
 
 - Build the containers
-```
-make build
-make up
-```
+  ```
+  make build
+  make up
+  ```
 
 - Install dependencies
-```
-make dependencies
-```
+  ```
+  make dependencies
+  ```
 
 - Run migrations and fixtures
-```
-make migrate
-make fixtures
-```
+  ```
+  make migrate
+  make fixtures
+  ```
 
 - Go to [http://localhost:8080/graphiql](http://localhost:8080/graphiql)
 - Run the following login mutation
-```
-mutation login {
-  loginUser(input: {email: "demo@gmail.com", password: "123456"})
-}
+  ```
+  mutation login {
+    loginUser(input: {email: "demo@gmail.com", password: "123456"})
+  }
 ```
 - You should get the following response
-```
-{
-  "data": {
-    "loginUser": "<yourApiToken>"
+  ```
+  {
+    "data": {
+      "loginUser": "<yourApiToken>"
+    }
   }
-}
 ```
