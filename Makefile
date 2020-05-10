@@ -6,20 +6,10 @@ help:
 	@echo "usage: make COMMAND"
 	@echo ""
 	@echo "Commands:"
-	@echo "     init            Initializes the project for first time."
 	@echo "     up              Starts application containers and services."
 	@echo "     down            Stops application containers and services."
 	@echo "     build           Builds the application containers."
 	@echo "     ssh             Use it if you want to SSH into the PHP service."
-
-init: dependencies
-	@echo "⬆ Container initialized"
-
-dependencies: composer.json composer.lock
-	$(info 📦 Make: Installing dependencies.)
-	@docker-compose run --rm php composer self-update
-	@docker-compose run --rm php composer validate
-	@docker-compose run --rm php composer install
 
 up:
 	$(info 🔥 Make: Starting up.)
@@ -37,12 +27,12 @@ build:
 
 migrate:
 	$(info 📦 Make: Running migrations)
-	@docker-compose run --rm php bin/console doctrine:migrations:migrate --quiet
+	@docker-compose run --rm backend bin/console doctrine:migrations:migrate --quiet
 
 fixtures:
 	$(info 📦 Make: Running migrations)
-	@docker-compose run --rm php bin/console doctrine:fixtures:load --quiet --env=fixtures
+	@docker-compose run --rm backend bin/console doctrine:fixtures:load --quiet --env=fixtures
 
 ssh:
 	$(info 💻 Make: SSH into PHP container.)
-	@docker-compose exec php bash
+	@docker-compose exec backend bash

@@ -4,7 +4,7 @@ services:
   db:
     image: mysql
     command: ["--default-authentication-plugin=mysql_native_password"]
-    container_name: expense-tracker-backend-db
+    container_name: expense-tracker-db
     ports:
       - "3306:3306"
     environment:
@@ -12,11 +12,11 @@ services:
       MYSQL_DATABASE: expense-tracker
       MYSQL_USER: symfony
       MYSQL_PASSWORD: symfony
-  php:
+  backend:
     image: snaksa/expense-tracker-backend
     build:
       context: .
-    container_name: expense-tracker-backend-php
+    container_name: expense-tracker-backend
     links:
       - db
     volumes:
