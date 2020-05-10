@@ -35,7 +35,7 @@
   mutation login {
     loginUser(input: {email: "demo@gmail.com", password: "123456"})
   }
-```
+  ```
 - You should get the following response
   ```
   {
