@@ -12,11 +12,14 @@ services:
       MYSQL_DATABASE: expense-tracker
       MYSQL_USER: symfony
       MYSQL_PASSWORD: symfony
-  backend:
+  php:
     image: snaksa/expense-tracker-backend
     build:
       context: .
     container_name: expense-tracker-backend
+    environment:
+      - DATABASE_URL=mysql://symfony:symfony@db:3306/expense-tracker?serverVersion=5.7
+      - JWT_PASSPHRASE=expensestracker2020
     links:
       - db
     volumes:

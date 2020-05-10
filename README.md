@@ -12,15 +12,15 @@ git clone git@github.com:snaksa/expense-tracker-backend.git
 cd expense-tracker-backend
 ```
 
-- Set permissions to the `config/jwt` folder
-```
-sudo chown -R www-data:www-data config/jwt
-```
-
 - Build the containers
 ```
-docker-compose build
-docker-compose up -d
+make build
+make up
+```
+
+- Install dependencies
+```
+make dependencies
 ```
 
 - Run migrations and fixtures
