@@ -55,9 +55,14 @@ class TransactionRepository extends ServiceEntityRepository
             $params['categoryIds'] = $filters->categoryIds;
         }
 
-        if ($filters->date) {
-            $where[] = 't.date >= :date';
-            $params['date'] = $filters->date;
+        if ($filters->startDate) {
+            $where[] = 't.date >= :startDate';
+            $params['startDate'] = $filters->startDate;
+        }
+
+        if ($filters->endDate) {
+            $where[] = 't.date <= :endDate';
+            $params['endDate'] = $filters->endDate;
         }
 
         $query = $this->createQueryBuilder('t')
@@ -89,19 +94,23 @@ class TransactionRepository extends ServiceEntityRepository
             $params['categoryIds'] = $filters->categoryIds;
         }
 
-        if ($filters->date) {
-            $where[] = 't.date >= :date';
-            $params['date'] = $filters->date;
+        if ($filters->startDate) {
+            $where[] = 't.date >= :startDate';
+            $params['startDate'] = $filters->startDate;
+        }
+
+        if ($filters->endDate) {
+            $where[] = 't.date <= :endDate';
+            $params['endDate'] = $filters->endDate;
         }
 
         return $this->createQueryBuilder('t')
-            ->select("DATE_FORMAT(t.date, '%Y-%m-%d') as date, SUM(t.value) as total")
+            ->select("t.date, t.value")
             ->leftJoin('t.wallet', 'w')
             ->leftJoin('t.category', 'c')
             ->where(join(' AND ', $where))
             ->setParameters($params)
-            ->orderBy('date', 'ASC')
-            ->groupBy('date')
+            ->orderBy('t.date', 'ASC')
             ->getQuery()
             ->getResult();
     }
@@ -121,20 +130,23 @@ class TransactionRepository extends ServiceEntityRepository
             $params['categoryIds'] = $filters->categoryIds;
         }
 
-        if ($filters->date) {
-            $where[] = 't.date >= :date';
-            $params['date'] = $filters->date;
+        if ($filters->startDate) {
+            $where[] = 't.date >= :startDate';
+            $params['startDate'] = $filters->startDate;
+        }
+
+        if ($filters->endDate) {
+            $where[] = 't.date <= :endDate';
+            $params['endDate'] = $filters->endDate;
         }
 
         return $this->createQueryBuilder('t')
-            ->select("DATE_FORMAT(t.date, '%Y-%m-%d') as date, SUM(t.value) as total, t.category_id as category")
+            ->select("t.date, t.value, t.category_id")
             ->leftJoin('t.wallet', 'w')
             ->leftJoin('t.category', 'c')
             ->where(join(' AND ', $where))
             ->setParameters($params)
-            ->orderBy('date', 'ASC')
-            ->groupBy('date')
-            ->addGroupBy('t.category_id')
+            ->orderBy('t.date', 'ASC')
             ->getQuery()
             ->getResult();
     }
@@ -157,18 +169,22 @@ class TransactionRepository extends ServiceEntityRepository
             $params['type'] = $filters->type->value;
         }
 
-        if ($filters->date) {
-            $where[] = 't.date >= :date';
-            $params['date'] = $filters->date;
+        if ($filters->startDate) {
+            $where[] = 't.date >= :startDate';
+            $params['startDate'] = $filters->startDate;
+        }
+
+        if ($filters->endDate) {
+            $where[] = 't.date <= :endDate';
+            $params['endDate'] = $filters->endDate;
         }
 
         return $this->createQueryBuilder('t')
-            ->select("SUM(t.value) as total, c.name as category, c.color as color")
+            ->select("t.value, c.name as category, c.color as color")
             ->leftJoin('t.wallet', 'w')
             ->leftJoin('t.category', 'c')
             ->where(join(' AND ', $where))
             ->setParameters($params)
-            ->addGroupBy('t.category_id')
             ->getQuery()
             ->getResult();
     }

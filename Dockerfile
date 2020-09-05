@@ -19,6 +19,7 @@ RUN composer install
 RUN a2enmod rewrite
 
 RUN chown -R www-data:www-data config/jwt
+RUN chown -R www-data:www-data var
 
 EXPOSE 80
 

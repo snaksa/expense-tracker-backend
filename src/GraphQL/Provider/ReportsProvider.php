@@ -61,45 +61,67 @@ class ReportsProvider
             throw GraphQLException::fromString('Unauthorized access!');
         }
 
-        /** @var Transaction[] $transactions */
-        $result = $this->transactionRepository->findSpendingFlow(
+        $transactions = $this->transactionRepository->findSpendingFlow(
             $input,
             $this->authService->getCurrentUser()->getId()
         );
 
         $header = ['Date', 'Money'];
-        $reportData = [];
 
-        if ($input->date) {
-            $backDate = $this->createFromFormat($input->date, $this->dateFormat, null, true);
+        if ($input->startDate) {
+            $startDate = $this->createFromFormat($input->startDate, $this->dateTimeFormat, null);
         } else {
-            $backDate = count($result)
-                ? $this->createFromFormat(
-                    $result[0]['date'],
-                    $this->dateFormat,
-                    null,
-                    true
-                )
+            $startDate = count($transactions)
+                ? $transactions[0]['date']->setTime(0, 0)
                 : null;
         }
-        $currentDate = $this->getCurrentDateTime()->setTime(23, 59);
 
-        while ($backDate && $backDate <= $currentDate) {
-            $found = false;
-            foreach ($result as $row) {
-                if ($row['date'] === $backDate->format('Y-m-d')) {
-                    $reportData[] = [$backDate->format('Y-m-d'), $row['total']];
-                    $found = true;
-                    break;
-                }
+        $endDate = $input->endDate ?
+            $this->createFromFormat($input->endDate, $this->dateTimeFormat, null) :
+            $this->getCurrentDateTime()->setTime(23, 59, 59);
+
+        if ($input->timezone) {
+            if ($startDate) {
+                $startDate->setTimezone(new \DateTimeZone($input->timezone));
             }
-            if (!$found) {
-                $reportData[] = [$backDate->format('Y-m-d'), 0];
+            if ($endDate) {
+                $endDate->setTimezone(new \DateTimeZone($input->timezone));
             }
-            $backDate->modify('+ 1 day');
         }
 
-        return AreaChart::fromData($header, $reportData);
+        $result = [];
+        foreach ($transactions as $transaction) {
+            $date = $transaction['date'];
+
+            if ($input->timezone) {
+                $date->setTimeZone(new \DateTimeZone(($input->timezone)));
+            }
+
+            if (!$startDate) {
+                $startDate = $date;
+            }
+
+            $key = $date->format('Y-m-d');
+            if (!isset($result[$key])) {
+                $result[$key] = 0;
+            }
+
+            $result[$key] += $transaction['value'];
+        }
+
+        $data = [];
+        while ($startDate && $startDate <= $endDate) {
+            $dateKey = $startDate->format('Y-m-d');
+            if (!isset($result[$dateKey])) {
+                $result[$dateKey] = 0;
+            }
+
+            $data[] = [$dateKey, $result[$dateKey]];
+
+            $startDate->modify('+ 1 day');
+        }
+
+        return AreaChart::fromData($header, $data);
     }
 
     /**
@@ -117,14 +139,13 @@ class ReportsProvider
         }
 
         /** @var Transaction[] $transactions */
-        $result = $this->transactionRepository->findCategorySpendingFlow(
+        $transactions = $this->transactionRepository->findCategorySpendingFlow(
             $input,
             $this->authService->getCurrentUser()->getId()
         );
 
         $categories = $this->categoryRepository->findUserCategories($this->authService->getCurrentUser());
 
-        $reportData = [];
         $colors = [];
         $header = ['Date'];
 
@@ -133,42 +154,69 @@ class ReportsProvider
             $colors[] = $category->getColor();
         }
 
-        if ($input->date) {
-            $backDate = $this->createFromFormat($input->date, $this->dateFormat, null, true);
+        if ($input->startDate) {
+            $startDate = $this->createFromFormat($input->startDate, $this->dateTimeFormat, null);
         } else {
-            $backDate = count($result)
-                ? $this->createFromFormat(
-                    $result[0]['date'],
-                    $this->dateFormat,
-                    null,
-                    true
-                )
-                : null;
+            $startDate = count($transactions)
+                ? $transactions[0]['date']->setTime(0, 0) :
+                $this->getCurrentDateTime()->setTime(23, 59, 59);
         }
-        $currentDate = $this->getCurrentDateTime()->setTime(23, 59);
 
-        while ($backDate && $backDate <= $currentDate) {
-            $dateData = [];
-            foreach ($categories as $category) {
-                $found = false;
-                foreach ($result as $row) {
-                    if ($row['date'] === $backDate->format('Y-m-d') && $row['category'] == $category->getId()) {
-                        $dateData[] = $row['total'];
-                        $found = true;
-                        break;
-                    }
-                }
-                if (!$found) {
-                    $dateData[] = 0;
-                }
+
+        $endDate = $input->endDate ?
+            $this->createFromFormat($input->endDate, $this->dateTimeFormat, null) :
+            $this->getCurrentDateTime()->setTime(23, 59, 59);
+
+        if ($input->timezone) {
+            if ($startDate) {
+                $startDate->setTimezone(new \DateTimeZone($input->timezone));
+            }
+            if ($endDate) {
+                $endDate->setTimezone(new \DateTimeZone($input->timezone));
+            }
+        }
+
+        $result = [];
+        foreach ($transactions as $transaction) {
+            $date = $transaction['date'];
+            $categoryId = $transaction['category_id'];
+
+            if ($input->timezone) {
+                $date->setTimeZone(new \DateTimeZone(($input->timezone)));
             }
 
-            $reportData[] = array_merge([$backDate->format('Y-m-d')], $dateData);
+            $key = $date->format('Y-m-d');
+            if (!isset($result[$key])) {
+                $result[$key] = [];
+            }
 
-            $backDate->modify('+ 1 day');
+            if (!isset($result[$key][$categoryId])) {
+                $result[$key][$categoryId] = 0;
+            }
+
+            $result[$key][$categoryId] += $transaction['value'];
         }
 
-        return AreaChart::fromData($header, $reportData, $colors);
+        $data = [];
+        while ($startDate && $startDate <= $endDate) {
+            $dateKey = $startDate->format('Y-m-d');
+            if (!isset($result[$dateKey])) {
+                $result[$dateKey] = [];
+            }
+
+            $recordData = [$dateKey];
+            foreach ($categories as $category) {
+                $recordData[] = isset($result[$dateKey][$category->getId()])
+                    ? $result[$dateKey][$category->getId()]
+                    : 0;
+            }
+
+            $data[] = $recordData;
+
+            $startDate->modify('+ 1 day');
+        }
+
+        return AreaChart::fromData($header, $data, $colors);
     }
 
     /**
@@ -195,9 +243,20 @@ class ReportsProvider
         $colors = [];
         $reportData = [];
 
+        $categoryColors = [];
+        $data = [];
         foreach ($result as $row) {
-            $reportData[] = [$row['category'], $row['total']];
-            $colors[] = $row['color'];
+            if (!isset($data[$row['category']])) {
+                $data[$row['category']] = 0;
+            }
+            $data[$row['category']] += $row['value'];
+            $categoryColors[$row['category']] = $row['color'];
+        }
+
+
+        foreach ($data as $key => $value) {
+            $reportData[] = [$key, $value];
+            $colors[] = $categoryColors[$key];
         }
 
         return AreaChart::fromData($header, $reportData, $colors);

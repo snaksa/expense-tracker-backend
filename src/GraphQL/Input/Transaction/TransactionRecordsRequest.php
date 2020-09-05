@@ -13,7 +13,7 @@ class TransactionRecordsRequest extends TransactionRequest
     use PaginationUtils;
 
     /**
-     * @GQL\Field(type="[Int]")
+     * @GQL\Field(type="[Int]!")
      * @var int[]
      */
     public $walletIds;
@@ -28,5 +28,17 @@ class TransactionRecordsRequest extends TransactionRequest
      * @GQL\Field(type="String")
      * @var string
      */
-    public $date;
+    public $startDate;
+
+    /**
+     * @GQL\Field(type="String")
+     * @var string
+     */
+    public $endDate;
+
+    /**
+     * @GQL\Field(type="String")
+     * @var string
+     */
+    public $timezone;
 }
