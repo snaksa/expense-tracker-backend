@@ -21,14 +21,14 @@ class WalletProviderTest extends BaseTestCase
     {
         parent::setUp();
 
+        $this->client = $this->makeClient();
+
         $this->fixtures = $this->loadFixtures([
             UserFixtures::class,
             WalletFixtures::class
         ])->getReferenceRepository();
 
         $this->user = $this->fixtures->getReference('user_demo');
-
-        $this->client = $this->makeClient();
     }
 
     /**
@@ -45,7 +45,7 @@ class WalletProviderTest extends BaseTestCase
         $walletRepository->expects($this->once())->method('findBy')->with(['user_id' => $this->user->getId()])->willReturn($wallets);
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -73,7 +73,7 @@ class WalletProviderTest extends BaseTestCase
      */
     public function can_not_retrieve_user_wallets_if_not_logged(): void
     {
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -99,7 +99,7 @@ class WalletProviderTest extends BaseTestCase
         $walletRepository->expects($this->once())->method('findOneById')->with($wallet->getId())->willReturn($wallet);
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -135,7 +135,7 @@ class WalletProviderTest extends BaseTestCase
         $walletRepository->expects($this->once())->method('findOneById')->with($wallet->getId())->willReturn($wallet);
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -158,7 +158,7 @@ class WalletProviderTest extends BaseTestCase
     {
         $wallet = $this->fixtures->getReference('user_demo_wallet_cash');
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -182,7 +182,7 @@ class WalletProviderTest extends BaseTestCase
         $walletRepository->expects($this->once())->method('findOneById')->with(-1)->willReturn(null);
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -206,7 +206,7 @@ class WalletProviderTest extends BaseTestCase
         $walletRepository->expects($this->once())->method('save')->willReturn(null);
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->exactly(3))->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -286,7 +286,7 @@ class WalletProviderTest extends BaseTestCase
      */
     public function can_not_create_wallet_if_not_logged(): void
     {
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -321,7 +321,7 @@ class WalletProviderTest extends BaseTestCase
         $walletRepository->expects($this->once())->method('save')->willReturn($wallet);
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -390,7 +390,7 @@ class WalletProviderTest extends BaseTestCase
         $walletRepository->expects($this->exactly(2))->method('find')->with($wallet->getId())->willReturn($wallet);
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -426,7 +426,7 @@ class WalletProviderTest extends BaseTestCase
         $walletRepository->expects($this->once())->method('find')->with($wallet->getId())->willReturn($wallet);
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -463,7 +463,7 @@ class WalletProviderTest extends BaseTestCase
         $walletRepository->expects($this->once())->method('remove')->willReturn($wallet);
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -533,7 +533,7 @@ class WalletProviderTest extends BaseTestCase
         $walletRepository->expects($this->once())->method('findOneById')->with($wallet->getId())->willReturn($wallet);
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -567,7 +567,7 @@ class WalletProviderTest extends BaseTestCase
         $walletRepository->expects($this->once())->method('find')->with($wallet->getId())->willReturn($wallet);
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 

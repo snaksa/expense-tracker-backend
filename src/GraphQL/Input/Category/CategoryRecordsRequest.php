@@ -11,7 +11,7 @@ use Overblog\GraphQLBundle\Annotation as GQL;
 class CategoryRecordsRequest
 {
     /**
-     * @GQL\Field(type="[Int]")
+     * @GQL\Field(type="[Int]!")
      * @var int[]
      */
     public $walletIds;
@@ -32,5 +32,17 @@ class CategoryRecordsRequest
      * @GQL\Field(type="String")
      * @var string
      */
-    public $date;
+    public $startDate;
+
+    /**
+     * @GQL\Field(type="String")
+     * @var string
+     */
+    public $endDate;
+
+    /**
+     * @GQL\Field(type="String")
+     * @var string
+     */
+    public $timezone;
 }

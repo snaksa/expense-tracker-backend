@@ -49,31 +49,15 @@ class TransactionBuilderTest extends TestCase
             ->willReturn($category);
 
         $walletRepository = $this->createMock(WalletRepository::class);
-        $walletRepository->expects($this->at(0))
+        $walletRepository
             ->method('find')
-            ->with($wallet->getId())
-            ->willReturn($wallet);
-        $walletRepository->expects($this->at(1))
-            ->method('find')
-            ->with($walletReceiver->getId())
-            ->willReturn($walletReceiver);
+            ->will($this->onConsecutiveCalls($wallet, $walletReceiver));
 
         $entityManagerMock = $this->createMock(EntityManager::class);
-
         $entityManagerMock
-            ->expects($this->at(0))
             ->method('getRepository')
-            ->willReturn($categoryRepository);
-
-        $entityManagerMock
-            ->expects($this->at(1))
-            ->method('getRepository')
-            ->willReturn($walletRepository);
-
-        $entityManagerMock
-            ->expects($this->at(2))
-            ->method('getRepository')
-            ->willReturn($walletRepository);
+            ->willReturn($categoryRepository)
+            ->will($this->onConsecutiveCalls($categoryRepository, $walletRepository, $walletRepository));
 
         $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->method('getCurrentUser')
@@ -124,22 +108,12 @@ class TransactionBuilderTest extends TestCase
         $entityManagerMock = $this->createMock(EntityManager::class);
 
         $entityManagerMock
-            ->expects($this->at(0))
             ->method('getRepository')
-            ->willReturn($transactionRepository);
-
-        $entityManagerMock
-            ->expects($this->at(1))
-            ->method('getRepository')
-            ->willReturn($categoryRepository);
-
-        $entityManagerMock
-            ->expects($this->at(2))
-            ->method('getRepository')
-            ->willReturn($walletRepository);
+            ->will($this->onConsecutiveCalls($transactionRepository, $categoryRepository, $walletRepository));
 
         $authServiceMock = $this->createMock(AuthorizationService::class);
-        $authServiceMock->method('getCurrentUser')
+        $authServiceMock
+            ->method('getCurrentUser')
             ->willReturn($user);
 
         $type = new TransactionType();
@@ -186,19 +160,8 @@ class TransactionBuilderTest extends TestCase
         $entityManagerMock = $this->createMock(EntityManager::class);
 
         $entityManagerMock
-            ->expects($this->at(0))
             ->method('getRepository')
-            ->willReturn($transactionRepository);
-
-        $entityManagerMock
-            ->expects($this->at(1))
-            ->method('getRepository')
-            ->willReturn($categoryRepository);
-
-        $entityManagerMock
-            ->expects($this->at(2))
-            ->method('getRepository')
-            ->willReturn($walletRepository);
+            ->will($this->onConsecutiveCalls($transactionRepository, $categoryRepository, $walletRepository));
 
         $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->method('getCurrentUser')
@@ -238,36 +201,15 @@ class TransactionBuilderTest extends TestCase
             ->willReturn($category);
 
         $walletRepository = $this->createMock(WalletRepository::class);
-        $walletRepository->expects($this->at(0))
+        $walletRepository
             ->method('find')
-            ->with($wallet->getId())
-            ->willReturn($wallet);
-        $walletRepository->expects($this->at(1))
-            ->method('find')
-            ->with($walletReceiver->getId())
-            ->willReturn($walletReceiver);
+            ->will($this->onConsecutiveCalls($wallet, $walletReceiver));
 
         $entityManagerMock = $this->createMock(EntityManager::class);
 
         $entityManagerMock
-            ->expects($this->at(0))
             ->method('getRepository')
-            ->willReturn($transactionRepository);
-
-        $entityManagerMock
-            ->expects($this->at(1))
-            ->method('getRepository')
-            ->willReturn($categoryRepository);
-
-        $entityManagerMock
-            ->expects($this->at(2))
-            ->method('getRepository')
-            ->willReturn($walletRepository);
-
-        $entityManagerMock
-            ->expects($this->at(3))
-            ->method('getRepository')
-            ->willReturn($walletRepository);
+            ->will($this->onConsecutiveCalls($transactionRepository, $categoryRepository, $walletRepository, $walletRepository));
 
         $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->method('getCurrentUser')
@@ -302,7 +244,7 @@ class TransactionBuilderTest extends TestCase
             ->willReturn($transaction);
 
         $walletRepository = $this->createMock(WalletRepository::class);
-        $walletRepository->expects($this->at(0))
+        $walletRepository
             ->method('find')
             ->with($wallet->getId())
             ->willReturn($wallet);
@@ -310,14 +252,8 @@ class TransactionBuilderTest extends TestCase
         $entityManagerMock = $this->createMock(EntityManager::class);
 
         $entityManagerMock
-            ->expects($this->at(0))
             ->method('getRepository')
-            ->willReturn($transactionRepository);
-
-        $entityManagerMock
-            ->expects($this->at(1))
-            ->method('getRepository')
-            ->willReturn($walletRepository);
+            ->will($this->onConsecutiveCalls($transactionRepository, $walletRepository));
 
         $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->method('getCurrentUser')

@@ -46,6 +46,8 @@ class TransactionProviderTest extends BaseTestCase
     {
         parent::setUp();
 
+        $this->client = $this->makeClient();
+
         $this->fixtures = $this->loadFixtures([
             UserFixtures::class,
             WalletFixtures::class,
@@ -57,8 +59,6 @@ class TransactionProviderTest extends BaseTestCase
         $this->secondUser = $this->fixtures->getReference('user_demo2');
         $this->category = $this->fixtures->getReference('category_food');
         $this->wallet = $this->fixtures->getReference('user_demo_wallet_cash');
-
-        $this->client = $this->makeClient();
     }
 
     /**
@@ -77,7 +77,7 @@ class TransactionProviderTest extends BaseTestCase
 
         $transactions = array_slice($transactions, 0, 10);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -111,7 +111,7 @@ class TransactionProviderTest extends BaseTestCase
     /**
      * @test
      */
-    public function can_retrieve_transactions_by_back_date(): void
+    public function can_retrieve_transactions_by_start_date(): void
     {
         $date = $this->getCurrentDateTime()->modify('- 2 day')->setTime(0, 0, 0, 0);
         $transactions = $this->filterFixtures(function ($entity) use ($date) {
@@ -126,7 +126,7 @@ class TransactionProviderTest extends BaseTestCase
 
         $transactions = array_slice($transactions, 0, 10);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -136,7 +136,172 @@ class TransactionProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'date' => $date->format('Y-m-d')
+                    'startDate' => $date->format('Y-m-d H:m:s')
+                ]
+            ],
+            ['data' => ['id', 'date']]
+        );
+
+        $response = $this->client->getResponse();
+        $this->assertOk($response);
+        $content = $this->getResponseContent($response);
+        $this->assertArrayHasKey('transactions', $content);
+        $this->assertArrayHasKey('data', $content['transactions']);
+
+        $expected = array_map(function (Transaction $transaction) {
+            return [
+                'id' => $transaction->getId(),
+                'date' => $transaction->getDate()->format('Y-m-d H:i:s')
+            ];
+        }, $transactions);
+
+        $this->assertEquals($expected, $content['transactions']['data']);
+    }
+
+    /**
+     * @test
+     */
+    public function can_retrieve_transactions_by_end_date(): void
+    {
+        $date = $this->getCurrentDateTime()->modify('- 1 day')->setTime(0, 0, 0, 0);
+        $transactions = $this->filterFixtures(function ($entity) use ($date) {
+            return $entity instanceof Transaction
+                && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getDate() <= $date;
+        });
+
+        usort($transactions, function (Transaction $a, Transaction $b) {
+            return $a->getDate()->format('Y-m-d H:m:s') === $b->getDate()->format('Y-m-d H:m:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
+        });
+
+        $transactions = array_slice($transactions, 0, 10);
+
+        $authServiceMock = $this->createMock(AuthorizationService::class);
+        $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
+        $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
+        $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
+
+        $this->query(
+            'transactions',
+            [
+                'input' => [
+                    'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'endDate' => $date->format('Y-m-d H:m:s')
+                ]
+            ],
+            ['data' => ['id', 'date']]
+        );
+
+        $response = $this->client->getResponse();
+        $this->assertOk($response);
+        $content = $this->getResponseContent($response);
+        $this->assertArrayHasKey('transactions', $content);
+        $this->assertArrayHasKey('data', $content['transactions']);
+
+        $expected = array_map(function (Transaction $transaction) {
+            return [
+                'id' => $transaction->getId(),
+                'date' => $transaction->getDate()->format('Y-m-d H:i:s')
+            ];
+        }, $transactions);
+
+        $this->assertEquals($expected, $content['transactions']['data']);
+    }
+
+    /**
+     * @test
+     */
+    public function can_retrieve_transactions_by_start_date_and_end_date(): void
+    {
+        $startDate = $this->getCurrentDateTime()->modify('- 3 day')->setTime(0, 0, 0, 0);
+        $endDate = $this->getCurrentDateTime()->modify('- 1 day')->setTime(0, 0, 0, 0);
+        $transactions = $this->filterFixtures(function ($entity) use ($startDate, $endDate) {
+            return $entity instanceof Transaction
+                && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getDate() >= $startDate
+                && $entity->getDate() <= $endDate;
+        });
+
+        usort($transactions, function (Transaction $a, Transaction $b) {
+            return $a->getDate()->format('Y-m-d H:m:s') === $b->getDate()->format('Y-m-d H:m:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
+        });
+
+        $transactions = array_slice($transactions, 0, 10);
+
+        $authServiceMock = $this->createMock(AuthorizationService::class);
+        $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
+        $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
+        $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
+
+        $this->query(
+            'transactions',
+            [
+                'input' => [
+                    'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'startDate' => $startDate->format('Y-m-d H:m:s'),
+                    'endDate' => $endDate->format('Y-m-d H:m:s')
+                ]
+            ],
+            ['data' => ['id', 'date']]
+        );
+
+        $response = $this->client->getResponse();
+        $this->assertOk($response);
+        $content = $this->getResponseContent($response);
+        $this->assertArrayHasKey('transactions', $content);
+        $this->assertArrayHasKey('data', $content['transactions']);
+
+        $expected = array_map(function (Transaction $transaction) {
+            return [
+                'id' => $transaction->getId(),
+                'date' => $transaction->getDate()->format('Y-m-d H:i:s')
+            ];
+        }, $transactions);
+
+        $this->assertEquals($expected, $content['transactions']['data']);
+    }
+
+    /**
+     * @test
+     */
+    public function can_retrieve_transactions_by_start_date_and_end_date_with_timezone(): void
+    {
+        $timezone = 'Europe/Sofia';
+
+        $startDate = $this->getCurrentDateTime()
+            ->modify('- 3 day')
+            ->setTime(0, 0, 0, 0);
+
+        $endDate = $this->getCurrentDateTime()
+            ->modify('- 1 day')
+            ->setTime(23, 59, 59, 59);
+
+        $transactions = $this->filterFixtures(function ($entity) use ($startDate, $endDate, $timezone) {
+            return $entity instanceof Transaction
+                && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getDate()->setTimezone(new \DateTimeZone($timezone)) >= $startDate->setTimezone(new \DateTimeZone($timezone))
+                && $entity->getDate()->setTimezone(new \DateTimeZone($timezone)) <= $endDate->setTimezone(new \DateTimeZone($timezone));
+        });
+
+        usort($transactions, function (Transaction $a, Transaction $b) {
+            return $a->getDate()->format('Y-m-d H:m:s') === $b->getDate()->format('Y-m-d H:m:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
+        });
+
+        $transactions = array_slice($transactions, 0, 10);
+
+        $authServiceMock = $this->createMock(AuthorizationService::class);
+        $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
+        $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
+        $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
+
+        $this->query(
+            'transactions',
+            [
+                'input' => [
+                    'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'startDate' => $startDate->format('Y-m-d H:m:s'),
+                    'endDate' => $endDate->format('Y-m-d H:m:s'),
+                    'timezone' => $timezone
                 ]
             ],
             ['data' => ['id', 'date']]
@@ -163,7 +328,7 @@ class TransactionProviderTest extends BaseTestCase
      */
     public function can_not_retrieve_transactions_if_wallet_not_possessed_by_current_user(): void
     {
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->secondUser);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -191,7 +356,7 @@ class TransactionProviderTest extends BaseTestCase
      */
     public function can_not_retrieve_transactions_if_not_logged(): void
     {
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -223,7 +388,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactionRepository->expects($this->once())->method('findOneById')->with($transaction->getId())->willReturn($transaction);
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -259,7 +424,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactionRepository->expects($this->once())->method('findOneById')->with($transaction->getId())->willReturn($transaction);
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -284,7 +449,7 @@ class TransactionProviderTest extends BaseTestCase
         $wallet = $this->fixtures->getReference('user_demo_wallet_cash');
         $transaction = $wallet->getTransactions()->first();
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -308,7 +473,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactionRepository->expects($this->once())->method('findOneById')->with(-1)->willReturn(null);
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -332,7 +497,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactionRepository->expects($this->once())->method('save')->willReturn(null);
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -462,7 +627,7 @@ class TransactionProviderTest extends BaseTestCase
      */
     public function can_not_create_transaction_if_not_logged(): void
     {
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -494,7 +659,7 @@ class TransactionProviderTest extends BaseTestCase
      */
     public function can_not_create_transaction_if_not_wallet_not_possessed_by_current_user(): void
     {
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->secondUser);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -536,7 +701,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactionRepository->expects($this->once())->method('save')->willReturn(null);
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -626,7 +791,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactionRepository->expects($this->exactly(2))->method('find')->willReturn($transaction);
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->secondUser);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -662,7 +827,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactionRepository->expects($this->once())->method('find')->willReturn($transaction);
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -699,7 +864,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactionRepository->expects($this->once())->method('remove')->willReturn($transaction);
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -769,7 +934,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactionRepository->expects($this->once())->method('findOneById')->with($transaction->getId())->willReturn($transaction);
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->secondUser);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -805,7 +970,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactionRepository->expects($this->once())->method('find')->with($transaction->getId())->willReturn($transaction);
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 

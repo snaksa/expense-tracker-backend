@@ -21,14 +21,14 @@ class CategoryProviderTest extends BaseTestCase
     {
         parent::setUp();
 
+        $this->client = $this->makeClient();
+
         $this->fixtures = $this->loadFixtures([
             UserFixtures::class,
             CategoryFixtures::class
         ])->getReferenceRepository();
 
         $this->user = $this->fixtures->getReference('user_demo');
-
-        $this->client = $this->makeClient();
     }
 
     /**
@@ -45,7 +45,7 @@ class CategoryProviderTest extends BaseTestCase
         $categoryRepository->expects($this->once())->method('findUserCategories')->with($this->user)->willReturn($categories);
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -73,7 +73,7 @@ class CategoryProviderTest extends BaseTestCase
      */
     public function can_not_retrieve_user_categories_if_not_logged(): void
     {
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -99,7 +99,7 @@ class CategoryProviderTest extends BaseTestCase
         $categoryRepository->expects($this->once())->method('findOneById')->with($category->getId())->willReturn($category);
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -135,7 +135,7 @@ class CategoryProviderTest extends BaseTestCase
         $categoryRepository->expects($this->once())->method('findOneById')->with($category->getId())->willReturn($category);
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -158,7 +158,7 @@ class CategoryProviderTest extends BaseTestCase
     {
         $category = $this->fixtures->getReference('category_food_2');
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -182,7 +182,7 @@ class CategoryProviderTest extends BaseTestCase
         $categoryRepository->expects($this->once())->method('findOneById')->with(-1)->willReturn(null);
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -206,7 +206,7 @@ class CategoryProviderTest extends BaseTestCase
         $categoryRepository->expects($this->once())->method('save')->willReturn(null);
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->exactly(3))->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -286,7 +286,7 @@ class CategoryProviderTest extends BaseTestCase
      */
     public function can_not_create_category_if_not_logged(): void
     {
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -321,7 +321,7 @@ class CategoryProviderTest extends BaseTestCase
         $categoryRepository->expects($this->once())->method('save')->willReturn($category);
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -390,7 +390,7 @@ class CategoryProviderTest extends BaseTestCase
         $categoryRepository->expects($this->exactly(2))->method('find')->with($category->getId())->willReturn($category);
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -427,7 +427,7 @@ class CategoryProviderTest extends BaseTestCase
         $categoryRepository->expects($this->once())->method('find')->with($category->getId())->willReturn($category);
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
@@ -464,7 +464,7 @@ class CategoryProviderTest extends BaseTestCase
         $categoryRepository->expects($this->once())->method('remove')->willReturn($category);
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -534,7 +534,7 @@ class CategoryProviderTest extends BaseTestCase
         $categoryRepository->expects($this->once())->method('findOneById')->with($category->getId())->willReturn($category);
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
         $authServiceMock->expects($this->once())->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
@@ -568,7 +568,7 @@ class CategoryProviderTest extends BaseTestCase
         $categoryRepository->expects($this->once())->method('find')->with($category->getId())->willReturn($category);
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
-        $authServiceMock = $this->getServiceMockBuilder(AuthorizationService::class)->getMock();
+        $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(false);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
