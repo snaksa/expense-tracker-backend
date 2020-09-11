@@ -49,6 +49,10 @@ class PaginatedResult
      */
     public $hasPrevPage = false;
 
+    final public function __construct()
+    {
+    }
+
     /**
      * Creates new instance from a pager.
      *

@@ -29,7 +29,7 @@ class EntityExistsValidator extends ConstraintValidator
      *
      * @throws UnexpectedTypeException
      */
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof EntityExists) {
             throw new UnexpectedTypeException($constraint, __NAMESPACE__ . '\EntityExists');

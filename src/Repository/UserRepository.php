@@ -62,7 +62,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function save(User $user)
+    public function save(User $user): void
     {
         $this->_em->persist($user);
         $this->_em->flush();

@@ -164,6 +164,9 @@ class WalletProvider
 
         /**@var Wallet $wallet */
         $wallet = $this->repository->findOneById($input->id);
+        if (!$wallet) {
+            throw GraphQLException::fromString('Wallet not found!');
+        }
 
         if ($wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
             throw GraphQLException::fromString('Unauthorized operation!');
@@ -181,7 +184,8 @@ class WalletProvider
             $this->transactionRepository->save($transaction);
         }
 
-        $this->transactionRepository->removeByWalletId($wallet->getId());
+        $walletId = $wallet->getId();
+        $this->transactionRepository->removeByWalletId($walletId ?? 0);
 
         $clone = clone $wallet;
 

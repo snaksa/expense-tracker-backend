@@ -164,6 +164,9 @@ class CategoryProvider
 
         /**@var Category $category */
         $category = $this->repository->findOneById($input->id);
+        if (!$category) {
+            throw GraphQLException::fromString("Category with ID {$input->id} not found!");
+        }
 
         if ($category->getUserId() !== $this->authService->getCurrentUser()->getId()) {
             throw GraphQLException::fromString('Unauthorized operation!');

@@ -61,10 +61,8 @@ class ReportsProvider
             throw GraphQLException::fromString('Unauthorized access!');
         }
 
-        $transactions = $this->transactionRepository->findSpendingFlow(
-            $input,
-            $this->authService->getCurrentUser()->getId()
-        );
+        $userId = $this->authService->getCurrentUser()->getId();
+        $transactions = $this->transactionRepository->findSpendingFlow($input, $userId ?? 0);
 
         $header = ['Date', 'Money'];
 
@@ -138,11 +136,9 @@ class ReportsProvider
             throw GraphQLException::fromString('Unauthorized access!');
         }
 
-        /** @var Transaction[] $transactions */
-        $transactions = $this->transactionRepository->findCategorySpendingFlow(
-            $input,
-            $this->authService->getCurrentUser()->getId()
-        );
+        $userId = $this->authService->getCurrentUser()->getId();
+
+        $transactions = $this->transactionRepository->findCategorySpendingFlow($input, $userId ?? 0);
 
         $categories = $this->categoryRepository->findUserCategories($this->authService->getCurrentUser());
 
@@ -233,11 +229,8 @@ class ReportsProvider
             throw GraphQLException::fromString('Unauthorized access!');
         }
 
-        /** @var Transaction[] $transactions */
-        $result = $this->transactionRepository->findCategorySpendingPie(
-            $input,
-            $this->authService->getCurrentUser()->getId()
-        );
+        $userId = $this->authService->getCurrentUser()->getId();
+        $result = $this->transactionRepository->findCategorySpendingPie($input, $userId ?? 0);
 
         $header = ['Category', 'Money'];
         $colors = [];

@@ -70,10 +70,8 @@ class TransactionProvider
             throw GraphQLException::fromString('Unauthorized access!');
         }
 
-        $records = $this->repository->findCollection(
-            $input,
-            $this->authService->getCurrentUser()->getId()
-        );
+        $userId = $this->authService->getCurrentUser()->getId();
+        $records = $this->repository->findCollection($input, $userId ?? 0);
 
         return TransactionsPaginatedResult::fromPager($records);
     }
@@ -99,7 +97,8 @@ class TransactionProvider
             throw GraphQLException::fromString('Transaction not found!');
         }
 
-        if ($transaction->getWallet()->getUserId() !== $this->authService->getCurrentUser()->getId()) {
+        $wallet = $transaction->getWallet();
+        if ($wallet && $wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
             throw GraphQLException::fromString('Unauthorized access!');
         }
 
@@ -180,8 +179,12 @@ class TransactionProvider
 
         /**@var Transaction $transaction */
         $transaction = $this->repository->findOneById($input->id);
+        if (!$transaction) {
+            throw GraphQLException::fromString("Transaction with ID {$input->id} not found!");
+        }
 
-        if ($transaction->getWallet()->getUserId() !== $this->authService->getCurrentUser()->getId()) {
+        $wallet = $transaction->getWallet();
+        if ($wallet && $wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
             throw GraphQLException::fromString('Unauthorized operation!');
         }
 

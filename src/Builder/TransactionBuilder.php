@@ -56,7 +56,9 @@ class TransactionBuilder extends BaseBuilder
 
         if ($input->date !== null) {
             $date = $this->createFromFormat($input->date, $this->dateTimeFormat);
-            $this->withDate($date);
+            if ($date) {
+                $this->withDate($date);
+            }
         }
 
         if ($input->description !== null) {
@@ -80,15 +82,19 @@ class TransactionBuilder extends BaseBuilder
         }
 
         if ($input->walletReceiverId !== null) {
-            $this->withWalletReceiver($this->findEntity($input->walletReceiverId, Wallet::class));
+            $walletReceiver = $this->findEntity($input->walletReceiverId, Wallet::class);
+            if ($walletReceiver) {
+                $this->withWalletReceiver($walletReceiver);
 
-            $userId = $this->transaction->getWalletReceiver()->getUserId();
-            if ($userId !== $this->authorizationService->getCurrentUser()->getId()) {
-                throw new UnauthorizedOperationException();
+                $userId = $walletReceiver->getUserId();
+                if ($userId !== $this->authorizationService->getCurrentUser()->getId()) {
+                    throw new UnauthorizedOperationException();
+                }
             }
         }
 
-        if ($this->transaction->getWallet()->getUserId() !== $this->authorizationService->getCurrentUser()->getId()) {
+        $wallet = $this->transaction->getWallet();
+        if ($wallet && $wallet->getUserId() !== $this->authorizationService->getCurrentUser()->getId()) {
             throw new UnauthorizedOperationException();
         }
 

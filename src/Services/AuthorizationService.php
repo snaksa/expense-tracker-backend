@@ -62,7 +62,7 @@ class AuthorizationService
         throw new NotAuthenticatedException();
     }
 
-    public function isPasswordValid(?UserInterface $user, string $password)
+    public function isPasswordValid(?UserInterface $user, string $password): void
     {
         if (!$user || !$this->passwordEncoder->isPasswordValid($user, $password)) {
             throw new InvalidPasswordException();

@@ -35,7 +35,7 @@ class WalletRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param array $ids
+     * @param int[] $ids
      * @return Wallet[]
      */
     public function findByIds(array $ids): array
@@ -47,13 +47,13 @@ class WalletRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function remove(Wallet $wallet)
+    public function remove(Wallet $wallet): void
     {
         $this->_em->remove($wallet);
         $this->_em->flush();
     }
 
-    public function save(Wallet $wallet)
+    public function save(Wallet $wallet): void
     {
         $this->_em->persist($wallet);
         $this->_em->flush();

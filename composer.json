@@ -4,7 +4,7 @@
     "type": "project",
     "license": "proprietary",
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "beberlei/doctrineextensions": "^1.2",
@@ -32,6 +32,7 @@
         "liip/test-fixtures-bundle": "^1.0.0",
         "overblog/graphiql-bundle": "^0.2.0",
         "phpro/grumphp": "^0.22.0",
+        "phpstan/phpstan": "^0.12.42",
         "symfony/maker-bundle": "^1.14",
         "symfony/phpunit-bridge": "^5.1",
         "symfony/twig-pack": "^1.0"

@@ -2,7 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Category;
 use App\Entity\Transaction;
+use App\Entity\Wallet;
 use App\GraphQL\Types\TransactionType;
 use App\Traits\DateUtils;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -13,19 +15,22 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 {
     use DateUtils;
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
+        /** @var Wallet[] $wallets */
         $wallets = [
             $this->getReference('user_demo_wallet_cash'),
             $this->getReference('user_demo_wallet_bank'),
             $this->getReference('user_demo2_wallet_loan')
         ];
 
+        /** @var Category[] $incomeCategories */
         $incomeCategories = [
             $this->getReference('category_income'),
             $this->getReference('category_olx'),
         ];
 
+        /** @var Category[] $categories */
         $categories = [
             $this->getReference('category_food'),
             $this->getReference('category_gaming'),

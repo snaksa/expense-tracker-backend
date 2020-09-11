@@ -20,37 +20,37 @@ class Category
      * @ORM\Column(type="integer")
      * @GQL\Field
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
      * @GQL\Field
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="string", nullable=false)
      * @GQL\Field
      */
-    private $color;
+    private string $color;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      * @GQL\Field
      */
-    private $icon;
+    private ?int $icon;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $user_id;
+    private ?int $user_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="categories")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=true)
      * @GQL\Field(type="User")
      */
-    private $user;
+    private ?User $user;
 
     /**
      * @ORM\OneToMany(
@@ -61,17 +61,17 @@ class Category
      * )
      * @GQL\Field(type="[Transaction]")
      */
-    private $transactions;
+    private Collection $transactions;
 
     /**
      * @GQL\Field(type="Int", resolve="value.getTransactionsCount()")
      */
-    private $transactionsCount;
+    private int $transactionsCount;
 
     /**
      * @GQL\Field(type="Float", resolve="value.getBalance()")
      */
-    private $balance;
+    private float $balance;
 
     public function getTransactionsCount(): int
     {
@@ -143,9 +143,6 @@ class Category
         return $this;
     }
 
-    /**
-     * @return Collection|Transaction[]
-     */
     public function getTransactions(): Collection
     {
         return $this->transactions;

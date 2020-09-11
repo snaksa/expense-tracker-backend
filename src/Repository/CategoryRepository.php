@@ -54,7 +54,7 @@ class CategoryRepository extends ServiceEntityRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function save(Category $category)
+    public function save(Category $category): void
     {
         $this->_em->persist($category);
         $this->_em->flush();
@@ -65,7 +65,7 @@ class CategoryRepository extends ServiceEntityRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function remove(Category $category)
+    public function remove(Category $category): void
     {
         $this->_em->remove($category);
         $this->_em->flush();

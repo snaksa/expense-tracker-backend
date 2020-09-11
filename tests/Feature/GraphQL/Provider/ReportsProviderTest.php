@@ -95,7 +95,7 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:m:s')
+                    'startDate' => $startDate->format('Y-m-d H:i:s')
                 ]
             ],
             ['data']
@@ -158,8 +158,8 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:m:s'),
-                    'endDate' => $endDate->format('Y-m-d H:m:s')
+                    'startDate' => $startDate->format('Y-m-d H:i:s'),
+                    'endDate' => $endDate->format('Y-m-d H:i:s')
                 ]
             ],
             ['data']
@@ -201,7 +201,7 @@ class ReportsProviderTest extends BaseTestCase
             ->modify('- 2 day')
             ->setTime(23, 59, 59, 59);
 
-        $transactions = $this->filterFixtures(function ($entity) use ($startDate, $endDate, $timezone) {
+        $transactions = $this->filterFixtures(function ($entity) use ($startDate, $endDate) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
                 && $entity->getType() === TransactionType::EXPENSE
@@ -229,8 +229,8 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:m:s'),
-                    'endDate' => $endDate->format('Y-m-d H:m:s')
+                    'startDate' => $startDate->format('Y-m-d H:i:s'),
+                    'endDate' => $endDate->format('Y-m-d H:i:s')
                 ]
             ],
             ['data']
@@ -252,7 +252,7 @@ class ReportsProviderTest extends BaseTestCase
                 $values[$dateKey] = 0;
             }
 
-            $expected[] = [$dateKey, $values[$dateKey]];
+                $expected[] = [$dateKey, $values[$dateKey]];
 
             $startDate->modify('+ 1 day');
         }
@@ -298,7 +298,7 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:m:s')
+                    'startDate' => $startDate->format('Y-m-d H:i:s')
                 ]
             ],
             ['data']
@@ -376,8 +376,8 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:m:s'),
-                    'endDate' => $endDate->format('Y-m-d H:m:s')
+                    'startDate' => $startDate->format('Y-m-d H:i:s'),
+                    'endDate' => $endDate->format('Y-m-d H:i:s')
                 ]
             ],
             ['data']
@@ -456,13 +456,16 @@ class ReportsProviderTest extends BaseTestCase
         $authServiceMock->expects($this->exactly(2))->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
+        $startDate->setTimezone(new \DateTimeZone($timezone));
+        $endDate->setTimezone(new \DateTimeZone($timezone));
+
         $this->query(
             'categoriesSpendingFlow',
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:m:s'),
-                    'endDate' => $endDate->format('Y-m-d H:m:s')
+                    'startDate' => $startDate->format('Y-m-d H:i:s'),
+                    'endDate' => $endDate->format('Y-m-d H:i:s')
                 ]
             ],
             ['data']
@@ -474,7 +477,7 @@ class ReportsProviderTest extends BaseTestCase
         $this->assertArrayHasKey('categoriesSpendingFlow', $content);
         $this->assertArrayHasKey('data', $content['categoriesSpendingFlow']);
 
-        $categories = $this->filterFixtures(function ($entity) use ($startDate) {
+        $categories = $this->filterFixtures(function ($entity) {
             return $entity instanceof Category
                 && $entity->getUserId() === $this->user->getId();
         });
@@ -535,7 +538,7 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:m:s'),
+                    'startDate' => $startDate->format('Y-m-d H:i:s'),
                     'type' => new EnumType('EXPENSE')
                 ]
             ],
@@ -591,8 +594,8 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:m:s'),
-                    'endDate' => $endDate->format('Y-m-d H:m:s'),
+                    'startDate' => $startDate->format('Y-m-d H:i:s'),
+                    'endDate' => $endDate->format('Y-m-d H:i:s'),
                     'type' => new EnumType('EXPENSE')
                 ]
             ],
@@ -649,8 +652,8 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:m:s'),
-                    'endDate' => $endDate->format('Y-m-d H:m:s'),
+                    'startDate' => $startDate->format('Y-m-d H:i:s'),
+                    'endDate' => $endDate->format('Y-m-d H:i:s'),
                     'timezone' => 'Europe/Sofia',
                     'type' => new EnumType('EXPENSE')
                 ]

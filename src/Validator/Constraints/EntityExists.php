@@ -9,8 +9,8 @@ use Symfony\Component\Validator\Constraint;
  */
 class EntityExists extends Constraint
 {
-    public $entityClass = null;
-    public $idField = 'id';
-    public $message = "Entity doesn't exist";
-    public $allowNull = false;
+    public string $entityClass = '';
+    public string $idField = 'id';
+    public string $message = "Entity doesn't exist";
+    public bool $allowNull = false;
 }

@@ -20,55 +20,57 @@ class Wallet
      * @ORM\Column(type="integer")
      * @GQL\Field
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
      * @GQL\Field
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="string", nullable=false)
      * @GQL\Field
      */
-    private $color;
+    private string $color;
 
     /**
      * @ORM\Column(type="float", nullable=false)
      * @GQL\Field
      */
-    private $amount = 0;
+    private float $amount = 0;
 
     /**
      * @ORM\Column(type="float", nullable=false)
      * @GQL\Field
      */
-    private $initial_amount = 0;
+    private float $initial_amount = 0;
 
     /**
      * @ORM\Column(type="integer", nullable=false)
      */
-    private $user_id;
+    private int $user_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="wallets")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      * @GQL\Field(type="User")
      */
-    private $user;
+    private User $user;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="wallet")
      * @GQL\Field(type="[Transaction]")
+     * @var Collection<Transaction>
      */
-    private $transactions;
+    private Collection $transactions;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="wallet_receiver")
      * @GQL\Field(type="[Transaction]")
+     * @var Collection<Transaction>
      */
-    private $transferInTransactions;
+    private Collection $transferInTransactions;
 
     public function __construct()
     {
@@ -129,7 +131,7 @@ class Wallet
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 

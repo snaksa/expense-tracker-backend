@@ -10,17 +10,17 @@ trait PaginationUtils
     /**
      * @GQL\Field(type="Int")
      */
-    public $limit;
+    public ?int $limit;
 
     /**
      * @GQL\Field(type="Int")
      */
-    public $page;
+    public ?int $page;
 
     /**
      * @GQL\Field(type="Boolean")
      */
-    public $unlimited = false;
+    public ?bool $unlimited = false;
 
     /**
      * @return int

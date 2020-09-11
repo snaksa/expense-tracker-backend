@@ -18,69 +18,67 @@ class Transaction
      * @ORM\Column(type="integer")
      * @GQL\Field
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
      * @GQL\Field
      */
-    private $description;
+    private string $description;
 
     /**
      * @ORM\Column(type="float", nullable=false)
      * @GQL\Field
      */
-    private $value;
+    private float $value;
 
     /**
      * @ORM\Column(type="integer", nullable=false)
      * @GQL\Field(type="TransactionType!")
      */
-    private $type;
+    private int $type;
 
-    /**
-     * @var \DateTimeInterface
-     *
+    /**     *
      * @ORM\Column(type="datetime", nullable=false)
      * @GQL\Field(type="DateTime")
      */
-    private $date;
+    private \DateTimeInterface $date;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $wallet_id;
+    private ?int $wallet_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Wallet", inversedBy="transactions")
      * @ORM\JoinColumn(name="wallet_id", referencedColumnName="id", nullable=true)
      * @GQL\Field(type="Wallet")
      */
-    private $wallet;
+    private ?Wallet $wallet;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $wallet_receiver_id;
+    private ?int $wallet_receiver_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Wallet", inversedBy="transactions")
      * @ORM\JoinColumn(name="wallet_receiver_id", referencedColumnName="id", nullable=true)
      * @GQL\Field(type="Wallet", name="walletReceiver", resolve="value.getWalletReceiver()")
      */
-    private $wallet_receiver;
+    private ?Wallet $wallet_receiver;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $category_id;
+    private ?int $category_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="transactions")
      * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=true)
      * @GQL\Field(type="Category")
      */
-    private $category;
+    private ?Category $category = null;
 
     public function __construct()
     {

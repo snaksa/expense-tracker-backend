@@ -55,9 +55,13 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 
         try {
             $result = $this->jwtManager->decode($t);
+            if (!$result) {
+                return null;
+            }
         } catch (\Exception $ex) {
             return null;
         }
+
 
         $email = $result['username'];
 
@@ -69,7 +73,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
         return true;
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey)
     {
         return null;
     }

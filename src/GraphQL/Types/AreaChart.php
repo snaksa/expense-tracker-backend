@@ -27,7 +27,7 @@ class AreaChart
      */
     public $colors = [];
 
-    public static function fromData(array $header, array $data, array $colors = [])
+    public static function fromData(array $header, array $data, array $colors = []): self
     {
         $result = new self();
         $result->header = $header;

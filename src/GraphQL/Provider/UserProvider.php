@@ -108,6 +108,10 @@ class UserProvider
             'email' => $input->email
         ]);
 
+        if (!$user) {
+            throw GraphQLException::fromString('Wrong credentials!');
+        }
+
         try {
             $this->authService->isPasswordValid($user, $input->password);
         } catch (InvalidPasswordException $ex) {

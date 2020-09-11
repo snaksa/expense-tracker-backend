@@ -12,37 +12,31 @@ class CategoryRecordsRequest
 {
     /**
      * @GQL\Field(type="[Int]!")
-     * @var int[]
      */
-    public $walletIds;
+    public array $walletIds;
 
     /**
      * @GQL\Field(type="[Int]")
-     * @var int[]
      */
-    public $categoryIds;
+    public ?array $categoryIds;
 
     /**
      * @GQL\Field(type="TransactionType")
-     * @var TransactionType
      */
-    public $type;
+    public ?TransactionType $type;
 
     /**
      * @GQL\Field(type="String")
-     * @var string
      */
-    public $startDate;
+    public ?string $startDate;
 
     /**
      * @GQL\Field(type="String")
-     * @var string
      */
-    public $endDate;
+    public ?string $endDate;
 
     /**
      * @GQL\Field(type="String")
-     * @var string
      */
-    public $timezone;
+    public ?string $timezone;
 }

@@ -31,8 +31,14 @@ class WalletBuilder extends BaseBuilder
     public function create(): self
     {
         $this->wallet = new Wallet();
-        $this->wallet->setUserId($this->authorizationService->getCurrentUser()->getId());
-        $this->wallet->setUser($this->authorizationService->getCurrentUser());
+
+        $user = $this->authorizationService->getCurrentUser();
+        $this->wallet->setUser($user);
+
+        $userId = $user->getId();
+        if ($userId) {
+            $this->wallet->setUserId($userId);
+        }
 
         return $this;
     }

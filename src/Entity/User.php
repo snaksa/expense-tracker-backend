@@ -20,64 +20,62 @@ class User implements UserInterface
      * @ORM\Column(type="integer")
      * @GQL\Field
      */
-    private $id;
+    private ?int $id = null;
 
     /**
-     * @var string
      * @ORM\Column(type="string", nullable=true)
      * @GQL\Field(type="String", name="firstName", resolve="value.getFirstName()")
      */
-    private $first_name;
+    private ?string $first_name;
 
     /**
-     * @var string
      * @ORM\Column(type="string", nullable=true)
      * @GQL\Field(type="String", name="lastName", resolve="value.getLastName()")
      */
-    private $last_name;
+    private ?string $last_name;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @GQL\Field
      */
-    private $email;
+    private ?string $email;
 
     /**
      * @ORM\Column(type="json")
+     * @var string[]
      */
-    private $roles = [];
+    private array $roles = [];
 
     /**
-     * @var string The hashed password
      * @ORM\Column(type="string")
      */
-    private $password;
+    private string $password;
 
     /**
-     * @var string
      * @ORM\Column(type="string", nullable=true)
      * @GQL\Field
      */
-    private $currency = 'USD';
+    private ?string $currency = 'USD';
 
     /**
-     * @var string
      * @ORM\Column(type="string", nullable=true)
      * @GQL\Field
      */
-    private $language = 'EN';
+    private ?string $language = 'EN';
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Category", mappedBy="user")
      * @GQL\Field(type="[Category]")
+     * @var Collection
      */
-    private $categories;
+    private Collection $categories;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Wallet", mappedBy="user")
      * @GQL\Field(type="[Wallet]")
+     * @var Collection<Wallet>
      */
-    private $wallets;
+    private Collection $wallets;
 
     public function __construct()
     {
@@ -131,6 +129,10 @@ class User implements UserInterface
         return array_unique($roles);
     }
 
+    /**
+     * @param string[] $roles
+     * @return $this
+     */
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -158,13 +160,14 @@ class User implements UserInterface
      */
     public function getSalt()
     {
+        return null;
         // not needed when using the "bcrypt" algorithm in security.yaml
     }
 
     /**
      * @see UserInterface
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
@@ -193,9 +196,6 @@ class User implements UserInterface
         if ($this->wallets->contains($wallet)) {
             $this->wallets->removeElement($wallet);
             // set the owning side to null (unless already changed)
-            if ($wallet->getUser() === $this) {
-                $wallet->setUser(null);
-            }
         }
 
         return $this;

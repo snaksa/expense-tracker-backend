@@ -27,7 +27,7 @@ class CreateListener
         $this->walletRepository = $walletRepository;
     }
 
-    public function postPersist(User $user, LifecycleEventArgs $args)
+    public function postPersist(User $user, LifecycleEventArgs $args): void
     {
         $categories = [
             [

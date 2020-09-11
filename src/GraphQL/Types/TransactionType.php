@@ -19,5 +19,5 @@ class TransactionType
     const EXPENSE = 2;
     const TRANSFER = 3;
 
-    public $value;
+    public int $value;
 }

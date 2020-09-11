@@ -39,7 +39,7 @@ class TransactionRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function findCollection(TransactionRecordsRequest $filters, int $userId)
+    public function findCollection(TransactionRecordsRequest $filters, int $userId): Pagerfanta
     {
         $where = [
             '(t.wallet_id IN (:walletIds) OR t.wallet_receiver_id IN (:walletIds))',
@@ -80,7 +80,7 @@ class TransactionRepository extends ServiceEntityRepository
         return $pager;
     }
 
-    public function findSpendingFlow(TransactionRecordsRequest $filters, int $userId)
+    public function findSpendingFlow(TransactionRecordsRequest $filters, int $userId): array
     {
         $where = ['t.type = :type', 't.wallet_id IN (:walletIds)', 'w.user_id = :userId'];
         $params = [
@@ -116,7 +116,7 @@ class TransactionRepository extends ServiceEntityRepository
     }
 
 
-    public function findCategorySpendingFlow(CategoryRecordsRequest $filters, int $userId)
+    public function findCategorySpendingFlow(CategoryRecordsRequest $filters, int $userId): array
     {
         $where = ['t.wallet_id IN (:walletIds)', 't.type = :type', 'w.user_id = :userId'];
         $params = [
@@ -151,7 +151,7 @@ class TransactionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findCategorySpendingPie(CategoryRecordsRequest $filters, int $userId)
+    public function findCategorySpendingPie(CategoryRecordsRequest $filters, int $userId): array
     {
         $where = ['t.wallet_id IN (:walletIds)', 'w.user_id = :userId'];
         $params = [
@@ -189,7 +189,7 @@ class TransactionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function removeByWalletId(int $walletId)
+    public function removeByWalletId(int $walletId): void
     {
         $transactions = $this->createQueryBuilder('t')
             ->where('t.wallet_id = :id OR t.wallet_receiver_id = :id')
@@ -204,13 +204,13 @@ class TransactionRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
-    public function remove(Transaction $transaction)
+    public function remove(Transaction $transaction): void
     {
         $this->_em->remove($transaction);
         $this->_em->flush();
     }
 
-    public function save(Transaction $transaction)
+    public function save(Transaction $transaction): void
     {
         $this->_em->persist($transaction);
         $this->_em->flush();

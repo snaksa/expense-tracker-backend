@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Types;
 
+use App\Entity\Transaction;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
@@ -11,7 +12,7 @@ class TransactionsPaginatedResult extends PaginatedResult
 {
     /**
      * @GQL\Field(type="[Transaction]!")
-     * @var array
+     * @var Transaction[]
      */
     public $data = [];
 }

@@ -72,7 +72,7 @@ class TransactionProviderTest extends BaseTestCase
         });
 
         usort($transactions, function (Transaction $a, Transaction $b) {
-            return $a->getDate()->format('Y-m-d H:m:s') === $b->getDate()->format('Y-m-d H:m:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
+            return $a->getDate()->format('Y-m-d H:i:s') === $b->getDate()->format('Y-m-d H:i:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
         });
 
         $transactions = array_slice($transactions, 0, 10);
@@ -121,7 +121,7 @@ class TransactionProviderTest extends BaseTestCase
         });
 
         usort($transactions, function (Transaction $a, Transaction $b) {
-            return $a->getDate()->format('Y-m-d H:m:s') === $b->getDate()->format('Y-m-d H:m:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
+            return $a->getDate()->format('Y-m-d H:i:s') === $b->getDate()->format('Y-m-d H:i:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
         });
 
         $transactions = array_slice($transactions, 0, 10);
@@ -136,7 +136,7 @@ class TransactionProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $date->format('Y-m-d H:m:s')
+                    'startDate' => $date->format('Y-m-d H:i:s')
                 ]
             ],
             ['data' => ['id', 'date']]
@@ -171,7 +171,7 @@ class TransactionProviderTest extends BaseTestCase
         });
 
         usort($transactions, function (Transaction $a, Transaction $b) {
-            return $a->getDate()->format('Y-m-d H:m:s') === $b->getDate()->format('Y-m-d H:m:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
+            return $a->getDate()->format('Y-m-d H:i:s') === $b->getDate()->format('Y-m-d H:i:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
         });
 
         $transactions = array_slice($transactions, 0, 10);
@@ -186,7 +186,7 @@ class TransactionProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'endDate' => $date->format('Y-m-d H:m:s')
+                    'endDate' => $date->format('Y-m-d H:i:s')
                 ]
             ],
             ['data' => ['id', 'date']]
@@ -223,7 +223,7 @@ class TransactionProviderTest extends BaseTestCase
         });
 
         usort($transactions, function (Transaction $a, Transaction $b) {
-            return $a->getDate()->format('Y-m-d H:m:s') === $b->getDate()->format('Y-m-d H:m:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
+            return $a->getDate()->format('Y-m-d H:i:s') === $b->getDate()->format('Y-m-d H:i:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
         });
 
         $transactions = array_slice($transactions, 0, 10);
@@ -238,8 +238,8 @@ class TransactionProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:m:s'),
-                    'endDate' => $endDate->format('Y-m-d H:m:s')
+                    'startDate' => $startDate->format('Y-m-d H:i:s'),
+                    'endDate' => $endDate->format('Y-m-d H:i:s')
                 ]
             ],
             ['data' => ['id', 'date']]
@@ -284,7 +284,7 @@ class TransactionProviderTest extends BaseTestCase
         });
 
         usort($transactions, function (Transaction $a, Transaction $b) {
-            return $a->getDate()->format('Y-m-d H:m:s') === $b->getDate()->format('Y-m-d H:m:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
+            return $a->getDate()->format('Y-m-d H:i:s') === $b->getDate()->format('Y-m-d H:i:s') ? $a->getId() > $b->getId() : $a->getDate() < $b->getDate();
         });
 
         $transactions = array_slice($transactions, 0, 10);
@@ -299,8 +299,8 @@ class TransactionProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:m:s'),
-                    'endDate' => $endDate->format('Y-m-d H:m:s'),
+                    'startDate' => $startDate->format('Y-m-d H:i:s'),
+                    'endDate' => $endDate->format('Y-m-d H:i:s'),
                     'timezone' => $timezone
                 ]
             ],
