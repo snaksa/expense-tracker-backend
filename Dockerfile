@@ -10,6 +10,11 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
         && apt-get install -y libzip-dev zip \
         && docker-php-ext-install pdo_mysql zip
 
+ENV PHPCS_VERSION=3.5.6
+
+RUN curl -L https://github.com/squizlabs/PHP_CodeSniffer/releases/download/$PHPCS_VERSION/phpcs.phar > /usr/local/bin/phpcs \
+    && chmod +x /usr/local/bin/phpcs
+
 WORKDIR /var/www/html
 
 COPY . .
