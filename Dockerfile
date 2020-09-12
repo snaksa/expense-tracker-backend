@@ -1,7 +1,7 @@
 FROM php:7.4-apache
 
 ENV APACHE_DOCUMENT_ROOT=/vaw/www/html/public
-ENV PHPCS_VERSION=3.5.6
+ENV PHPCS_VERSION=3.5.4
 
 RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-setup.php.sig \
         && curl -sS https://getcomposer.org/installer | tee composer-setup.php | sha384sum -c composer-setup.php.sig \
@@ -10,9 +10,6 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
         && apt-get update \
         && apt-get install -y libzip-dev zip \
         && docker-php-ext-install pdo_mysql zip
-
-RUN curl -L https://github.com/squizlabs/PHP_CodeSniffer/releases/download/$PHPCS_VERSION/phpcs.phar > /usr/bin/phpcs \
-    && chmod +x /usr/bin/phpcs
 
 WORKDIR /var/www/html
 
