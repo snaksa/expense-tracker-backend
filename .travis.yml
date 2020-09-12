@@ -9,5 +9,5 @@ before_script:
 
 script:
   - ./vendor/bin/phpunit
-  - ./vendor/bin/grumphp run --quiet
+  - ./vendor/bin/grumphp run
   - ./vendor/bin/phpstan analyse
