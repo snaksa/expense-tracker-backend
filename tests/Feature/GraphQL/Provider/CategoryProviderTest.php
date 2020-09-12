@@ -203,7 +203,7 @@ class CategoryProviderTest extends BaseTestCase
     public function can_create_category(): void
     {
         $categoryRepository = $this->createMock(CategoryRepository::class);
-        $categoryRepository->expects($this->once())->method('save')->willReturn(null);
+        $categoryRepository->expects($this->once())->method('save');
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
         $authServiceMock = $this->createMock(AuthorizationService::class);
@@ -318,7 +318,7 @@ class CategoryProviderTest extends BaseTestCase
 
         $categoryRepository = $this->createMock(CategoryRepository::class);
         $categoryRepository->expects($this->exactly(2))->method('find')->with($category->getId())->willReturn($category);
-        $categoryRepository->expects($this->once())->method('save')->willReturn($category);
+        $categoryRepository->expects($this->once())->method('save');
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
         $authServiceMock = $this->createMock(AuthorizationService::class);
@@ -461,7 +461,7 @@ class CategoryProviderTest extends BaseTestCase
         $categoryRepository = $this->createMock(CategoryRepository::class);
         $categoryRepository->expects($this->once())->method('find')->with($category->getId())->willReturn($category);
         $categoryRepository->expects($this->once())->method('findOneById')->with($category->getId())->willReturn($category);
-        $categoryRepository->expects($this->once())->method('remove')->willReturn($category);
+        $categoryRepository->expects($this->once())->method('remove');
         $this->client->getContainer()->set(CategoryRepository::class, $categoryRepository);
 
         $authServiceMock = $this->createMock(AuthorizationService::class);

@@ -421,15 +421,22 @@ class ReportsProviderTest extends BaseTestCase
     {
         $timezone = 'Europe/Sofia';
 
-        $startDate = $this->getCurrentDateTime()->modify('- 5 day')->setTime(0, 0, 0, 0);
-        $endDate = $this->getCurrentDateTime()->modify('- 2 day')->setTime(23, 59, 59, 59);
+        $startDate = $this->getCurrentDateTime()
+            ->setTimezone(new \DateTimeZone($timezone))
+            ->modify('- 5 day')
+            ->setTime(0, 0, 0, 0);
+
+        $endDate = $this->getCurrentDateTime()
+            ->setTimezone(new \DateTimeZone($timezone))
+            ->modify('- 2 day')
+            ->setTime(23, 59, 59, 59);
 
         $transactions = $this->filterFixtures(function ($entity) use ($startDate, $endDate, $timezone) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
                 && $entity->getType() === TransactionType::EXPENSE
-                && $entity->getDate() >= $startDate
-                && $entity->getDate() <= $endDate;
+                && $entity->getDate() >= (clone $startDate)->setTimezone($this->getUTCTimeZone())
+                && $entity->getDate() <= (clone $endDate)->setTimezone($this->getUTCTimeZone());
         });
 
         $values = [];
@@ -456,16 +463,14 @@ class ReportsProviderTest extends BaseTestCase
         $authServiceMock->expects($this->exactly(2))->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
-        $startDate->setTimezone(new \DateTimeZone($timezone));
-        $endDate->setTimezone(new \DateTimeZone($timezone));
-
         $this->query(
             'categoriesSpendingFlow',
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:i:s'),
-                    'endDate' => $endDate->format('Y-m-d H:i:s')
+                    'startDate' => (clone $startDate)->setTimezone($this->getUTCTimeZone())->format('Y-m-d H:i:s'),
+                    'endDate' => (clone $endDate)->setTimezone($this->getUTCTimeZone())->format('Y-m-d H:i:s'),
+                    'timezone' => $timezone
                 ]
             ],
             ['data']
@@ -481,9 +486,6 @@ class ReportsProviderTest extends BaseTestCase
             return $entity instanceof Category
                 && $entity->getUserId() === $this->user->getId();
         });
-
-        $startDate->setTimezone(new \DateTimeZone($timezone));
-        $endDate->setTimezone(new \DateTimeZone($timezone));
 
         $expected = [];
         while ($startDate && $startDate <= $endDate) {
@@ -621,15 +623,17 @@ class ReportsProviderTest extends BaseTestCase
      */
     public function can_retrieve_category_spending_pie_chart_by_start_date_and_end_date_with_timezone(): void
     {
-        $startDate = $this->getCurrentDateTime()->modify('- 5 day')->setTime(0, 0, 0, 0);
-        $endDate = $this->getCurrentDateTime()->modify('- 2 day')->setTime(0, 0, 0, 0);
+        $timezone = 'Europe/Sofia';
+
+        $startDate = $this->getCurrentDateTime()->setTimezone(new \DateTimeZone($timezone))->modify('- 5 day')->setTime(0, 0, 0, 0);
+        $endDate = $this->getCurrentDateTime()->setTimezone(new \DateTimeZone($timezone))->modify('- 2 day')->setTime(23, 59, 59, 59);
 
         $transactions = $this->filterFixtures(function ($entity) use ($startDate,$endDate) {
             return $entity instanceof Transaction
                 && $entity->getType() === TransactionType::EXPENSE
                 && $entity->getWalletId() === $this->wallet->getId()
-                && $entity->getDate() >= $startDate
-                && $entity->getDate() <= $endDate;
+                && $entity->getDate() >= (clone $startDate)->setTimezone($this->getUTCTimeZone())
+                && $entity->getDate() <= (clone $endDate)->setTimezone($this->getUTCTimeZone());
         });
 
         $values = [];
@@ -652,9 +656,9 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:i:s'),
-                    'endDate' => $endDate->format('Y-m-d H:i:s'),
-                    'timezone' => 'Europe/Sofia',
+                    'startDate' => (clone $startDate)->setTimezone($this->getUTCTimeZone())->format('Y-m-d H:i:s'),
+                    'endDate' => (clone $endDate)->setTimezone($this->getUTCTimeZone())->format('Y-m-d H:i:s'),
+                    'timezone' => $timezone,
                     'type' => new EnumType('EXPENSE')
                 ]
             ],

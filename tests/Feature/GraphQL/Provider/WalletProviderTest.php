@@ -203,12 +203,12 @@ class WalletProviderTest extends BaseTestCase
     public function can_create_wallet(): void
     {
         $walletRepository = $this->createMock(WalletRepository::class);
-        $walletRepository->expects($this->once())->method('save')->willReturn(null);
+        $walletRepository->expects($this->once())->method('save');
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
         $authServiceMock = $this->createMock(AuthorizationService::class);
         $authServiceMock->expects($this->once())->method('isLoggedIn')->willReturn(true);
-        $authServiceMock->expects($this->exactly(3))->method('getCurrentUser')->willReturn($this->user);
+        $authServiceMock->expects($this->exactly(2))->method('getCurrentUser')->willReturn($this->user);
         $this->client->getContainer()->set(AuthorizationService::class, $authServiceMock);
 
         $inputParams = [
@@ -318,7 +318,7 @@ class WalletProviderTest extends BaseTestCase
 
         $walletRepository = $this->createMock(WalletRepository::class);
         $walletRepository->expects($this->exactly(2))->method('find')->with($wallet->getId())->willReturn($wallet);
-        $walletRepository->expects($this->once())->method('save')->willReturn($wallet);
+        $walletRepository->expects($this->once())->method('save');
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
         $authServiceMock = $this->createMock(AuthorizationService::class);
@@ -460,7 +460,7 @@ class WalletProviderTest extends BaseTestCase
         $walletRepository = $this->createMock(WalletRepository::class);
         $walletRepository->expects($this->once())->method('find')->with($wallet->getId())->willReturn($wallet);
         $walletRepository->expects($this->once())->method('findOneById')->with($wallet->getId())->willReturn($wallet);
-        $walletRepository->expects($this->once())->method('remove')->willReturn($wallet);
+        $walletRepository->expects($this->once())->method('remove');
         $this->client->getContainer()->set(WalletRepository::class, $walletRepository);
 
         $authServiceMock = $this->createMock(AuthorizationService::class);

@@ -215,6 +215,12 @@
             "config/routes/graphql.yaml"
         ]
     },
+    "pagerfanta/core": {
+        "version": "v2.4.1"
+    },
+    "pagerfanta/doctrine-orm-adapter": {
+        "version": "v2.4.1"
+    },
     "pagerfanta/pagerfanta": {
         "version": "v2.1.3"
     },

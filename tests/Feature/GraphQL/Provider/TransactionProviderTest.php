@@ -269,18 +269,20 @@ class TransactionProviderTest extends BaseTestCase
         $timezone = 'Europe/Sofia';
 
         $startDate = $this->getCurrentDateTime()
+            ->setTimezone(new \DateTimeZone($timezone))
             ->modify('- 3 day')
             ->setTime(0, 0, 0, 0);
 
         $endDate = $this->getCurrentDateTime()
+            ->setTimezone(new \DateTimeZone($timezone))
             ->modify('- 1 day')
             ->setTime(23, 59, 59, 59);
 
         $transactions = $this->filterFixtures(function ($entity) use ($startDate, $endDate, $timezone) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
-                && $entity->getDate()->setTimezone(new \DateTimeZone($timezone)) >= $startDate->setTimezone(new \DateTimeZone($timezone))
-                && $entity->getDate()->setTimezone(new \DateTimeZone($timezone)) <= $endDate->setTimezone(new \DateTimeZone($timezone));
+                && $entity->getDate() >= (clone $startDate)->setTimezone($this->getUTCTimeZone())
+                && $entity->getDate() <= (clone $endDate)->setTimezone($this->getUTCTimeZone());
         });
 
         usort($transactions, function (Transaction $a, Transaction $b) {
@@ -299,8 +301,8 @@ class TransactionProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
-                    'startDate' => $startDate->format('Y-m-d H:i:s'),
-                    'endDate' => $endDate->format('Y-m-d H:i:s'),
+                    'startDate' => (clone $startDate)->setTimezone($this->getUTCTimeZone())->format('Y-m-d H:i:s'),
+                    'endDate' => (clone $endDate)->setTimezone($this->getUTCTimeZone())->format('Y-m-d H:i:s'),
                     'timezone' => $timezone
                 ]
             ],
@@ -494,7 +496,7 @@ class TransactionProviderTest extends BaseTestCase
     public function can_create_transaction(): void
     {
         $transactionRepository = $this->createMock(TransactionRepository::class);
-        $transactionRepository->expects($this->once())->method('save')->willReturn(null);
+        $transactionRepository->expects($this->once())->method('save');
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
         $authServiceMock = $this->createMock(AuthorizationService::class);
@@ -698,7 +700,7 @@ class TransactionProviderTest extends BaseTestCase
 
         $transactionRepository = $this->createMock(TransactionRepository::class);
         $transactionRepository->expects($this->exactly(2))->method('find')->willReturn($transaction);
-        $transactionRepository->expects($this->once())->method('save')->willReturn(null);
+        $transactionRepository->expects($this->once())->method('save');
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
         $authServiceMock = $this->createMock(AuthorizationService::class);
@@ -861,7 +863,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactionRepository = $this->createMock(TransactionRepository::class);
         $transactionRepository->expects($this->once())->method('find')->with($transaction->getId())->willReturn($transaction);
         $transactionRepository->expects($this->once())->method('findOneById')->with($transaction->getId())->willReturn($transaction);
-        $transactionRepository->expects($this->once())->method('remove')->willReturn($transaction);
+        $transactionRepository->expects($this->once())->method('remove');
         $this->client->getContainer()->set(TransactionRepository::class, $transactionRepository);
 
         $authServiceMock = $this->createMock(AuthorizationService::class);

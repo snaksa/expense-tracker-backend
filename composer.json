@@ -12,6 +12,7 @@
         "lexik/jwt-authentication-bundle": "^2.6",
         "nelmio/cors-bundle": "^2.0",
         "overblog/graphql-bundle": "^0.13.1",
+        "pagerfanta/doctrine-orm-adapter": "^2.4",
         "pagerfanta/pagerfanta": "^2.1",
         "sensiolabs/security-checker": "^6.0",
         "symfony/console": "5.1.*",

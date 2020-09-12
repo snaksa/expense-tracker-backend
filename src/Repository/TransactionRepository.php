@@ -9,7 +9,7 @@ use App\GraphQL\Types\TransactionType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\NonUniqueResultException;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 
 /**
@@ -73,7 +73,7 @@ class TransactionRepository extends ServiceEntityRepository
             ->setParameters($params)
             ->orderBy('t.date', 'DESC');
 
-        $pager = new Pagerfanta(new DoctrineORMAdapter($query));
+        $pager = new Pagerfanta(new QueryAdapter($query));
         $pager->setMaxPerPage($filters->getLimit());
         $pager->setCurrentPage($filters->getPage());
 
