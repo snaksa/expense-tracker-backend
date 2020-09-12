@@ -6,7 +6,6 @@ php:
 before_script:
   - composer self-update
   - composer install --no-interaction
-  - composer require "squizlabs/php_codesniffer=*"
 
 script:
   - ./vendor/bin/phpunit
