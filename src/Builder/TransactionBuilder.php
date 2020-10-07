@@ -3,12 +3,12 @@
 namespace App\Builder;
 
 use App\Entity\Category;
+use App\Entity\Label;
 use App\Entity\Transaction;
 use App\Entity\Wallet;
 use App\Exception\RequiredEntityException;
 use App\Exception\UnauthorizedOperationException;
 use App\GraphQL\Input\Transaction\TransactionRequest;
-use App\GraphQL\Types\DateTime;
 use App\GraphQL\Types\TransactionType;
 use App\Services\AuthorizationService;
 use App\Traits\DateUtils;
@@ -19,15 +19,8 @@ class TransactionBuilder extends BaseBuilder
 {
     use DateUtils;
 
-    /**
-     * @var Transaction
-     */
-    private $transaction;
-
-    /**
-     * @var AuthorizationService
-     */
-    private $authorizationService;
+    private Transaction $transaction;
+    private AuthorizationService $authorizationService;
 
     public function __construct(EntityManagerInterface $entityManager, AuthorizationService $authorizationService)
     {
@@ -89,6 +82,29 @@ class TransactionBuilder extends BaseBuilder
                 $userId = $walletReceiver->getUserId();
                 if ($userId !== $this->authorizationService->getCurrentUser()->getId()) {
                     throw new UnauthorizedOperationException();
+                }
+            }
+        }
+
+        if ($input->labelIds !== null) {
+            $newIds = $input->labelIds;
+            $oldIds = $this->transaction->getLabels()->map(function (Label $label) {
+                return $label->getId();
+            })->toArray();
+
+            $toRemoveIds = array_diff($oldIds, $newIds);
+
+            foreach ($newIds as $labelId) {
+                if (!in_array($labelId, $oldIds)) {
+                    $label = $this->findEntity($labelId, Label::class);
+                    $this->addLabel($label);
+                }
+            }
+
+            foreach ($toRemoveIds as $labelId) {
+                $label = $this->findEntity($labelId, Label::class);
+                if ($label) {
+                    $this->removeLabel($label);
                 }
             }
         }
@@ -157,6 +173,20 @@ class TransactionBuilder extends BaseBuilder
     public function withWalletReceiver(Wallet $wallet): self
     {
         $this->transaction->setWalletReceiver($wallet);
+
+        return $this;
+    }
+
+    public function addLabel(Label $label): self
+    {
+        $this->transaction->addLabel($label);
+
+        return $this;
+    }
+
+    public function removeLabel(Label $label): self
+    {
+        $this->transaction->removeLabel($label);
 
         return $this;
     }

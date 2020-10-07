@@ -3,28 +3,28 @@
 namespace App\EventListener\User;
 
 use App\Entity\Category;
+use App\Entity\Label;
 use App\Entity\User;
 use App\Entity\Wallet;
 use App\Repository\CategoryRepository;
+use App\Repository\LabelRepository;
 use App\Repository\WalletRepository;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 class CreateListener
 {
-    /**
-     * @var CategoryRepository
-     */
-    private $categoryRepository;
+    private CategoryRepository $categoryRepository;
+    private WalletRepository $walletRepository;
+    private LabelRepository $labelRepository;
 
-    /**
-     * @var WalletRepository
-     */
-    private $walletRepository;
-
-    public function __construct(CategoryRepository $categoryRepository, WalletRepository $walletRepository)
-    {
+    public function __construct(
+        CategoryRepository $categoryRepository,
+        WalletRepository $walletRepository,
+        LabelRepository $labelRepository
+    ) {
         $this->categoryRepository = $categoryRepository;
         $this->walletRepository = $walletRepository;
+        $this->labelRepository = $labelRepository;
     }
 
     public function postPersist(User $user, LifecycleEventArgs $args): void
@@ -86,6 +86,24 @@ class CreateListener
             $wallet->setInitialAmount(0);
             $wallet->setColor($w['color']);
             $this->walletRepository->save($wallet);
+        }
+
+        $labels = [
+            [
+                'name' => 'Essentials',
+                'color' => '#f98f83',
+            ],
+            [
+                'name' => 'Spoiling',
+                'color' => '#a6a6a6',
+            ],
+        ];
+
+        foreach ($labels as $l) {
+            $label = new Label();
+            $label->setName($l['name']);
+            $label->setColor($l['color']);
+            $this->labelRepository->save($label);
         }
     }
 }

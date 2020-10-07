@@ -45,4 +45,9 @@ abstract class TransactionRequest
      * @var integer
      */
     public $walletReceiverId;
+
+    /**
+     * @var int[]
+     */
+    public $labelIds;
 }

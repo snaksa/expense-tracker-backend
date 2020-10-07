@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
@@ -80,9 +82,16 @@ class Transaction
      */
     private ?Category $category = null;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Label", inversedBy="transactions")
+     * @GQL\Field(type="[Label]")
+     */
+    private Collection $labels;
+
     public function __construct()
     {
         $this->date = new \DateTime();
+        $this->labels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -206,6 +215,32 @@ class Transaction
     public function setWalletReceiver(?Wallet $wallet_receiver): self
     {
         $this->wallet_receiver = $wallet_receiver;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Label[]
+     */
+    public function getLabels(): Collection
+    {
+        return $this->labels;
+    }
+
+    public function addLabel(Label $label): self
+    {
+        if (!$this->labels->contains($label)) {
+            $this->labels[] = $label;
+        }
+
+        return $this;
+    }
+
+    public function removeLabel(Label $label): self
+    {
+        if ($this->labels->contains($label)) {
+            $this->labels->removeElement($label);
+        }
 
         return $this;
     }
