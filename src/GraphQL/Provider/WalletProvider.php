@@ -172,13 +172,6 @@ class WalletProvider
             throw GraphQLException::fromString('Unauthorized operation!');
         }
 
-        foreach ($wallet->getTransactions() as $transaction) {
-            if ($transaction->getType() === TransactionType::TRANSFER) {
-                $transaction->setWallet(null);
-                $this->transactionRepository->save($transaction);
-            }
-        }
-
         foreach ($wallet->getTransferInTransactions() as $transaction) {
             $transaction->setWalletReceiver(null);
             $this->transactionRepository->save($transaction);

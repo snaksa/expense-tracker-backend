@@ -77,4 +77,10 @@ class TransactionUpdateRequest extends TransactionRequest
      * @var integer
      */
     public $walletReceiverId;
+
+    /**
+     * @GQL\Field(type="[Int]")
+     * @var int[]
+     */
+    public $labelIds;
 }

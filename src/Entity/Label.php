@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\GraphQL\Types\TransactionType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,9 +9,10 @@ use Overblog\GraphQLBundle\Annotation as GQL;
 
 /**
  * @GQL\Type
- * @ORM\Entity(repositoryClass="App\Repository\CategoryRepository")
+ * @ORM\Table(name="label")
+ * @ORM\Entity(repositoryClass="App\Repository\LabelRepository")
  */
-class Category
+class Label
 {
     /**
      * @ORM\Id
@@ -20,7 +20,7 @@ class Category
      * @ORM\Column(type="integer")
      * @GQL\Field
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
@@ -35,60 +35,22 @@ class Category
     private string $color;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
-     * @GQL\Field
-     */
-    private ?int $icon = null;
-
-    /**
      * @ORM\Column(type="integer", nullable=false)
      */
     private int $user_id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="categories")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="labels")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      * @GQL\Field(type="User")
      */
     private User $user;
-
+    
     /**
-     * @ORM\OneToMany(
-     *     targetEntity="App\Entity\Transaction",
-     *     mappedBy="category",
-     *     cascade={"persist", "remove"},
-     *     orphanRemoval=true
-     * )
+     * @ORM\ManyToMany(targetEntity="Transaction", mappedBy="labels")
      * @GQL\Field(type="[Transaction]")
      */
     private Collection $transactions;
-
-    /**
-     * @GQL\Field(type="Int", resolve="value.getTransactionsCount()")
-     */
-    private int $transactionsCount;
-
-    /**
-     * @GQL\Field(type="Float", resolve="value.getBalance()")
-     */
-    private float $balance;
-
-    public function getTransactionsCount(): int
-    {
-        return $this->getTransactions()->count();
-    }
-
-    public function getBalance(): float
-    {
-        $total = 0;
-        /**@var Transaction[] $transactions */
-        $transactions = $this->getTransactions()->toArray();
-        foreach ($transactions as $transaction) {
-            $total += ($transaction->getType() === TransactionType::EXPENSE ? -1 : 1) * $transaction->getValue();
-        }
-
-        return $total;
-    }
 
     public function __construct()
     {
@@ -119,7 +81,33 @@ class Category
         return $this;
     }
 
-    public function getColor(): string
+    /**
+     * @return Collection|Transaction[]
+     */
+    public function getTransactions(): Collection
+    {
+        return $this->transactions;
+    }
+
+    public function addTransaction(Transaction $transaction): self
+    {
+        if (!$this->transactions->contains($transaction)) {
+            $this->transactions[] = $transaction;
+        }
+
+        return $this;
+    }
+
+    public function removeTransaction(Transaction $transaction): self
+    {
+        if ($this->transactions->contains($transaction)) {
+            $this->transactions->removeElement($transaction);
+        }
+
+        return $this;
+    }
+
+    public function getColor(): ?string
     {
         return $this->color;
     }
@@ -131,47 +119,7 @@ class Category
         return $this;
     }
 
-    public function getIcon(): ?int
-    {
-        return $this->icon;
-    }
-
-    public function setIcon(?int $icon): self
-    {
-        $this->icon = $icon;
-
-        return $this;
-    }
-
-    public function getTransactions(): Collection
-    {
-        return $this->transactions;
-    }
-
-    public function addTransaction(Transaction $transaction): self
-    {
-        if (!$this->transactions->contains($transaction)) {
-            $this->transactions[] = $transaction;
-            $transaction->setCategory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTransaction(Transaction $transaction): self
-    {
-        if ($this->transactions->contains($transaction)) {
-            $this->transactions->removeElement($transaction);
-            // set the owning side to null (unless already changed)
-            if ($transaction->getCategory() === $this) {
-                $transaction->setCategory(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getUserId(): int
+    public function getUserId(): ?int
     {
         return $this->user_id;
     }
@@ -183,7 +131,7 @@ class Category
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }

@@ -20,25 +20,25 @@ class User implements UserInterface
      * @ORM\Column(type="integer")
      * @GQL\Field
      */
-    private ?int $id = null;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", nullable=true)
      * @GQL\Field(type="String", name="firstName", resolve="value.getFirstName()")
      */
-    private ?string $first_name;
+    private ?string $first_name = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
      * @GQL\Field(type="String", name="lastName", resolve="value.getLastName()")
      */
-    private ?string $last_name;
+    private ?string $last_name = null;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @GQL\Field
      */
-    private ?string $email;
+    private ?string $email = null;
 
     /**
      * @ORM\Column(type="json")
@@ -85,7 +85,7 @@ class User implements UserInterface
 
     public function getId(): ?int
     {
-        return $this->id;
+        return isset($this->id) ? $this->id : null;
     }
 
     public function setId(int $id): self
@@ -223,10 +223,6 @@ class User implements UserInterface
     {
         if ($this->categories->contains($category)) {
             $this->categories->removeElement($category);
-            // set the owning side to null (unless already changed)
-            if ($category->getUser() === $this) {
-                $category->setUser(null);
-            }
         }
 
         return $this;

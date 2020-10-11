@@ -3,23 +3,17 @@
 namespace App\Builder;
 
 use App\Entity\Category;
+use App\Entity\Label;
 use App\Exception\UnauthorizedOperationException;
-use App\GraphQL\Input\Category\CategoryRequest;
+use App\GraphQL\Input\Label\LabelRequest;
 use App\Services\AuthorizationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 
-class CategoryBuilder extends BaseBuilder
+class LabelBuilder extends BaseBuilder
 {
-    /**
-     * @var Category
-     */
-    private $category;
-
-    /**
-     * @var AuthorizationService
-     */
-    private $authorizationService;
+    private Label $label;
+    private AuthorizationService $authorizationService;
 
     public function __construct(EntityManagerInterface $entityManager, AuthorizationService $authorizationService)
     {
@@ -30,28 +24,29 @@ class CategoryBuilder extends BaseBuilder
 
     public function create(): self
     {
-        $this->category = new Category();
+        $this->label = new Label();
+
         $userId = $this->authorizationService->getCurrentUser()->getId();
         if ($userId) {
-            $this->category->setUserId($userId);
-            $this->category->setUser($this->authorizationService->getCurrentUser());
+            $this->label->setUserId($userId);
+            $this->label->setUser($this->authorizationService->getCurrentUser());
         }
 
         return $this;
     }
 
     /**
-     * @param CategoryRequest $input
-     * @return CategoryBuilder
+     * @param LabelRequest $input
+     * @return LabelBuilder
      * @throws EntityNotFoundException
      */
-    public function bind(CategoryRequest $input): self
+    public function bind(LabelRequest $input): self
     {
         if ($input->id !== null) {
-            $this->setCategory($this->findEntity($input->id, Category::class));
+            $this->setLabel($this->findEntity($input->id, Label::class));
         }
 
-        if ($this->category->getUserId() !== $this->authorizationService->getCurrentUser()->getId()) {
+        if ($this->label->getUserId() !== $this->authorizationService->getCurrentUser()->getId()) {
             throw new UnauthorizedOperationException();
         }
 
@@ -63,43 +58,32 @@ class CategoryBuilder extends BaseBuilder
             $this->withColor($input->color);
         }
 
-        if ($input->icon !== null) {
-            $this->withIcon($input->icon);
-        }
-
         return $this;
     }
 
-    public function setCategory(Category $category): self
+    public function setLabel(Label $label): self
     {
-        $this->category = $category;
+        $this->label = $label;
 
         return $this;
     }
 
     public function withName(string $name): self
     {
-        $this->category->setName($name);
+        $this->label->setName($name);
 
         return $this;
     }
 
     public function withColor(string $color): self
     {
-        $this->category->setColor($color);
+        $this->label->setColor($color);
 
         return $this;
     }
 
-    public function withIcon(int $icon): self
+    public function build(): Label
     {
-        $this->category->setIcon($icon);
-
-        return $this;
-    }
-
-    public function build(): Category
-    {
-        return $this->category;
+        return $this->label;
     }
 }

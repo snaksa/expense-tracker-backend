@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Overblog\GraphQLBundle\Annotation as GQL;
 
@@ -18,7 +20,7 @@ class Transaction
      * @ORM\Column(type="integer")
      * @GQL\Field
      */
-    private ?int $id = null;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
@@ -45,21 +47,21 @@ class Transaction
     private \DateTimeInterface $date;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=false)
      */
-    private ?int $wallet_id;
+    private int $wallet_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Wallet", inversedBy="transactions")
-     * @ORM\JoinColumn(name="wallet_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="wallet_id", referencedColumnName="id", nullable=false)
      * @GQL\Field(type="Wallet")
      */
-    private ?Wallet $wallet;
+    private Wallet $wallet;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private ?int $wallet_receiver_id;
+    private ?int $wallet_receiver_id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Wallet", inversedBy="transactions")
@@ -71,7 +73,7 @@ class Transaction
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private ?int $category_id;
+    private ?int $category_id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="transactions")
@@ -80,14 +82,28 @@ class Transaction
      */
     private ?Category $category = null;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Label", inversedBy="transactions")
+     * @GQL\Field(type="[Label]")
+     */
+    private Collection $labels;
+
     public function __construct()
     {
         $this->date = new \DateTime();
+        $this->labels = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
-        return $this->id;
+        return isset($this->id) ? $this->id : null;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getDescription(): ?string
@@ -126,7 +142,7 @@ class Transaction
         return $this;
     }
 
-    public function getWalletId(): ?int
+    public function getWalletId(): int
     {
         return $this->wallet_id;
     }
@@ -150,12 +166,12 @@ class Transaction
         return $this;
     }
 
-    public function getWallet(): ?Wallet
+    public function getWallet(): Wallet
     {
         return $this->wallet;
     }
 
-    public function setWallet(?Wallet $wallet): self
+    public function setWallet(Wallet $wallet): self
     {
         $this->wallet = $wallet;
 
@@ -200,12 +216,38 @@ class Transaction
 
     public function getWalletReceiver(): ?Wallet
     {
-        return $this->wallet_receiver;
+        return $this->wallet_receiver ?? null;
     }
 
     public function setWalletReceiver(?Wallet $wallet_receiver): self
     {
         $this->wallet_receiver = $wallet_receiver;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Label[]
+     */
+    public function getLabels(): Collection
+    {
+        return $this->labels;
+    }
+
+    public function addLabel(Label $label): self
+    {
+        if (!$this->labels->contains($label)) {
+            $this->labels[] = $label;
+        }
+
+        return $this;
+    }
+
+    public function removeLabel(Label $label): self
+    {
+        if ($this->labels->contains($label)) {
+            $this->labels->removeElement($label);
+        }
 
         return $this;
     }

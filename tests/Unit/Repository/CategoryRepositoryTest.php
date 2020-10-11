@@ -74,6 +74,7 @@ class CategoryRepositoryTest extends BaseTestCase
         $category = new Category();
         $category->setName('Test');
         $category->setColor('red');
+        $category->setUser($this->user);
         $this->repository->save($category);
 
         $this->assertNotNull($category->getId());
@@ -87,10 +88,12 @@ class CategoryRepositoryTest extends BaseTestCase
     public function can_remove(): void
     {
         $fixtureCategory = $this->fixtures->getReference('category_food');
-        $category = $this->repository->findOneById($fixtureCategory->getId());
+        $id = $fixtureCategory->getId();
+        $category = $this->repository->findOneById($id);
         $this->repository->remove($category);
 
-        $this->assertNull($category->getId());
+        $category = $this->repository->findOneById($id);
+        $this->assertNull($category);
     }
 
     protected function tearDown(): void

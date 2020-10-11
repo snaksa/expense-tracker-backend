@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Category;
+use App\Entity\Label;
 use App\Entity\Transaction;
 use App\Entity\Wallet;
 use App\GraphQL\Types\TransactionType;
@@ -38,6 +39,12 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
             $this->getReference('category_clothes')
         ];
 
+        /** @var Label[] $labels */
+        $labels = [
+            $this->getReference('label_essentials'),
+            $this->getReference('label_spoiling')
+        ];
+
         foreach ($wallets as $wallet) {
             foreach ($incomeCategories as $category) {
                 $transaction = new Transaction();
@@ -56,7 +63,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
         }
 
         foreach ($wallets as $wallet) {
-            foreach ($categories as $category) {
+            foreach ($categories as $key => $category) {
                 $count = 0;
                 while ($count < 10) {
                     $randomDays = rand(1, 50);
@@ -68,6 +75,12 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
                     $transaction->setDate($this->getCurrentDateTime()->modify("- {$randomDays} day"));
                     $transaction->setCategory($category);
                     $transaction->setWallet($wallet);
+                    if ($key % 2) {
+                        $transaction->addLabel($labels[0]);
+                    } else {
+                        $transaction->addLabel($labels[1]);
+                    }
+
                     $manager->persist($transaction);
                     $this->setReference(
                         'transaction_' . $wallet->getName() . '_' . $category->getName() . '_' . $count,
@@ -85,6 +98,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
     {
         return array(
             CategoryFixtures::class,
+            LabelFixtures::class,
             WalletFixtures::class
         );
     }

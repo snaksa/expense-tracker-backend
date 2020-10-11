@@ -98,7 +98,7 @@ class TransactionProvider
         }
 
         $wallet = $transaction->getWallet();
-        if ($wallet && $wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
+        if ($wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
             throw GraphQLException::fromString('Unauthorized access!');
         }
 
@@ -184,7 +184,7 @@ class TransactionProvider
         }
 
         $wallet = $transaction->getWallet();
-        if ($wallet && $wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
+        if ($wallet->getUserId() !== $this->authService->getCurrentUser()->getId()) {
             throw GraphQLException::fromString('Unauthorized operation!');
         }
 
