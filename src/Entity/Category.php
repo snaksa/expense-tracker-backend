@@ -20,7 +20,7 @@ class Category
      * @ORM\Column(type="integer")
      * @GQL\Field
      */
-    private ?int $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
@@ -38,19 +38,19 @@ class Category
      * @ORM\Column(type="integer", nullable=true)
      * @GQL\Field
      */
-    private ?int $icon;
+    private ?int $icon = null;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=false)
      */
-    private ?int $user_id;
+    private int $user_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="categories")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      * @GQL\Field(type="User")
      */
-    private ?User $user;
+    private User $user;
 
     /**
      * @ORM\OneToMany(
@@ -97,7 +97,7 @@ class Category
 
     public function getId(): ?int
     {
-        return $this->id;
+        return isset($this->id) ? $this->id : null;
     }
 
     public function setId(int $id): self
@@ -171,12 +171,12 @@ class Category
         return $this;
     }
 
-    public function getUserId(): ?int
+    public function getUserId(): int
     {
         return $this->user_id;
     }
 
-    public function setUserId(?int $user_id): self
+    public function setUserId(int $user_id): self
     {
         $this->user_id = $user_id;
 
@@ -188,7 +188,7 @@ class Category
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 

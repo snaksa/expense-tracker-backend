@@ -59,7 +59,7 @@ class Label
 
     public function getId(): ?int
     {
-        return $this->id;
+        return isset($this->id) ? $this->id : null;
     }
 
     public function setId(int $id): self

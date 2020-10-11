@@ -20,7 +20,7 @@ class Wallet
      * @ORM\Column(type="integer")
      * @GQL\Field
      */
-    private ?int $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
@@ -80,7 +80,7 @@ class Wallet
 
     public function getId(): ?int
     {
-        return $this->id;
+        return isset($this->id) ? $this->id : null;
     }
 
     public function setId(int $id): self
@@ -160,10 +160,6 @@ class Wallet
     {
         if ($this->transactions->contains($transaction)) {
             $this->transactions->removeElement($transaction);
-            // set the owning side to null (unless already changed)
-            if ($transaction->getWallet() === $this) {
-                $transaction->setWallet(null);
-            }
         }
 
         return $this;

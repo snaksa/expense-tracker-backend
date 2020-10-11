@@ -17,6 +17,7 @@ class TransactionTest extends TestCase
         $category = (new Category())->setName('Category');
 
         $transaction = (new Transaction())
+            ->setId(1)
             ->setCategoryId(1)
             ->setCategory($category)
             ->setWalletId(1)
@@ -25,7 +26,7 @@ class TransactionTest extends TestCase
             ->setValue(10)
             ->setType(TransactionType::INCOME);
 
-        $this->assertEquals(null, $transaction->getId());
+        $this->assertEquals(1, $transaction->getId());
         $this->assertEquals(1, $transaction->getCategoryId());
         $this->assertEquals($category, $transaction->getCategory());
         $this->assertEquals(1, $transaction->getWalletId());

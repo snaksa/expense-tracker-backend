@@ -104,10 +104,12 @@ class WalletRepositoryTest extends BaseTestCase
     public function can_remove(): void
     {
         $fixtureWallet = $this->fixtures->getReference('user_demo_wallet_cash');
-        $wallet = $this->repository->findOneById($fixtureWallet->getId());
+        $id = $fixtureWallet->getId();
+        $wallet = $this->repository->findOneById($id);
         $this->repository->remove($wallet);
 
-        $this->assertNull($wallet->getId());
+        $wallet = $this->repository->findOneById($id);
+        $this->assertNull($wallet);
     }
 
     protected function tearDown(): void

@@ -110,7 +110,7 @@ class TransactionBuilder extends BaseBuilder
         }
 
         $wallet = $this->transaction->getWallet();
-        if ($wallet && $wallet->getUserId() !== $this->authorizationService->getCurrentUser()->getId()) {
+        if ($wallet->getUserId() !== $this->authorizationService->getCurrentUser()->getId()) {
             throw new UnauthorizedOperationException();
         }
 

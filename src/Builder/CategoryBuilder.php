@@ -31,8 +31,11 @@ class CategoryBuilder extends BaseBuilder
     public function create(): self
     {
         $this->category = new Category();
-        $this->category->setUserId($this->authorizationService->getCurrentUser()->getId());
-        $this->category->setUser($this->authorizationService->getCurrentUser());
+        $userId = $this->authorizationService->getCurrentUser()->getId();
+        if ($userId) {
+            $this->category->setUserId($userId);
+            $this->category->setUser($this->authorizationService->getCurrentUser());
+        }
 
         return $this;
     }

@@ -88,10 +88,12 @@ class LabelRepositoryTest extends BaseTestCase
     public function can_remove(): void
     {
         $fixtureLabel = $this->fixtures->getReference('label_essentials');
-        $label = $this->repository->findOneById($fixtureLabel->getId());
+        $id = $fixtureLabel->getId();
+        $label = $this->repository->findOneById($id);
         $this->repository->remove($label);
 
-        $this->assertNull($label->getId());
+        $label = $this->repository->findOneById($id);
+        $this->assertNull($label);
     }
 
     protected function tearDown(): void

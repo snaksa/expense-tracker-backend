@@ -25,8 +25,12 @@ class LabelBuilder extends BaseBuilder
     public function create(): self
     {
         $this->label = new Label();
-        $this->label->setUserId($this->authorizationService->getCurrentUser()->getId());
-        $this->label->setUser($this->authorizationService->getCurrentUser());
+
+        $userId = $this->authorizationService->getCurrentUser()->getId();
+        if ($userId) {
+            $this->label->setUserId($userId);
+            $this->label->setUser($this->authorizationService->getCurrentUser());
+        }
 
         return $this;
     }

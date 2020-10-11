@@ -22,7 +22,6 @@ class LabelFixtures extends Fixture implements DependentFixtureInterface
         $label->setName('Essentials');
         $label->setColor('#f98f83');
         $label->setUser($demoUser);
-        $label->setUserId($demoUser->getId());
         $this->setReference('label_essentials', $label);
         $manager->persist($label);
 
@@ -30,7 +29,6 @@ class LabelFixtures extends Fixture implements DependentFixtureInterface
         $label->setName('Spoiling');
         $label->setColor('#f98f83');
         $label->setUser($demoUser);
-        $label->setUserId($demoUser->getId());
         $this->setReference('label_spoiling', $label);
         $manager->persist($label);
 
@@ -38,7 +36,6 @@ class LabelFixtures extends Fixture implements DependentFixtureInterface
         $label->setName('Essentials');
         $label->setColor('#f98f83');
         $label->setUser($demoUser2);
-        $label->setUserId($demoUser2->getId());
         $this->setReference('label_essentials_2', $label);
         $manager->persist($label);
 

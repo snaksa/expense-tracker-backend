@@ -15,4 +15,9 @@ abstract class LabelRequest
      * @var string
      */
     public $name;
+
+    /**
+     * @var string
+     */
+    public $color;
 }
