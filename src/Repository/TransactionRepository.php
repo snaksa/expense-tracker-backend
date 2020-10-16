@@ -55,6 +55,11 @@ class TransactionRepository extends ServiceEntityRepository
             $params['categoryIds'] = $filters->categoryIds;
         }
 
+        if ($filters->labelIds) {
+            $where[] = 'tl.id IN (:labelIds)';
+            $params['labelIds'] = $filters->labelIds;
+        }
+
         if ($filters->startDate) {
             $where[] = 't.date >= :startDate';
             $params['startDate'] = $filters->startDate;
@@ -69,6 +74,7 @@ class TransactionRepository extends ServiceEntityRepository
             ->leftJoin('t.wallet', 'w')
             ->leftJoin('t.wallet_receiver', 'wr')
             ->leftJoin('t.category', 'c')
+            ->leftJoin('t.labels', 'tl')
             ->where(implode(' AND ', $where))
             ->setParameters($params)
             ->orderBy('t.date', 'DESC');
@@ -94,6 +100,11 @@ class TransactionRepository extends ServiceEntityRepository
             $params['categoryIds'] = $filters->categoryIds;
         }
 
+        if ($filters->labelIds) {
+            $where[] = 'tl.id IN (:labelIds)';
+            $params['labelIds'] = $filters->labelIds;
+        }
+
         if ($filters->startDate) {
             $where[] = 't.date >= :startDate';
             $params['startDate'] = $filters->startDate;
@@ -108,6 +119,7 @@ class TransactionRepository extends ServiceEntityRepository
             ->select("t.date, t.value")
             ->leftJoin('t.wallet', 'w')
             ->leftJoin('t.category', 'c')
+            ->leftJoin('t.labels', 'tl')
             ->where(join(' AND ', $where))
             ->setParameters($params)
             ->orderBy('t.date', 'ASC')
@@ -130,6 +142,11 @@ class TransactionRepository extends ServiceEntityRepository
             $params['categoryIds'] = $filters->categoryIds;
         }
 
+        if ($filters->labelIds) {
+            $where[] = 'tl.id IN (:labelIds)';
+            $params['labelIds'] = $filters->labelIds;
+        }
+
         if ($filters->startDate) {
             $where[] = 't.date >= :startDate';
             $params['startDate'] = $filters->startDate;
@@ -144,6 +161,7 @@ class TransactionRepository extends ServiceEntityRepository
             ->select("t.date, t.value, t.category_id")
             ->leftJoin('t.wallet', 'w')
             ->leftJoin('t.category', 'c')
+            ->leftJoin('t.labels', 'tl')
             ->where(join(' AND ', $where))
             ->setParameters($params)
             ->orderBy('t.date', 'ASC')
@@ -162,6 +180,11 @@ class TransactionRepository extends ServiceEntityRepository
         if ($filters->categoryIds) {
             $where[] = 't.category_id IN (:categoryIds) AND c.user_id = :userId';
             $params['categoryIds'] = $filters->categoryIds;
+        }
+
+        if ($filters->labelIds) {
+            $where[] = 'tl.id IN (:labelIds)';
+            $params['labelIds'] = $filters->labelIds;
         }
 
         if ($filters->type) {
@@ -183,6 +206,7 @@ class TransactionRepository extends ServiceEntityRepository
             ->select("t.value, c.name as category, c.color as color")
             ->leftJoin('t.wallet', 'w')
             ->leftJoin('t.category', 'c')
+            ->leftJoin('t.labels', 'tl')
             ->where(join(' AND ', $where))
             ->setParameters($params)
             ->getQuery()

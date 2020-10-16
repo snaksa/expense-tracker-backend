@@ -21,6 +21,11 @@ class CategoryRecordsRequest
     public ?array $categoryIds;
 
     /**
+     * @GQL\Field(type="[Int]")
+     */
+    public ?array $labelIds;
+
+    /**
      * @GQL\Field(type="TransactionType")
      */
     public ?TransactionType $type;
