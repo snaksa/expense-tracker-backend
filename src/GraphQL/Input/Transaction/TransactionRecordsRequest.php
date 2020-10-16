@@ -25,6 +25,12 @@ class TransactionRecordsRequest extends TransactionRequest
     public $categoryIds;
 
     /**
+     * @GQL\Field(type="[Int]")
+     * @var int[]
+     */
+    public $labelIds;
+
+    /**
      * @GQL\Field(type="String")
      * @var string
      */

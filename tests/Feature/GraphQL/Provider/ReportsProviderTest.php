@@ -3,10 +3,12 @@
 namespace App\Tests\Feature\GraphQL\Provider;
 
 use App\DataFixtures\CategoryFixtures;
+use App\DataFixtures\LabelFixtures;
 use App\DataFixtures\TransactionFixtures;
 use App\DataFixtures\UserFixtures;
 use App\DataFixtures\WalletFixtures;
 use App\Entity\Category;
+use App\Entity\Label;
 use App\Entity\Transaction;
 use App\Entity\User;
 use App\Entity\Wallet;
@@ -39,6 +41,11 @@ class ReportsProviderTest extends BaseTestCase
     private $category;
 
     /**
+     * @var Label
+     */
+    private $label;
+
+    /**
      * @var Wallet
      */
     private $wallet;
@@ -53,24 +60,27 @@ class ReportsProviderTest extends BaseTestCase
             UserFixtures::class,
             WalletFixtures::class,
             CategoryFixtures::class,
+            LabelFixtures::class,
             TransactionFixtures::class
         ])->getReferenceRepository();
 
         $this->user = $this->fixtures->getReference('user_demo');
         $this->secondUser = $this->fixtures->getReference('user_demo2');
         $this->category = $this->fixtures->getReference('category_food');
+        $this->label = $this->fixtures->getReference('label_essentials');
         $this->wallet = $this->fixtures->getReference('user_demo_wallet_cash');
     }
 
     /**
      * @test
      */
-    public function can_retrieve_transactions_spending_flow_by_start_date(): void
+    public function can_retrieve_transactions_spending_flow_by_start_date_1(): void
     {
         $startDate = $this->getCurrentDateTime()->modify('- 2 day')->setTime(0, 0, 0, 0);
         $transactions = $this->filterFixtures(function ($entity) use ($startDate) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getDate() >= $startDate
                 && $entity->getType() === TransactionType::EXPENSE;
         });
@@ -95,6 +105,7 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'startDate' => $startDate->format('Y-m-d H:i:s')
                 ]
             ],
@@ -133,6 +144,7 @@ class ReportsProviderTest extends BaseTestCase
         $transactions = $this->filterFixtures(function ($entity) use ($startDate, $endDate) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getDate() >= $startDate
                 && $entity->getDate() <= $endDate
                 && $entity->getType() === TransactionType::EXPENSE;
@@ -158,6 +170,7 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'startDate' => $startDate->format('Y-m-d H:i:s'),
                     'endDate' => $endDate->format('Y-m-d H:i:s')
                 ]
@@ -204,6 +217,7 @@ class ReportsProviderTest extends BaseTestCase
         $transactions = $this->filterFixtures(function ($entity) use ($startDate, $endDate) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getType() === TransactionType::EXPENSE
                 && $entity->getDate() >= $startDate
                 && $entity->getDate() <= $endDate;
@@ -228,7 +242,9 @@ class ReportsProviderTest extends BaseTestCase
             'transactionSpendingFlow',
             [
                 'input' => [
+                    'timezone' => $timezone,
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'startDate' => $startDate->format('Y-m-d H:i:s'),
                     'endDate' => $endDate->format('Y-m-d H:i:s')
                 ]
@@ -269,6 +285,7 @@ class ReportsProviderTest extends BaseTestCase
         $transactions = $this->filterFixtures(function ($entity) use ($startDate) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getDate() >= $startDate
                 && $entity->getType() === TransactionType::EXPENSE;
         });
@@ -298,6 +315,7 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'startDate' => $startDate->format('Y-m-d H:i:s')
                 ]
             ],
@@ -346,6 +364,7 @@ class ReportsProviderTest extends BaseTestCase
         $transactions = $this->filterFixtures(function ($entity) use ($startDate, $endDate) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getType() === TransactionType::EXPENSE
                 && $entity->getDate() >= $startDate
                 && $entity->getDate() <= $endDate;
@@ -376,6 +395,7 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'startDate' => $startDate->format('Y-m-d H:i:s'),
                     'endDate' => $endDate->format('Y-m-d H:i:s')
                 ]
@@ -434,6 +454,7 @@ class ReportsProviderTest extends BaseTestCase
         $transactions = $this->filterFixtures(function ($entity) use ($startDate, $endDate, $timezone) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getType() === TransactionType::EXPENSE
                 && $entity->getDate() >= (clone $startDate)->setTimezone($this->getUTCTimeZone())
                 && $entity->getDate() <= (clone $endDate)->setTimezone($this->getUTCTimeZone());
@@ -468,6 +489,7 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'startDate' => (clone $startDate)->setTimezone($this->getUTCTimeZone())->format('Y-m-d H:i:s'),
                     'endDate' => (clone $endDate)->setTimezone($this->getUTCTimeZone())->format('Y-m-d H:i:s'),
                     'timezone' => $timezone
@@ -517,6 +539,7 @@ class ReportsProviderTest extends BaseTestCase
             return $entity instanceof Transaction
                 && $entity->getType() === TransactionType::EXPENSE
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getDate() >= $startDate;
         });
 
@@ -540,6 +563,7 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'startDate' => $startDate->format('Y-m-d H:i:s'),
                     'type' => new EnumType('EXPENSE')
                 ]
@@ -572,6 +596,7 @@ class ReportsProviderTest extends BaseTestCase
             return $entity instanceof Transaction
                 && $entity->getType() === TransactionType::EXPENSE
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getDate() >= $startDate
                 && $entity->getDate() <= $endDate;
         });
@@ -596,6 +621,7 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'startDate' => $startDate->format('Y-m-d H:i:s'),
                     'endDate' => $endDate->format('Y-m-d H:i:s'),
                     'type' => new EnumType('EXPENSE')
@@ -632,6 +658,7 @@ class ReportsProviderTest extends BaseTestCase
             return $entity instanceof Transaction
                 && $entity->getType() === TransactionType::EXPENSE
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getDate() >= (clone $startDate)->setTimezone($this->getUTCTimeZone())
                 && $entity->getDate() <= (clone $endDate)->setTimezone($this->getUTCTimeZone());
         });
@@ -656,6 +683,7 @@ class ReportsProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'startDate' => (clone $startDate)->setTimezone($this->getUTCTimeZone())->format('Y-m-d H:i:s'),
                     'endDate' => (clone $endDate)->setTimezone($this->getUTCTimeZone())->format('Y-m-d H:i:s'),
                     'timezone' => $timezone,

@@ -65,8 +65,8 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
         foreach ($wallets as $wallet) {
             foreach ($categories as $key => $category) {
                 $count = 0;
-                while ($count < 10) {
-                    $randomDays = rand(1, 50);
+                while ($count < 20) {
+                    $randomDays = rand(1, 5);
                     $amount = rand(10, 100) / 10;
                     $transaction = new Transaction();
                     $transaction->setValue($amount);
@@ -77,6 +77,9 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
                     $transaction->setWallet($wallet);
                     if ($key % 2) {
                         $transaction->addLabel($labels[0]);
+                    } elseif ($key % 3) {
+                        $transaction->addLabel($labels[0]);
+                        $transaction->addLabel($labels[1]);
                     } else {
                         $transaction->addLabel($labels[1]);
                     }

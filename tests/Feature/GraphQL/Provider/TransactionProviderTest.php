@@ -3,10 +3,12 @@
 namespace App\Tests\Feature\GraphQL\Provider;
 
 use App\DataFixtures\CategoryFixtures;
+use App\DataFixtures\LabelFixtures;
 use App\DataFixtures\TransactionFixtures;
 use App\DataFixtures\UserFixtures;
 use App\DataFixtures\WalletFixtures;
 use App\Entity\Category;
+use App\Entity\Label;
 use App\Entity\Transaction;
 use App\Entity\User;
 use App\Entity\Wallet;
@@ -38,6 +40,11 @@ class TransactionProviderTest extends BaseTestCase
     private $category;
 
     /**
+     * @var Label
+     */
+    private $label;
+
+    /**
      * @var Wallet
      */
     private $wallet;
@@ -52,12 +59,14 @@ class TransactionProviderTest extends BaseTestCase
             UserFixtures::class,
             WalletFixtures::class,
             CategoryFixtures::class,
+            LabelFixtures::class,
             TransactionFixtures::class
         ])->getReferenceRepository();
 
         $this->user = $this->fixtures->getReference('user_demo');
         $this->secondUser = $this->fixtures->getReference('user_demo2');
         $this->category = $this->fixtures->getReference('category_food');
+        $this->label = $this->fixtures->getReference('label_essentials');
         $this->wallet = $this->fixtures->getReference('user_demo_wallet_cash');
     }
 
@@ -68,7 +77,8 @@ class TransactionProviderTest extends BaseTestCase
     {
         $transactions = $this->filterFixtures(function ($entity) {
             return $entity instanceof Transaction
-                && $entity->getWalletId() === $this->wallet->getId();
+                && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label);
         });
 
         usort($transactions, function (Transaction $a, Transaction $b) {
@@ -86,7 +96,8 @@ class TransactionProviderTest extends BaseTestCase
             'transactions',
             [
                 'input' => [
-                    'walletIds' => new IntegerArrayType([$this->wallet->getId()])
+                    'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()])
                 ]
             ],
             ['data' => ['id', 'date']]
@@ -117,6 +128,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactions = $this->filterFixtures(function ($entity) use ($date) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getDate() >= $date;
         });
 
@@ -136,6 +148,7 @@ class TransactionProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'startDate' => $date->format('Y-m-d H:i:s')
                 ]
             ],
@@ -167,6 +180,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactions = $this->filterFixtures(function ($entity) use ($date) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getDate() <= $date;
         });
 
@@ -186,6 +200,7 @@ class TransactionProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'endDate' => $date->format('Y-m-d H:i:s')
                 ]
             ],
@@ -218,6 +233,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactions = $this->filterFixtures(function ($entity) use ($startDate, $endDate) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getDate() >= $startDate
                 && $entity->getDate() <= $endDate;
         });
@@ -238,6 +254,7 @@ class TransactionProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'startDate' => $startDate->format('Y-m-d H:i:s'),
                     'endDate' => $endDate->format('Y-m-d H:i:s')
                 ]
@@ -281,6 +298,7 @@ class TransactionProviderTest extends BaseTestCase
         $transactions = $this->filterFixtures(function ($entity) use ($startDate, $endDate, $timezone) {
             return $entity instanceof Transaction
                 && $entity->getWalletId() === $this->wallet->getId()
+                && $entity->getLabels()->contains($this->label)
                 && $entity->getDate() >= (clone $startDate)->setTimezone($this->getUTCTimeZone())
                 && $entity->getDate() <= (clone $endDate)->setTimezone($this->getUTCTimeZone());
         });
@@ -301,6 +319,7 @@ class TransactionProviderTest extends BaseTestCase
             [
                 'input' => [
                     'walletIds' => new IntegerArrayType([$this->wallet->getId()]),
+                    'labelIds' => new IntegerArrayType([$this->label->getId()]),
                     'startDate' => (clone $startDate)->setTimezone($this->getUTCTimeZone())->format('Y-m-d H:i:s'),
                     'endDate' => (clone $endDate)->setTimezone($this->getUTCTimeZone())->format('Y-m-d H:i:s'),
                     'timezone' => $timezone
