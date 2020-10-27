@@ -103,6 +103,7 @@ class CreateListener
             $label = new Label();
             $label->setName($l['name']);
             $label->setColor($l['color']);
+            $label->setUser($user);
             $this->labelRepository->save($label);
         }
     }

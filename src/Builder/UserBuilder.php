@@ -76,7 +76,7 @@ class UserBuilder extends BaseBuilder
                 throw new UserAlreadyExistsException('User with this email already exists');
             }
 
-            $this->withEmail($input->email);
+            $this->withEmail(trim($input->email));
         }
 
         if ($input->firstName !== null) {
@@ -97,7 +97,7 @@ class UserBuilder extends BaseBuilder
 
         if ($input->password !== null) {
             if ($input->password !== $input->confirmPassword) {
-                throw new PasswordConfirmationException();
+                throw new PasswordConfirmationException('Passwords do not match');
             }
 
             $this->withPassword($input->password);
