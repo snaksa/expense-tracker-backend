@@ -1,4 +1,7 @@
 overblog_graphql:
+    batching_method: "apollo"
+    services:
+        promise_adapter: "webonyx_graphql.sync_promise_adapter"
     definitions:
         schema:
             default:
@@ -16,3 +19,15 @@ overblog_graphql:
                     dir: "%kernel.project_dir%/src/GraphQL"
                     suffix: ~
 
+overblog_dataloader:
+    defaults:
+        promise_adapter: 'overblog_dataloader.webonyx_graphql_sync_promise_adapter'
+        options:
+            batch: true
+            cache: true
+            max_batch_size: 50
+            cache_map: 'overblog_dataloader.cache_map'
+    loaders:
+        category:
+            alias: 'category_loader'
+            batch_load_fn: '@App\GraphQL\Loader\CategoryLoader:all'

@@ -78,7 +78,7 @@ class Transaction
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="transactions")
      * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=true)
-     * @GQL\Field(type="Category")
+     * @GQL\Field(type="Category", resolve="@=service('category_loader').load(value.getCategoryId())")
      */
     private ?Category $category = null;
 

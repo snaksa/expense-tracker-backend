@@ -21,3 +21,9 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+
+    App\GraphQL\Loader\:
+        resource: '../src/GraphQL/Loader/*'
+        exclude: '../src/GraphQL/Loader/{BaseLoader}'
+        arguments:
+            $promiseAdapter: '@overblog_graphql.promise_adapter'
