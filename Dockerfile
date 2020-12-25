@@ -8,6 +8,7 @@ RUN echo "$(curl -sS https://composer.github.io/installer.sig) -" > composer-set
         && php composer-setup.php && rm composer-setup.php* \
         && chmod +x composer.phar && mv composer.phar /usr/bin/composer \
         && apt-get update \
+        && pecl install xdebug \
         && apt-get install -y libzip-dev zip \
         && docker-php-ext-install pdo_mysql zip
 
@@ -15,6 +16,7 @@ WORKDIR /var/www/html
 
 COPY . .
 COPY .docker/default.conf /etc/apache2/sites-available/000-default.conf
+COPY .docker/xdebug.ini /usr/local/etc/php/conf.d/
 
 RUN composer install
 RUN a2enmod rewrite
