@@ -225,19 +225,25 @@ class Budget
         $transactionIds = [];
         foreach ($this->categories as $category) {
             foreach ($category->getTransactions() as $transaction) {
-                if (!in_array($transaction->getId(), $transactionIds)) {
+                if (!in_array($transaction->getId(), $transactionIds) &&
+                    $transaction->getDate() >= $this->getStartDate() &&
+                    $transaction->getDate() <= $this->getEndDate()
+                ) {
                     $total += $transaction->getValue();
+                    $transactionIds[] = $transaction->getId();
                 }
-                $transactionIds[] = $transaction->getId();
             }
         }
 
         foreach ($this->labels as $label) {
             foreach ($label->getTransactions() as $transaction) {
-                if (!in_array($transaction->getId(), $transactionIds)) {
+                if (!in_array($transaction->getId(), $transactionIds) &&
+                    $transaction->getDate() >= $this->getStartDate() &&
+                    $transaction->getDate() <= $this->getEndDate()
+                ) {
                     $total += $transaction->getValue();
+                    $transactionIds[] = $transaction->getId();
                 }
-                $transactionIds[] = $transaction->getId();
             }
         }
 
