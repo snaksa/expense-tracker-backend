@@ -219,7 +219,7 @@ class Budget
         return $this;
     }
 
-    public function getSpent()
+    public function getSpent(): float
     {
         $total = 0;
         $transactionIds = [];
