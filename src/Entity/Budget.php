@@ -35,6 +35,11 @@ class Budget
     private float $value;
 
     /**
+     * @GQL\Field(type="Float!", name="spent", resolve="value.getSpent()")
+     */
+    private float $spent;
+
+    /**
      * @ORM\Column(type="integer", nullable=false)
      */
     private int $user_id;
@@ -212,5 +217,30 @@ class Budget
         }
 
         return $this;
+    }
+
+    public function getSpent()
+    {
+        $total = 0;
+        $transactionIds = [];
+        foreach ($this->categories as $category) {
+            foreach ($category->getTransactions() as $transaction) {
+                if (!in_array($transaction->getId(), $transactionIds)) {
+                    $total += $transaction->getValue();
+                }
+                $transactionIds[] = $transaction->getId();
+            }
+        }
+
+        foreach ($this->labels as $label) {
+            foreach ($label->getTransactions() as $transaction) {
+                if (!in_array($transaction->getId(), $transactionIds)) {
+                    $total += $transaction->getValue();
+                }
+                $transactionIds[] = $transaction->getId();
+            }
+        }
+
+        return $total;
     }
 }
