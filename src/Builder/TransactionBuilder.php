@@ -102,9 +102,11 @@ class TransactionBuilder extends BaseBuilder
             }
 
             foreach ($toRemoveIds as $labelId) {
-                $label = $this->findEntity($labelId, Label::class);
-                if ($label) {
-                    $this->removeLabel($label);
+                if ($labelId) {
+                    $label = $this->findEntity($labelId, Label::class);
+                    if ($label) {
+                        $this->removeLabel($label);
+                    }
                 }
             }
         }

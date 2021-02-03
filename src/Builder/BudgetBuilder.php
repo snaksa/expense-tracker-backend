@@ -98,9 +98,11 @@ class BudgetBuilder extends BaseBuilder
             }
 
             foreach ($toRemoveIds as $categoryId) {
-                $category = $this->findEntity($categoryId, Category::class);
-                if ($category) {
-                    $this->removeCategory($category);
+                if ($categoryId) {
+                    $category = $this->findEntity($categoryId, Category::class);
+                    if ($category) {
+                        $this->removeCategory($category);
+                    }
                 }
             }
         }
@@ -115,15 +117,19 @@ class BudgetBuilder extends BaseBuilder
 
             foreach ($newIds as $labelId) {
                 if (!in_array($labelId, $oldIds)) {
-                    $label = $this->findEntity($labelId, Label::class);
-                    $this->addLabel($label);
+                    if ($labelId) {
+                        $label = $this->findEntity($labelId, Label::class);
+                        $this->addLabel($label);
+                    }
                 }
             }
 
             foreach ($toRemoveIds as $labelId) {
-                $label = $this->findEntity($labelId, Label::class);
-                if ($label) {
-                    $this->removeLabel($label);
+                if ($labelId) {
+                    $label = $this->findEntity($labelId, Label::class);
+                    if ($label) {
+                        $this->removeLabel($label);
+                    }
                 }
             }
         }
