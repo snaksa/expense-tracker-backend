@@ -349,18 +349,6 @@
     "seld/jsonlint": {
         "version": "1.7.2"
     },
-    "sensiolabs/security-checker": {
-        "version": "4.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "4.0",
-            "ref": "160c9b600564faa1224e8f387d49ef13ceb8b793"
-        },
-        "files": [
-            "config/packages/security_checker.yaml"
-        ]
-    },
     "squizlabs/php_codesniffer": {
         "version": "3.0",
         "recipe": {
@@ -463,9 +451,6 @@
             "src/Kernel.php"
         ]
     },
-    "symfony/http-client": {
-        "version": "v5.0.2"
-    },
     "symfony/http-client-contracts": {
         "version": "v2.0.1"
     },
@@ -486,9 +471,6 @@
             "version": "1.0",
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
-    },
-    "symfony/mime": {
-        "version": "v5.0.2"
     },
     "symfony/options-resolver": {
         "version": "v5.0.2"
@@ -517,9 +499,6 @@
     },
     "symfony/polyfill-intl-icu": {
         "version": "v1.14.0"
-    },
-    "symfony/polyfill-intl-idn": {
-        "version": "v1.13.1"
     },
     "symfony/polyfill-intl-normalizer": {
         "version": "v1.18.1"
