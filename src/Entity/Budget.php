@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\GraphQL\Types\TransactionType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -221,29 +222,60 @@ class Budget
 
     public function getSpent(): float
     {
-        $total = 0;
+        /**@var Transaction[] $transactions */
+        $transactions = [];
         $transactionIds = [];
+        $categoryIds = [];
         foreach ($this->categories as $category) {
+            $categoryIds[] = $category->getId();
             foreach ($category->getTransactions() as $transaction) {
-                if (!in_array($transaction->getId(), $transactionIds) &&
-                    $transaction->getDate() >= $this->getStartDate() &&
-                    $transaction->getDate() <= $this->getEndDate()
+                if ($transaction->getDate() >= $this->getStartDate() &&
+                    $transaction->getDate() <= $this->getEndDate() &&
+                    !in_array($transaction->getId(), $transactionIds)
                 ) {
-                    $total += $transaction->getValue();
+                    $transactions[] = $transaction;
                     $transactionIds[] = $transaction->getId();
                 }
             }
         }
 
+        $labelIds = [];
         foreach ($this->labels as $label) {
+            $labelIds[] = $label->getId();
             foreach ($label->getTransactions() as $transaction) {
-                if (!in_array($transaction->getId(), $transactionIds) &&
-                    $transaction->getDate() >= $this->getStartDate() &&
-                    $transaction->getDate() <= $this->getEndDate()
+                if ($transaction->getDate() >= $this->getStartDate() &&
+                    $transaction->getDate() <= $this->getEndDate() &&
+                    !in_array($transaction->getId(), $transactionIds)
                 ) {
-                    $total += $transaction->getValue();
+                    $transactions[] = $transaction;
                     $transactionIds[] = $transaction->getId();
                 }
+            }
+        }
+
+        $total = 0;
+        foreach ($transactions as $transaction) {
+            $labelNotFound = false;
+            if (count($labelIds)) {
+                $transactionLabelIds = $transaction->getLabels()->map(function (Label $label) {
+                    return $label->getId();
+                })->toArray();
+
+                foreach ($labelIds as $labelId) {
+                    if (!in_array($labelId, $transactionLabelIds)) {
+                        $labelNotFound = true;
+                    }
+                }
+            }
+
+            $categoryNotFound = false;
+            if (count($categoryIds)) {
+                $categoryNotFound = !in_array($transaction->getCategoryId(), $categoryIds);
+            }
+
+
+            if (!$labelNotFound && !$categoryNotFound) {
+                $total += $transaction->getValue();
             }
         }
 
