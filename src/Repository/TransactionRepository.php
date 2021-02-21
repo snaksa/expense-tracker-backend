@@ -42,13 +42,16 @@ class TransactionRepository extends ServiceEntityRepository
     public function findCollection(TransactionRecordsRequest $filters, int $userId): Pagerfanta
     {
         $where = [
-            '(t.wallet_id IN (:walletIds) OR t.wallet_receiver_id IN (:walletIds))',
             '(w.user_id = :userId OR wr.user_id = :userId)'
         ];
         $params = [
-            'walletIds' => $filters->walletIds,
             'userId' => $userId
         ];
+
+        if ($filters->walletIds) {
+            $where[] = '(t.wallet_id IN (:walletIds) OR t.wallet_receiver_id IN (:walletIds))';
+            $params['walletIds'] = $filters->walletIds;
+        }
 
         if ($filters->categoryIds) {
             $where[] = 't.category_id IN (:categoryIds) AND c.user_id = :userId';
@@ -88,12 +91,16 @@ class TransactionRepository extends ServiceEntityRepository
 
     public function findSpendingFlow(TransactionRecordsRequest $filters, int $userId): array
     {
-        $where = ['t.type = :type', 't.wallet_id IN (:walletIds)', 'w.user_id = :userId'];
+        $where = ['t.type = :type', 'w.user_id = :userId'];
         $params = [
-            'walletIds' => $filters->walletIds,
             'type' => TransactionType::EXPENSE,
             'userId' => $userId
         ];
+
+        if ($filters->walletIds) {
+            $where[] = 't.wallet_id IN (:walletIds)';
+            $params['walletIds'] = $filters->walletIds;
+        }
 
         if ($filters->categoryIds) {
             $where[] = 't.category_id IN (:categoryIds) AND c.user_id = :userId';
@@ -130,12 +137,16 @@ class TransactionRepository extends ServiceEntityRepository
 
     public function findCategorySpendingFlow(CategoryRecordsRequest $filters, int $userId): array
     {
-        $where = ['t.wallet_id IN (:walletIds)', 't.type = :type', 'w.user_id = :userId'];
+        $where = ['t.type = :type', 'w.user_id = :userId'];
         $params = [
-            'walletIds' => $filters->walletIds,
             'type' => TransactionType::EXPENSE,
             'userId' => $userId
         ];
+
+        if ($filters->walletIds) {
+            $where[] = 't.wallet_id IN (:walletIds)';
+            $params['walletIds'] = $filters->walletIds;
+        }
 
         if ($filters->categoryIds) {
             $where[] = 't.category_id IN (:categoryIds) AND c.user_id = :userId';
@@ -171,11 +182,15 @@ class TransactionRepository extends ServiceEntityRepository
 
     public function findCategorySpendingPie(CategoryRecordsRequest $filters, int $userId): array
     {
-        $where = ['t.wallet_id IN (:walletIds)', 'w.user_id = :userId'];
+        $where = ['w.user_id = :userId'];
         $params = [
-            'walletIds' => $filters->walletIds,
             'userId' => $userId
         ];
+
+        if ($filters->walletIds) {
+            $where[] = 't.wallet_id IN (:walletIds)';
+            $params['walletIds'] = $filters->walletIds;
+        }
 
         if ($filters->categoryIds) {
             $where[] = 't.category_id IN (:categoryIds) AND c.user_id = :userId';
