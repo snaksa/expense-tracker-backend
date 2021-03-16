@@ -123,7 +123,7 @@ class TransactionRepository extends ServiceEntityRepository
         }
 
         return $this->createQueryBuilder('t')
-            ->select("t.date, t.value")
+            ->select("t.id, t.date, t.value")
             ->leftJoin('t.wallet', 'w')
             ->leftJoin('t.category', 'c')
             ->leftJoin('t.labels', 'tl')
@@ -169,7 +169,7 @@ class TransactionRepository extends ServiceEntityRepository
         }
 
         return $this->createQueryBuilder('t')
-            ->select("t.date, t.value, t.category_id")
+            ->select("t.id, t.date, t.value, t.category_id")
             ->leftJoin('t.wallet', 'w')
             ->leftJoin('t.category', 'c')
             ->leftJoin('t.labels', 'tl')
@@ -218,7 +218,7 @@ class TransactionRepository extends ServiceEntityRepository
         }
 
         return $this->createQueryBuilder('t')
-            ->select("t.value, c.name as category, c.color as color")
+            ->select("t.id, t.value, c.name as category, c.color as color")
             ->leftJoin('t.wallet', 'w')
             ->leftJoin('t.category', 'c')
             ->leftJoin('t.labels', 'tl')

@@ -87,6 +87,7 @@ class ReportsProvider
             }
         }
 
+        $calculatedRecords = [];
         $result = [];
         foreach ($transactions as $transaction) {
             $date = $transaction['date'];
@@ -104,7 +105,10 @@ class ReportsProvider
                 $result[$key] = 0;
             }
 
-            $result[$key] += $transaction['value'];
+            if (!in_array($transaction['id'], $calculatedRecords)) {
+                $result[$key] += $transaction['value'];
+                $calculatedRecords[] = $transaction['id'];
+            }
         }
 
         $data = [];
@@ -172,6 +176,7 @@ class ReportsProvider
             }
         }
 
+        $calculatedRecords = [];
         $result = [];
         foreach ($transactions as $transaction) {
             $date = $transaction['date'];
@@ -190,7 +195,10 @@ class ReportsProvider
                 $result[$key][$categoryId] = 0;
             }
 
-            $result[$key][$categoryId] += $transaction['value'];
+            if (!in_array($transaction['id'], $calculatedRecords)) {
+                $result[$key][$categoryId] += $transaction['value'];
+                $calculatedRecords[] = $transaction['id'];
+            }
         }
 
         $data = [];
@@ -236,14 +244,19 @@ class ReportsProvider
         $colors = [];
         $reportData = [];
 
+        $calculatedRecords = [];
         $categoryColors = [];
         $data = [];
         foreach ($result as $row) {
             if (!isset($data[$row['category']])) {
                 $data[$row['category']] = 0;
+                $categoryColors[$row['category']] = $row['color'];
             }
-            $data[$row['category']] += $row['value'];
-            $categoryColors[$row['category']] = $row['color'];
+
+            if (!in_array($row['id'], $calculatedRecords)) {
+                $data[$row['category']] += $row['value'];
+                $calculatedRecords[] = $row['id'];
+            }
         }
 
 
