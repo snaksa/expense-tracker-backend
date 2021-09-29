@@ -1808,16 +1808,16 @@
         },
         {
             "name": "lcobucci/jwt",
-            "version": "4.1.4",
+            "version": "4.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lcobucci/jwt.git",
-                "reference": "71cf170102c8371ccd933fa4df6252086d144de6"
+                "reference": "fe2d89f2eaa7087af4aa166c6f480ef04e000582"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/71cf170102c8371ccd933fa4df6252086d144de6",
-                "reference": "71cf170102c8371ccd933fa4df6252086d144de6",
+                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/fe2d89f2eaa7087af4aa166c6f480ef04e000582",
+                "reference": "fe2d89f2eaa7087af4aa166c6f480ef04e000582",
                 "shasum": ""
             },
             "require": {
@@ -1833,7 +1833,7 @@
                 "infection/infection": "^0.21",
                 "lcobucci/coding-standard": "^6.0",
                 "mikey179/vfsstream": "^1.6.7",
-                "phpbench/phpbench": "^1.0@alpha",
+                "phpbench/phpbench": "^1.0",
                 "phpstan/extension-installer": "^1.0",
                 "phpstan/phpstan": "^0.12",
                 "phpstan/phpstan-deprecation-rules": "^0.12",
@@ -1874,7 +1874,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2021-03-23T23:53:08+00:00"
+            "time": "2021-09-28T19:34:56+00:00"
         },
         {
             "name": "lexik/jwt-authentication-bundle",
@@ -2190,12 +2190,12 @@
             "version": "v2.6.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/pagerfanta-packages/core.git",
+                "url": "https://github.com/Pagerfanta/core.git",
                 "reference": "160d03760337d2dab7d44b1435d19df42d9b2ad8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pagerfanta-packages/core/zipball/160d03760337d2dab7d44b1435d19df42d9b2ad8",
+                "url": "https://api.github.com/repos/Pagerfanta/core/zipball/160d03760337d2dab7d44b1435d19df42d9b2ad8",
                 "reference": "160d03760337d2dab7d44b1435d19df42d9b2ad8",
                 "shasum": ""
             },
@@ -2225,12 +2225,12 @@
             "version": "v2.6.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/pagerfanta-packages/doctrine-orm-adapter.git",
+                "url": "https://github.com/Pagerfanta/doctrine-orm-adapter.git",
                 "reference": "b040b7d2fc5bd904b2059f28cbc1a71b283fd04b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pagerfanta-packages/doctrine-orm-adapter/zipball/b040b7d2fc5bd904b2059f28cbc1a71b283fd04b",
+                "url": "https://api.github.com/repos/Pagerfanta/doctrine-orm-adapter/zipball/b040b7d2fc5bd904b2059f28cbc1a71b283fd04b",
                 "reference": "b040b7d2fc5bd904b2059f28cbc1a71b283fd04b",
                 "shasum": ""
             },
